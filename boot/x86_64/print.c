@@ -4,15 +4,13 @@
 #include <axboot.h>
 #include <print.h>
 
-INTN
+VOID
 EfiPrint(CHAR16 *Format, ...)
 {
 	VA_LIST Args;
-	INTN Counter;
 	CHAR16 CharString[2];
 
 	va_start(Args, Format);
-	Counter = 0;
 	CharString[0] = L'\0';
 	CharString[1] = L'\0';
 
@@ -23,19 +21,17 @@ EfiPrint(CHAR16 *Format, ...)
 			if (Format[i] == L'c') {
 				CharString[0] = va_arg(Args, int);
 				g_SystemTable->ConOut->OutputString(g_SystemTable->ConOut, CharString);
-				Counter++;
+			} else if (Format[i] == L's') {
+				CHAR16 *String = va_arg(Args, CHAR16 *);
+				g_SystemTable->ConOut->OutputString(g_SystemTable->ConOut, String);
 			} else {
 				g_SystemTable->ConOut->OutputString(g_SystemTable->ConOut, L"%?");
-				Counter += 2;
 			}
 		} else {
 			CharString[0] = Format[i];
 			g_SystemTable->ConOut->OutputString(g_SystemTable->ConOut, CharString);
-			Counter++;
 		}
 	}
 
 	va_end(Args);
-
-	return Counter;
 }
