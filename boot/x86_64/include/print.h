@@ -1,7 +1,7 @@
 #ifndef PRINT_H
 #define PRINT_H
 
-INT32
+INTN
 EfiPrint(CHAR16 *Format, ...);
 
 #endif /* PRINT_H */

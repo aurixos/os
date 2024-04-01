@@ -4,11 +4,11 @@
 #include <axboot.h>
 #include <print.h>
 
-INT32
+INTN
 EfiPrint(CHAR16 *Format, ...)
 {
 	VA_LIST Args;
-	INT32 Counter;
+	INTN Counter;
 	CHAR16 CharString[2];
 
 	va_start(Args, Format);
