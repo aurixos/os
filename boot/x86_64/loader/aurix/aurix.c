@@ -12,7 +12,7 @@ LoaderAurixBoot(struct BootEntry *Entry)
 	UINTN KernelSize = 0;
 	VOID *Kernel = FileRead(Entry->KernelPath, &KernelSize);
 
-	LoaderElfParse(Kernel);
+	LoaderElfLoad(Kernel);
 
 	g_SystemTable->BootServices->FreePool(Kernel);
 	EfiPrint(L"Loaded AurixOS\r\n");
