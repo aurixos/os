@@ -2,7 +2,9 @@
 #include <efilib.h>
 
 #include <axboot.h>
+#include <config.h>
 #include <print.h>
+#include <loader/loader.h>
 
 EFI_HANDLE g_ImageHandle;
 EFI_SYSTEM_TABLE *g_SystemTable;
@@ -28,10 +30,10 @@ AxBootEntryPoint(EFI_HANDLE ImageHandle,
 
 	// TEMPORARY: I've set these up only temporarily
 	//			  before I make a proper config parser.
-	const CHAR16 *MenuItems[] = {
-		L"AurixOS",
-		L"Windows",
-		L"Linux"
+	struct BootEntry MenuItems[] = {
+		{L"AurixOS", L"System\\axkrnl", L"-v", ENTRY_PROTOCOL_AURIX, NULL, 0},
+		{L"Windows", L"EFI\\Microsoft\\boot\\bootmgfw.efi", L"", ENTRY_PROTOCOL_CHAINLOAD, NULL, 0},
+		{L"Linux", L"EFI\\BOOT\\GRUBX64.EFI", L"", ENTRY_PROTOCOL_CHAINLOAD, NULL, 0}
 	};
 
 	UINTN SelectedItem = 0;
@@ -51,9 +53,9 @@ AxBootEntryPoint(EFI_HANDLE ImageHandle,
 
 		for (UINTN Index = 0; Index < ARRAY_SIZE(MenuItems); Index++) {
 			if (Index == SelectedItem) {
-				EfiPrint(L" > %s <\r\n", MenuItems[Index]);
+				EfiPrint(L" > %s <\r\n", MenuItems[Index].Name);
 			} else {
-				EfiPrint(L"   %s\r\n", MenuItems[Index]);
+				EfiPrint(L"   %s\r\n", MenuItems[Index].Name);
 			}
 		}
 
@@ -69,6 +71,8 @@ AxBootEntryPoint(EFI_HANDLE ImageHandle,
 		// boot selection
 		if (Key.UnicodeChar == L'\r') {
 			g_SystemTable->ConOut->ClearScreen(g_SystemTable->ConOut);
+			
+			LoaderBootEntry(&MenuItems[SelectedItem]);
 			for (;;);
 		}
 
