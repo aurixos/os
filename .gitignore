@@ -1,0 +1,10 @@
+build/
+release/
+.vscode/
+
+.DS_Store
+*.o
+*.d
+*.iso
+*.img
+*.log

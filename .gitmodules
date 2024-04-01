@@ -1,0 +1,3 @@
+[submodule "boot/x86_64/libefi"]
+	path = boot/x86_64/libefi
+	url = https://github.com/schkwve/sel
