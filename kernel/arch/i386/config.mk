@@ -1,1 +1,1 @@
-KERNEL_FILE := axkrnl
+KERNEL_FILE := System/axkrnl

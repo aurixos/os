@@ -1,4 +1,4 @@
-override KERNEL_FILE := axkrnl
+override KERNEL_FILE := System/axkrnl
 
 override AS := nasm
 override CC := clang

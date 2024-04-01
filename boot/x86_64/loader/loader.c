@@ -22,7 +22,7 @@ LoaderBootEntry(struct BootEntry *Entry)
 			break;
 		}
 		default: {
-			EfiPrint(L"Unknown protocol type!\r\n");
+			EfiPrint(L"ERROR: Unknown protocol type!\r\n");
 			break;
 		}
 	}

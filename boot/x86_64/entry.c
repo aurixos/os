@@ -4,6 +4,7 @@
 #include <axboot.h>
 #include <config.h>
 #include <print.h>
+#include <loader/aurix.h>
 #include <loader/loader.h>
 
 EFI_HANDLE g_ImageHandle;
@@ -25,7 +26,7 @@ AxBootEntryPoint(EFI_HANDLE ImageHandle,
 	// disable watchdog
 	Status = g_SystemTable->BootServices->SetWatchdogTimer(0, 0, 0, NULL);
 	if (EFI_ERROR(Status)) {
-		EfiPrint(L"Failed to disable UEFI watchdog!\r\n");
+		EfiPrint(L"ERROR: Failed to disable UEFI watchdog!\r\n");
 	}
 
 	// TEMPORARY: I've set these up only temporarily
@@ -35,6 +36,12 @@ AxBootEntryPoint(EFI_HANDLE ImageHandle,
 		{L"Windows", L"EFI\\Microsoft\\boot\\bootmgfw.efi", L"", ENTRY_PROTOCOL_CHAINLOAD, NULL, 0},
 		{L"Linux", L"EFI\\BOOT\\GRUBX64.EFI", L"", ENTRY_PROTOCOL_CHAINLOAD, NULL, 0}
 	};
+
+	//////
+	// DEBUG
+	LoaderAurixBoot(&MenuItems[0]);
+	//////
+
 
 	UINTN SelectedItem = 0;
 	UINTN Cols = 0;
