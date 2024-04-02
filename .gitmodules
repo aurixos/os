@@ -1,3 +1,4 @@
-[submodule "boot/x86_64/libefi"]
-	path = boot/x86_64/libefi
-	url = https://github.com/schkwve/sel
+[submodule "boot/x86_64/limine"]
+	path = boot/x86_64/limine
+	url = https://github.com/limine-bootloader/limine
+	branch = v7.x-binary
