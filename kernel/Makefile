@@ -1,10 +1,13 @@
 include arch/$(ARCH)/config.mk
 
 ifeq ($(DEBUG),yes)
-INTERNAL_CFLAGS += -g -D_DEBUG
+override INTERNAL_CFLAGS += -g -D_DEBUG
 endif
 
 INCLUDE_DIRS := . libc arch/$(ARCH)
+
+override INTERNAL_ASFLAGS += $(foreach d, $(INCLUDE_DIRS), -I$d)
+override INTERNAL_CFLAGS += $(foreach d, $(INCLUDE_DIRS), -I$d)
 
 ARCH_CFILES := $(shell find arch/$(ARCH) -type f -name '*.c')
 ARCH_ASFILES := $(shell find arch/$(ARCH) -type f -name '*.asm')

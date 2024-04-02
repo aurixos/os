@@ -6,7 +6,7 @@ override LD := x86_64-elf-ld
 
 override INTERNAL_ASFLAGS := -felf64
 
-override INTERNAL_CFLAGS := -std=c11 \
+override INTERNAL_CFLAGS := -std=c99 \
 							-ffreestanding \
 							-fno-stack-protector \
 							-fno-stack-check \
