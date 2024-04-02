@@ -5,8 +5,8 @@
 #include <print.h>
 #include <file.h>
 
-VOID *
-FileRead(CHAR16 *Filename, UINTN *FileSize)
+EFI_FILE_PROTOCOL *
+FileOpen(CHAR16 *Filename, UINTN *FileSize)
 {
 	EFI_GUID LoadedImageProtocolGuid = EFI_LOADED_IMAGE_PROTOCOL_GUID;
 	EFI_GUID SimpleFileSystemProtocolGuid = EFI_SIMPLE_FILE_SYSTEM_PROTOCOL_GUID;
@@ -16,8 +16,7 @@ FileRead(CHAR16 *Filename, UINTN *FileSize)
 	EFI_SIMPLE_FILE_SYSTEM_PROTOCOL *FileSystem = NULL;
 	EFI_FILE_PROTOCOL *RootDirectory = NULL;
 
-	VOID *Buffer = NULL;
-	UINTN BufferSize = sizeof(EFI_FILE_INFO);
+	UINTN Size = sizeof(EFI_FILE_INFO);
 	EFI_FILE_PROTOCOL *File = NULL;
 	EFI_FILE_INFO FileInfo;
 
@@ -57,31 +56,15 @@ FileRead(CHAR16 *Filename, UINTN *FileSize)
 		goto cleanup;
 	}
 
-	Status = File->GetInfo(File, &FileInfoGuid, &BufferSize, &FileInfo);
+	Status = File->GetInfo(File, &FileInfoGuid, &Size, &FileInfo);
 	if (EFI_ERROR(Status)) {
 		EfiPrint(L"ERROR: Failed to get file info ('%s') - %d.\r\n", Filename, Status);
 		goto cleanup;
 	}
 
-	EfiPrint(L"File size: %u\r\n", FileInfo.FileSize);
-
-	BufferSize = FileInfo.FileSize;
-	Status = g_SystemTable->BootServices->AllocatePool(EfiLoaderData, BufferSize, &Buffer);
-	if (EFI_ERROR(Status) || (BufferSize != FileInfo.FileSize)) {
-		EfiPrint(L"ERROR: Failed to allocate memory for file '%s'.\r\n", Filename);
-		goto cleanup;
-	}
-
-	Status = File->Read(File, &BufferSize, Buffer);
-	if (EFI_ERROR(Status) || (BufferSize != FileInfo.FileSize)) {
-		EfiPrint(L"ERROR: Failed to read file '%s'.\r\n", Filename);
-		goto cleanup;
-	}
-
-	*FileSize = BufferSize;
+	*FileSize = FileInfo.FileSize;
 
 cleanup:
-	File->Close(File);
 	RootDirectory->Close(RootDirectory);
 
 	g_SystemTable->BootServices->CloseProtocol(LoadedImage->DeviceHandle,
@@ -94,5 +77,11 @@ cleanup:
 		g_ImageHandle,
 		NULL);
 
-	return Buffer;
+	return File;
+}
+
+VOID
+FileClose(EFI_FILE_PROTOCOL *File)
+{
+	File->Close(File);
 }

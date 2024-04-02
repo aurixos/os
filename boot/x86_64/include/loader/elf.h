@@ -21,6 +21,10 @@
 #define	ELFCLASS64 2
 #define	ELFDATA2LSB	1
 
+#define ET_EXEC 2
+
+#define EM_X86_64 62
+
 #define	PT_NULL 0
 #define	PT_LOAD 1
 #define	PT_DYNAMIC 2
@@ -71,7 +75,16 @@ typedef struct {
     UINT64 p_align;
 } Elf64_Phdr;
 
-VOID *
-LoaderElfLoad(VOID *FileBuffer);
+EFI_STATUS
+LoaderElfLoadHeader(EFI_FILE_PROTOCOL *File, Elf64_Ehdr *Header);
+
+EFI_STATUS
+LoaderElfVerifyHeader(Elf64_Ehdr *Header);
+
+EFI_STATUS
+LoaderElfLoadProgramHeaders(EFI_FILE_PROTOCOL *File, Elf64_Ehdr *Ehdr, Elf64_Phdr *Phdr);
+
+EFI_STATUS
+LoaderElfLoad(EFI_FILE_PROTOCOL *File, UINT64 *EntryPoint);
 
 #endif /* __LOADER_ELF_H */

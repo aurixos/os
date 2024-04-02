@@ -3,7 +3,10 @@
 
 #include <efi.h>
 
-VOID *
-FileRead(CHAR16 *Filename, UINTN *FileSize);
+EFI_FILE_PROTOCOL *
+FileOpen(CHAR16 *Filename, UINTN *FileSize);
+
+VOID
+FileClose(EFI_FILE_PROTOCOL *File);
 
 #endif /* __FILE_H */

@@ -37,12 +37,6 @@ AxBootEntryPoint(EFI_HANDLE ImageHandle,
 		{L"Linux", L"EFI\\BOOT\\GRUBX64.EFI", L"", ENTRY_PROTOCOL_CHAINLOAD, NULL, 0}
 	};
 
-	//////
-	// DEBUG
-	LoaderAurixBoot(&MenuItems[0]);
-	//////
-
-
 	UINTN SelectedItem = 0;
 	UINTN Cols = 0;
 	UINTN Rows = 0;
