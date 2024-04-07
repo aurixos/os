@@ -10,4 +10,7 @@ typedef unsigned int uint32_t;
 typedef long long int64_t;
 typedef unsigned long long uint64_t;
 
+typedef unsigned long size_t;
+typedef long ssize_t;
+
 #endif /* _ARCH_SYS_TYPES_H */
