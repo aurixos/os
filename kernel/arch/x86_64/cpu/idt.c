@@ -1,7 +1,9 @@
+#include <arch/x86_64/cpu/idt.h>
+#include <aurix.h>
+
 #include <stdint.h>
 #include <stddef.h>
 
-#include "idt.h"
 
 interrupt_handler g_int_handlers[16];
 
@@ -24,7 +26,9 @@ void idt_init()
 	struct idtr idtr;
 	idtr.size = sizeof(idt) - 1;
 	idtr.base = (uint64_t)&idt;
-	//idt_load(&idtr);
+	idt_load(&idtr);
+
+	klog("done");
 }
 
 void idt_set_entry(struct idt_descriptor *entry, uint64_t handler, uint8_t flags)

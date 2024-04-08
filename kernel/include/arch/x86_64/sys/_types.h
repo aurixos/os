@@ -13,4 +13,11 @@ typedef unsigned long long uint64_t;
 typedef unsigned long size_t;
 typedef long ssize_t;
 
+typedef long ptrdiff_t;
+
+typedef int64_t intmax_t;
+typedef uint64_t uintmax_t;
+
+typedef unsigned int uintptr_t;
+
 #endif /* _ARCH_SYS_TYPES_H */

@@ -14,12 +14,12 @@ RELEASE_HDD := $(RELEASE_DIR)/aurixos-hdd-$(GIT_REV)_$(ARCH).img
 RELEASE_SDCARD := $(RELEASE_DIR)/aurixos-sdcard-$(GIT_REV)_$(ARCH).img
 
 # User-changeable flags
-export CFLAGS ?= -O2 -g -Wall -Wextra -Wpedantic
+export CFLAGS ?= -O2 -g -Wall -Wextra
 export ASFLAGS ?= 
 export LDFLAGS ?=
 
 include arch/$(ARCH)/config.mk
-QEMU_FLAGS ?= -m 2G
+QEMU_FLAGS ?= -m 2G -serial stdio
 
 # Check if architecture is supported
 ifeq ($(ARCH),x86_64)

@@ -1,4 +1,5 @@
-#include <cpu/gdt.h>
+#include <arch/x86_64/cpu/gdt.h>
+#include <aurix.h>
 
 #include <stdint.h>
 
@@ -19,7 +20,7 @@ void gdt_init(void)
 	gdtr.offset = (uint64_t)&entries;
 	gdt_load(&gdtr);
 
-	// klog("done");
+	klog("done");
 }
 
 void gdt_set_entry(struct gdt_entry *entry, uint32_t base, uint32_t limit, uint8_t access,
