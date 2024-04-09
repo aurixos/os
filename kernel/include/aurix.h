@@ -3,11 +3,14 @@
 
 #include <debug/klog.h>
 
-typedef int aurix_status;
-enum {
+#define STRINGIZE_HELPER(x...) #x
+#define STRINGIZE(x...) STRINGIZE_HELPER(x)
+#define ARCH_INCLUDE(hdr) STRINGIZE(arch/AURIXOS_ARCH/hdr)
+
+typedef enum {
 	AURIX_SUCCESS,
 	AURIX_ERROR,
-};
+} aurix_status;
 
 void aurix_print_version(void);
 
