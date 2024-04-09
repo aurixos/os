@@ -10,8 +10,9 @@ override INTERNAL_CFLAGS := -std=c99 \
 							-ffreestanding \
 							-fno-stack-protector \
 							-fno-stack-check \
+							-fno-omit-frame-pointer \
 							-fno-lto \
-							-fpie \
+							-fPIE \
 							-m64 \
 							-march=x86-64 \
 							-mabi=sysv \
@@ -24,8 +25,9 @@ override INTERNAL_CFLAGS := -std=c99 \
 							-MP
 
 override INTERNAL_LDFLAGS := -nostdlib \
+							-flto \
 							--no-dynamic-linker \
-							-z max-page-size=4096 \
+							-z max-page-size=0x1000 \
 							-z text \
 							-melf_x86_64 \
 							-static \

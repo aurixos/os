@@ -6,5 +6,7 @@ void cpu_exception_handler(struct interrupt_frame frame)
 	(void)frame;
 	// @todo: implement an exception handler
 	klog("EXCEPTION!");
-	for (;;);
+	for (;;) {
+		__asm__ volatile("cli;hlt");
+	}
 }

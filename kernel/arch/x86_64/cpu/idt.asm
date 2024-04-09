@@ -3,6 +3,7 @@
 global idt_load
 idt_load:
 	lidt [rdi]
+	sti
 	ret
 
 ;;;;
@@ -10,8 +11,8 @@ idt_load:
 extern cpu_exception_handler
 
 _int_stub:
-	pushaq
 	cld
+	pushaq
 	call cpu_exception_handler
 	popaq
 	add rsp, 16
@@ -19,7 +20,6 @@ _int_stub:
 
 %macro _isr_noerr 1
 isr_%+%1:
-	cli
 	push 0
 	push %1
 	jmp _int_stub
@@ -27,7 +27,6 @@ isr_%+%1:
 
 %macro _isr_err 1
 isr_%+%1:
-	cli
 	push %1
 	jmp _int_stub
 %endmacro

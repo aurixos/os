@@ -19,7 +19,7 @@ export ASFLAGS ?=
 export LDFLAGS ?=
 
 include arch/$(ARCH)/config.mk
-QEMU_FLAGS ?= -m 2G -serial stdio
+QEMU_FLAGS ?= -m 2G -serial stdio -d int -d cpu_reset -D log.txt -M smm=off
 
 # Check if architecture is supported
 ifeq ($(ARCH),x86_64)
