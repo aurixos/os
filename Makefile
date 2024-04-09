@@ -2,6 +2,13 @@ export ARCH ?= x86_64
 export DEBUG ?= yes
 
 export GIT_REV := $(shell git rev-parse --short HEAD)
+export AURIXOS_VERSION := $(GIT_REV)
+export AURIXOS_ARCH := $(ARCH)
+ifeq ($(DEBUG),yes)
+export AURIXOS_CONFIGURATION := Debug
+else
+export AURIXOS_CONFIGURATION := Release
+endif
 
 # No matter where the makefile is run, this should always be equal to the root
 # of this repo.
@@ -14,7 +21,7 @@ RELEASE_HDD := $(RELEASE_DIR)/aurixos-hdd-$(GIT_REV)_$(ARCH).img
 RELEASE_SDCARD := $(RELEASE_DIR)/aurixos-sdcard-$(GIT_REV)_$(ARCH).img
 
 # User-changeable flags
-export CFLAGS ?= -O2 -g -Wall -Wextra
+export CFLAGS ?= -O2 -g -Wall -Wextra -DAURIXOS_VERSION=\"$(AURIXOS_VERSION)\" -DAURIXOS_ARCH=\"$(AURIXOS_ARCH)\" -DAURIXOS_CONFIGURATION=\"$(AURIXOS_CONFIGURATION)\"
 export ASFLAGS ?= 
 export LDFLAGS ?=
 

@@ -30,6 +30,8 @@ struct interrupt_frame {
 	uint64_t ss;
 } __attribute__((packed));
 
+typedef void (*interrupt_handler)();
+
 void cpu_exception_handler(struct interrupt_frame frame);
 
 #endif /* _ARCH_CPU_EXCEPTION_H */

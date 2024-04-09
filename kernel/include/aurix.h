@@ -9,4 +9,6 @@ enum {
 	AURIX_ERROR,
 };
 
+void aurix_print_version(void);
+
 #endif /* _AURIX_H */

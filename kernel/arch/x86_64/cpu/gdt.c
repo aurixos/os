@@ -20,8 +20,6 @@ void gdt_init(void)
 	gdtr.size = sizeof(entries) - 1;
 	gdtr.offset = (uint64_t)&entries;
 	gdt_load(&gdtr);
-
-	klog("done");
 }
 
 void gdt_set_entry(struct gdt_entry *entry, uint32_t base, uint32_t limit, uint8_t access,

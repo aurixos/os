@@ -5,7 +5,6 @@
 #include <stdint.h>
 #include <stddef.h>
 
-interrupt_handler irq_handlers[16];
 extern uint64_t isr_tbl[];
 
 void idt_init()
@@ -22,10 +21,6 @@ void idt_init()
 		idt_set_entry(&idt[i], isr_tbl[i], IDT_INT_GATE);
 	}
 
-	for (size_t i = 0; i < 16; i++) {
-		irq_handlers[i] = NULL;
-	}
-
 	// @todo: Add 8259 PIC code
 	pic_init();
 	pic_disable();
@@ -34,8 +29,6 @@ void idt_init()
 	idtr.size = (uint16_t)sizeof(idt) - 1;
 	idtr.base = (uint64_t)&idt;
 	idt_load(&idtr);
-
-	klog("done");
 }
 
 void idt_set_entry(struct idt_descriptor *entry, uint64_t handler, uint8_t flags)

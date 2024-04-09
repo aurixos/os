@@ -23,8 +23,6 @@ struct idtr {
 	uint64_t base;
 } __attribute__((packed));
 
-typedef void (*interrupt_handler)();
-
 void idt_init();
 void idt_set_entry(struct idt_descriptor *entry, uint64_t handler, uint8_t flags);
 
