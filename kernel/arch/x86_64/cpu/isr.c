@@ -50,19 +50,19 @@ void cpu_exception_handler(struct interrupt_frame frame)
 		// @todo: get cpu id when smp is implemented
 		int cpu_id = 1;
 
-		_klog("\npanic(cpu %d, 0x%.16llx): type %i (%s), register dump:\n", cpu_id, frame.rip, frame.vector, exception_strings[frame.vector]);
+		_klog("\npanic(cpu %d, 0x%.16lx): type %i (%s), register dump:\n", cpu_id, frame.rip, frame.vector, exception_strings[frame.vector]);
 		
-		_klog("cr0: 0x%.16llx, cr2: 0x%.16llx, cr3: 0x%.16llx, cr4: 0x%.16llx\n",
+		_klog("cr0: 0x%.16lx, cr2: 0x%.16lx, cr3: 0x%.16lx, cr4: 0x%.16lx\n",
 		  read_cr0(), read_cr2(), read_cr3(), read_cr4());
-		_klog("rax: 0x%.16llx, rbx: 0x%.16llx, rcx: 0x%.16llx, rdx: 0x%.16llx\n",
+		_klog("rax: 0x%.16lx, rbx: 0x%.16lx, rcx: 0x%.16lx, rdx: 0x%.16lx\n",
 			  frame.rax, frame.rbx, frame.rcx, frame.rdx);
-		_klog("rsp: 0x%.16llx, rbp: 0x%.16llx, rsi: 0x%.16llx, rdi: 0x%.16llx\n",
+		_klog("rsp: 0x%.16lx, rbp: 0x%.16lx, rsi: 0x%.16lx, rdi: 0x%.16lx\n",
 			  frame.rsp, frame.rbp, frame.rsi, frame.rdi);
-		_klog("r8:  0x%.16llx, r9:  0x%.16llx, r10: 0x%.16llx, r11: 0x%.16llx\n",
+		_klog("r8:  0x%.16lx, r9:  0x%.16lx, r10: 0x%.16lx, r11: 0x%.16lx\n",
 			  frame.r8, frame.r9, frame.r10, frame.r11);
-		_klog("r12: 0x%.16llx, r13: 0x%.16llx, r14: 0x%.16llx, r15: 0x%.16llx\n",
+		_klog("r12: 0x%.16lx, r13: 0x%.16lx, r14: 0x%.16lx, r15: 0x%.16lx\n",
 			  frame.r12, frame.r13, frame.r14, frame.r15);
-		_klog("rfl: 0x%.16llx, rip: 0x%.16llx, cs:  0x%.16llx, ss:  0x%.16llx\n",
+		_klog("rfl: 0x%.16lx, rip: 0x%.16lx, cs:  0x%.16lx, ss:  0x%.16lx\n",
 			  frame.rflags, frame.rip, frame.cs, frame.ss);
 
 		_klog("\nAurixOS version:\n");
