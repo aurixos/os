@@ -8,5 +8,6 @@ aurix_status cpu_init(void)
 {
 	gdt_init();
 	idt_init();
-	return 0;
+
+	return AURIX_SUCCESS;
 }
