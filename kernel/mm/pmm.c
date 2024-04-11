@@ -44,6 +44,5 @@ void pmm_init(struct limine_memmap_response *memmap_response)
 		for (;;);
 	}
 
-
 	klog("done");
 }

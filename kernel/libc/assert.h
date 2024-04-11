@@ -7,5 +7,5 @@
 # define _STR(x) _VAL(x)
 # define assert(expr) ((expr) ? (void)0 : _Assert(__FILE__ ":" _STR(__LINE__) "" #expr))
 
-void _Assert(char *msg);
+void _Assert(char *);
 #endif
