@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _ASSERT_H
+#define _ASSERT_H
 
 #ifdef NDEBUG
 # define assert(expr) ((void)0)
@@ -9,3 +10,5 @@
 
 void _Assert(char *);
 #endif
+
+#endif /* _ASSERT_H */
