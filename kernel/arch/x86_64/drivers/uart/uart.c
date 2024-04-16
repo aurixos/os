@@ -1,8 +1,10 @@
 #include <drivers/uart/uart.h>
 #include <arch/x86_64/cpu/cpu_utils.h>
 
-void uart_init()
+void uart_init(int baud)
 {
+	// @todo: use custom baud rate
+	(void)baud;
 	outb(COM1 + 1, 0x00);
 
 	// 115200 baud

@@ -1,0 +1,1 @@
+QEMU_BOARD_FLAGS := -M raspi3b

@@ -31,9 +31,11 @@ include arch/$(ARCH)/config.mk
 QEMU_FLAGS ?= -m 2G -serial stdio
 
 # Check if architecture is supported
+# @todo: this should be better
 ifeq ($(ARCH),x86_64)
+else ifeq ($(ARCH),aarch64)
 else
-	$(error Architecture '$(ARCH)' is not supported.)
+$(error Architecture '$(ARCH)' is not supported.)
 endif
 
 .PHONY: all
