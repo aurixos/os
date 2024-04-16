@@ -1,5 +1,4 @@
 #include <arch/cpu.h>
-#include <boot/boot.h>
 
 #include <aurix.h>
 
