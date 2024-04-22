@@ -3,7 +3,7 @@
 
 void aurix_print_version(void)
 {
-	_klog("LuxeOS version:\n%s (%s/%s)\n",
+	_klog("%s (%s/%s)\n",
 		STRINGIZE(AURIXOS_VERSION),
 		STRINGIZE(AURIXOS_CONFIGURATION),
 		STRINGIZE(AURIXOS_ARCH));
