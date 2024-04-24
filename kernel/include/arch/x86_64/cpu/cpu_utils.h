@@ -1,11 +1,12 @@
-#ifndef _ARCH_CPU_UTILS_H
-#define _ARCH_CPU_UTILS_H
+#ifndef _CPU_UTILS_H
+#define _CPU_UTILS_H
 
 #include <stdint.h>
 
 ////
 // CPU-Related instructions
 ///
+
 static inline void cpuid(int code, uint32_t *a, uint32_t *d)
 {
     __asm__ volatile( "cpuid"
@@ -55,6 +56,7 @@ static inline void wrmsr(uint64_t msr, uint64_t val)
 ////
 // Reading Control Registers
 ///
+
 static inline uint64_t read_cr0()
 {
 	uint64_t val;
@@ -95,11 +97,39 @@ static inline uint64_t read_cr8()
 	return val;
 }
 
-
 ////
 // Writing Control Registers
 ///
 
+static inline void write_cr0(uint64_t val)
+{
+	__asm__ volatile("mov %0, %%cr0"
+					:: "r"(val));
+}
+
+static inline void write_cr2(uint64_t val)
+{
+	__asm__ volatile("mov %0, %%cr2"
+					:: "r"(val));
+}
+
+static inline void write_cr3(uint64_t val)
+{
+	__asm__ volatile("mov %0, %%cr3"
+					:: "r"(val));
+}
+
+static inline void write_cr4(uint64_t val)
+{
+	__asm__ volatile("mov %0, %%cr4"
+					:: "r"(val));
+}
+
+static inline void write_cr8(uint64_t val)
+{
+	__asm__ volatile("mov %0, %%cr8"
+					:: "r"(val));
+}
 
 ////
 // I/O Operations
@@ -117,4 +147,4 @@ static inline uint8_t inb(uint16_t port)
 	return retval;
 }
 
-#endif /* _ARCH_CPU_UTILS_H */
+#endif /* _CPU_UTILS_H */
