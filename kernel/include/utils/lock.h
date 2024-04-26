@@ -14,7 +14,7 @@ typedef struct spinlock {
 static inline void spinlock_acquire(spinlock_t *spinlock)
 {
 	while (__atomic_test_and_set(&spinlock->lock, __ATOMIC_ACQUIRE)) {
-#ifdef AURIXOS_X86_64
+#ifdef AURIXOS_x86_64
 		__asm__ volatile("pause");
 #endif
 	}
