@@ -23,7 +23,6 @@ HEADER_DEPS := $(CFILES:.c=.d)
 .PHONY: all
 all: $(BUILD_DIR)/output/$(KERNEL_FILE)
 
--include $(HEADER_DEPS)
 $(BUILD_DIR)/%.c.o: %.c
 	@mkdir -p $(@D)
 	@printf "  CC $<\n"

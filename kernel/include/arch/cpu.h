@@ -7,4 +7,6 @@
 
 aurix_status cpu_init(void);
 
+void print_backtrace(void);
+
 #endif /* _ARCH_CPU_H */
