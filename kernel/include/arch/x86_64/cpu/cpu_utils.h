@@ -2,6 +2,7 @@
 #define _CPU_UTILS_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 ////
 // CPU-Related instructions

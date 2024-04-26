@@ -8,7 +8,7 @@
 
 uint64_t MMIO_BASE = 0;
 
-aurix_status cpu_init(void)
+void cpu_init(void)
 {
 	uart_init(115200);
 
@@ -16,6 +16,14 @@ aurix_status cpu_init(void)
 	idt_init();
 
 	klog("early init");
+}
 
-	return AURIX_SUCCESS;
+void cpu_enable_interrupts(void)
+{
+	__asm__ volatile("sti");
+}
+
+void cpu_disable_interrupts(void)
+{
+	__asm__ volatile("cli");
 }

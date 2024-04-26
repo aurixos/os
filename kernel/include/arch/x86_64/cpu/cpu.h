@@ -3,6 +3,8 @@
 
 #include "cpu_utils.h"
 
+#include <stdbool.h>
+
 struct stackframe {
 	struct stackframe *rbp;
 	uint64_t rip;
