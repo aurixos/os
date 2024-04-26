@@ -1,5 +1,5 @@
 <h1 align="center">
-  <a href="https://github.com/aurixos/kernel">
+  <a href="https://github.com/aurixos/os">
     <!-- Please provide path to your logo here -->
     <img src="docs/images/logo.png" alt="Logo" width="100" height="100">
   </a>
@@ -11,11 +11,11 @@
   <a href="#about"><strong>Explore the screenshots »</strong></a>
   <br />
   <br />
-  <a href="https://github.com/aurixos/kernel/issues/new?assignees=&labels=bug&template=01_BUG_REPORT.md&title=bug%3A+">Report a Bug</a>
+  <a href="https://github.com/aurixos/os/issues/new?assignees=&labels=bug&template=01_BUG_REPORT.md&title=bug%3A+">Report a Bug</a>
   ·
-  <a href="https://github.com/aurixos/kernel/issues/new?assignees=&labels=enhancement&template=02_FEATURE_REQUEST.md&title=feat%3A+">Request a Feature</a>
+  <a href="https://github.com/aurixos/os/issues/new?assignees=&labels=enhancement&template=02_FEATURE_REQUEST.md&title=feat%3A+">Request a Feature</a>
   .
-  <a href="https://github.com/aurixos/kernel/issues/new?assignees=&labels=question&template=04_SUPPORT_QUESTION.md&title=support%3A+">Ask a Question</a>
+  <a href="https://github.com/aurixos/os/issues/new?assignees=&labels=question&template=04_SUPPORT_QUESTION.md&title=support%3A+">Ask a Question</a>
 </div>
 
 <details open="open">
@@ -54,7 +54,7 @@ AurixOS is a general-purpose operating system, meant to take security, performan
 
 ## Getting Started
 
-Latest official releases of AurixOS are available for download [here](https://github.com/aurixos/kernel/releases).
+Latest official releases of AurixOS are available for download [here](https://github.com/aurixos/os/releases).
 
 ### Prerequisites
 
@@ -83,7 +83,7 @@ Alternatively, you can boot AurixOS on a physical machine by running `dd if=rele
 
 ## Support
 
-If you have any questions, feel free to open a [GitHub issue](https://github.com/aurixos/kernel/issues/new?assignees=&labels=question&template=04_SUPPORT_QUESTION.md&title=support%3A+).
+If you have any questions, feel free to open a [GitHub issue](https://github.com/aurixos/os/issues/new?assignees=&labels=question&template=04_SUPPORT_QUESTION.md&title=support%3A+).
 
 ## Contributing
 
@@ -93,7 +93,7 @@ Please read [our contribution guidelines](docs/CONTRIBUTING.md), and thank you f
 
 ## Authors & contributors
 
-For a full list of all authors and contributors, see [the contributors page](https://github.com/aurixos/kernel/contributors).
+For a full list of all authors and contributors, see [the contributors page](https://github.com/aurixos/os/contributors).
 
 ## Security
 
