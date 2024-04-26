@@ -100,8 +100,11 @@ void *pmm_alloc(size_t npages)
 	}
 
 	pmm_info.used_pages += npages;
+	
+	void *ret = (void *)BIT_TO_PAGE(index);
+	memset(ret, 0, npages * PAGE_SIZE);
 
-	return (void *)BIT_TO_PAGE(index);
+	return ret;
 }
 
 void pmm_free(void *ptr, size_t npages)
