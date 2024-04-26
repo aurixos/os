@@ -3,6 +3,7 @@ release/
 .vscode/
 
 .DS_Store
+Brewfile.lock.json
 *.o
 *.d
 *.iso

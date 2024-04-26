@@ -39,39 +39,52 @@ else
 $(error Architecture '$(ARCH)' is not supported.)
 endif
 
+UNAME=$(shell uname -s)
+ifeq ($(UNAME),Darwin)
+	SED=gsed
+else
+	SED=sed
+endif
+
 .PHONY: all
-all: bootloader kernel
+all: bootloader kernel # Builds the entire OS
 
 .PHONY: release_full
-release_full: release_hdd release_sdcard release_iso
+release_full: release_hdd release_sdcard release_iso # Generates all possible images
 
 .PHONY: run
-run: release_iso
+run: release_iso # Runs QEMU
 	@$(QEMU) $(QEMU_FLAGS) $(QEMU_ARCH_FLAGS) -cdrom $(RELEASE_ISO)
 
 # TODO: Maybe add a nice message with instructions here before running qemu?
 .PHONY: rundbg
-rundbg: release_iso
-	@$(QEMU) $(QEMUGDB) $(QEMU_FLAGS) $(QEMU_ARCH_FLAGS) cdrom $(RELEASE_ISO)
+rundbg: release_iso # Runs QEMU with a GDB server
+	@$(QEMU) $(QEMUGDB) $(QEMU_FLAGS) $(QEMU_ARCH_FLAGS) -cdrom $(RELEASE_ISO)
 
 .PHONY: release_iso
-release_iso: $(RELEASE_ISO)
+release_iso: $(RELEASE_ISO) # Generates a CD-ROM image
 
 .PHONY: release_hdd
-release_hdd: $(RELEASE_HDD)
+release_hdd: $(RELEASE_HDD) # Generates an Hard Disk image
 
 .PHONY: release_sdcard
-release_sdcard: $(RELEASE_SDCARD)
+release_sdcard: $(RELEASE_SDCARD) # Generates an SD Card image
 
 .PHONY: bootloader
-bootloader:
+bootloader: # Builds the bootloader
 	@printf ">>> Building bootloader...\n"
 	@$(MAKE) -C boot/$(ARCH)
 
 .PHONY: kernel
-kernel:
+kernel: # Builds the kernel
 	@printf ">>> Building kernel...\n"
 	@$(MAKE) -C kernel
+
+.PHONY: help
+help: # Print help
+	@grep '^[^.#]\+:\s\+.*#' Makefile | \
+	$(SED) "s/\(.\+\):\s*\(.*\) #\s*\(.*\)/`printf "\033[93m"`\1`printf "\033[0m"`	\3 [\2]/" | \
+	expand -t20
 
 $(RELEASE_ISO): bootloader kernel
 	@printf ">>> Generating ISO image..."
