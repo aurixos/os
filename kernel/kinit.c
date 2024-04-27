@@ -1,15 +1,15 @@
 #include <arch/cpu.h>
 #include <acpi/acpi.h>
 #include <boot/boot.h>
-#include <mm/pmm.h>
+#include <mm/mm.h>
 #include <time/timer.h>
-
 #include <aurix.h>
+
+#include <string.h>
 
 void _start(void)
 {
 	cpu_init();
-	pmm_init();
 
 	acpi_init(rsdp_request.response->address);
 
