@@ -38,7 +38,8 @@ void acpi_init(void *rsdp_addr)
 void *acpi_find_sdt(char *signature)
 {
 	int div = xsdt_available ? 8 : 4;
-	int entries = (rsdt->header.length - sizeof(rsdt->header)) / div;
+	int header_length = xsdt_available ? xsdt->header.length : rsdt->header.length;
+	int entries = (header_length - sizeof(struct sdt_header)) / div;
 	for (int i = 0; i < entries; i++) {
 		struct sdt_header *header = NULL;
 		if (xsdt_available) {
