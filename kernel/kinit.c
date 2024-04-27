@@ -2,6 +2,7 @@
 #include <acpi/acpi.h>
 #include <boot/boot.h>
 #include <mm/pmm.h>
+#include <time/timer.h>
 
 #include <aurix.h>
 

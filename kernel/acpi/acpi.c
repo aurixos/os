@@ -1,5 +1,6 @@
 #include <acpi/acpi.h>
 #include <acpi/rsdt.h>
+#include <acpi/hpet.h>
 #include <acpi/madt.h>
 #include <mm/mm.h>
 #include <aurix.h>
@@ -39,6 +40,7 @@ void acpi_init(void *rsdp_addr)
 		}
 	}
 
+	hpet_init();
 	madt_init();
 
 	klog("done");
