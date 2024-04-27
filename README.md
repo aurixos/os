@@ -1,6 +1,5 @@
 <h1 align="center">
   <a href="https://github.com/aurixos/os">
-    <!-- Please provide path to your logo here -->
     <img src="docs/images/logo.png" alt="Logo" width="100" height="100">
   </a>
 </h1>
@@ -8,14 +7,18 @@
 <div align="center">
   AurixOS
   <br />
-  <a href="#about"><strong>Explore the screenshots »</strong></a>
-  <br />
   <br />
   <a href="https://github.com/aurixos/os/issues/new?assignees=&labels=bug&template=01_BUG_REPORT.md&title=bug%3A+">Report a Bug</a>
   ·
   <a href="https://github.com/aurixos/os/issues/new?assignees=&labels=enhancement&template=02_FEATURE_REQUEST.md&title=feat%3A+">Request a Feature</a>
   .
   <a href="https://github.com/aurixos/os/issues/new?assignees=&labels=question&template=04_SUPPORT_QUESTION.md&title=support%3A+">Ask a Question</a>
+</div>
+<br />
+<div align="center">
+
+[![Project license](https://img.shields.io/github/license/aurixos/os.svg?style=flat-square)](LICENSE)
+[![Discord](https://img.shields.io/discord/1224355667331256453)](https://discord.com/invite/pyaywgxKjQ)
 </div>
 
 <details open="open">
