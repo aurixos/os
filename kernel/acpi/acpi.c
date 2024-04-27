@@ -21,12 +21,21 @@ void acpi_init(void *rsdp_addr)
 	
 	struct rsdp *rsdp = (struct rsdp *)rsdp_addr;
 	rsdt = (struct rsdt *)PHYS_TO_VIRT(rsdp->rsdt_addr);
-	// @todo: Check if RSDP is valid
+	if (!acpi_verify_checksum(&rsdt->header)) {
+		// @todo: panic
+		klog("invalid RSDT header!");
+		for (;;);
+	}
+
 	if (rsdp->revision >= 2) {
 		struct xsdp *xsdp = (struct xsdp *)rsdp_addr;
 		if (xsdp->xsdt_addr) {
 			xsdt = (struct xsdt *)PHYS_TO_VIRT(xsdp->xsdt_addr);
-			xsdt_available = true;
+
+			if ((strncmp(xsdt->header.signature, "XSDT", 4) == 0) &&
+				(acpi_verify_checksum(&xsdt->header))) {
+				xsdt_available = true;
+			}
 		}
 	}
 
@@ -48,11 +57,27 @@ void *acpi_find_sdt(char *signature)
 			header = (struct sdt_header *)(uintptr_t)PHYS_TO_VIRT(rsdt->sdt[i]);
 		}
 
-		if (!strncmp(header->signature, signature, 4)) {
+		if (strncmp(header->signature, signature, 4) == 0) {
 			klog("found header with signature %.4s at %.16llx", header->signature, header);
 			return (void *)header;
 		}
 	}
 
 	return NULL;
+}
+
+bool acpi_verify_checksum(struct sdt_header *header)
+{
+	uint8_t checksum = 0;
+	uint8_t *ptr = (uint8_t *)header;
+
+	for (uint8_t i = 0; i < header->length; i++) {
+		checksum += ptr[i];
+	}
+
+	if ((checksum & 0xFF) == 0) {
+		return true;
+	}
+
+	return false;
 }

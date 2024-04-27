@@ -2,6 +2,7 @@
 #define _ACPI_ACPI_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 struct sdt_header {
 	char signature[4];
@@ -32,6 +33,8 @@ struct xsdp {
 } __attribute__((packed));
 
 void acpi_init(void *rsdp_addr);
+
 void *acpi_find_sdt(char *signature);
+bool acpi_verify_checksum(struct sdt_header *header);
 
 #endif /* _ACPI_ACPI_H */
