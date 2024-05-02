@@ -128,7 +128,7 @@ void *pmm_alloc(size_t npages)
 
 	pmm_info.used_pages += npages;
 
-	return (void *)BIT_TO_PAGE(index);
+	return (void *)PHYS_TO_VIRT(BIT_TO_PAGE(index));
 }
 
 void *pmm_allocz(size_t npages)
