@@ -18,7 +18,7 @@
 <div align="center">
 
 [![Project license](https://img.shields.io/github/license/aurixos/os.svg?style=flat-square)](LICENSE)
-[![Discord](https://img.shields.io/discord/1224355667331256453)](https://discord.com/invite/pyaywgxKjQ)
+[![Discord Chat](https://img.shields.io/discord/1234051470182055988)](https://discord.com/invite/hgbZ6wFP4n)
 </div>
 
 <details open="open">
