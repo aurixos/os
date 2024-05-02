@@ -20,8 +20,8 @@ override INTERNAL_CFLAGS := -std=c99 \
 							-mno-mmx \
 							-mno-sse \
 							-mno-sse2 \
-							-mno-red-zone
-							# -MMD \
+							-mno-red-zone \
+							-MMD \
 							-MP
 
 override INTERNAL_LDFLAGS := -nostdlib \

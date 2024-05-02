@@ -10,9 +10,9 @@
 #define PHYS_TO_VIRT(addr) ((addr) + hhdm_request.response->offset)
 #define VIRT_TO_PHYS(addr) ((addr) - hhdm_request.response->offset)
 
-#define KB_TO_PAGES(kb)		    (((kb) * 1024) / PAGE_SIZE)
+#define KB_TO_PAGES(kb) (((kb) * 1024) / PAGE_SIZE)
 
-#define BIT_TO_PAGE(bit)    ((size_t)bit * PAGE_SIZE)
-#define PAGE_TO_BIT(page)   ((size_t)page / PAGE_SIZE)
+#define BIT_TO_PAGE(bit) ((size_t)bit * PAGE_SIZE)
+#define PAGE_TO_BIT(page) ((size_t)page / PAGE_SIZE)
 
 #endif /* _MM_MM_H */

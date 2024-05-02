@@ -18,7 +18,9 @@ void _start(void)
 
 	pmm_init();
 
-#ifdef _DEBUG
+	// for some reason memset() triggers a page fault
+	// on allocated memory
+#if 0
 	// pmm test
 	void *ptr = pmm_allocz(1);
 	memset(ptr, 0x41, 2);
