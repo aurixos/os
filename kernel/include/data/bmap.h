@@ -12,6 +12,6 @@ typedef struct bitmap
 
 void bitmap_set(bitmap_t *bitmap, int bit);
 void bitmap_clear(bitmap_t *bitmap, int bit);
-uint32_t bitmap_get(bitmap_t *bitmap, int bit);
+uint8_t bitmap_get(bitmap_t *bitmap, int bit);
 
 #endif /* _DATA_BMAP_H */

@@ -6,7 +6,7 @@
 
 #include ARCH_INCLUDE(cpu/cpu.h)
 
-void cpu_init(void);
+void cpu_early_init(void);
 void print_backtrace(void);
 
 void cpu_enable_interrupts(void);

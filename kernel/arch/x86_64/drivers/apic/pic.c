@@ -1,4 +1,4 @@
-#include <arch/x86_64/drivers/pic/pic.h>
+#include <arch/x86_64/drivers/apic/pic.h>
 #include <arch/x86_64/cpu/cpu_utils.h>
 
 void pic_init()

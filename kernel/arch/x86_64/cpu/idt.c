@@ -1,5 +1,5 @@
 #include <arch/x86_64/cpu/idt.h>
-#include <arch/x86_64/drivers/pic/pic.h>
+#include <arch/x86_64/drivers/apic/pic.h>
 #include <aurix.h>
 
 #include <stdint.h>
@@ -21,7 +21,6 @@ void idt_init()
 		idt_set_entry(&idt[i], isr_tbl[i], IDT_INT_GATE);
 	}
 
-	// @todo: Add 8259 PIC code
 	pic_init();
 	pic_disable();
 

@@ -8,7 +8,7 @@
 
 uint64_t MMIO_BASE = 0;
 
-void cpu_init(void)
+void cpu_early_init(void)
 {
 	uart_init(115200);
 

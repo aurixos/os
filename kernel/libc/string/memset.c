@@ -1,14 +1,13 @@
 #include <stdint.h>
 #include <string.h>
 
-void *memset(void *s, int c, size_t n)
+void *memset(void *ptr, int c, size_t n)
 {
-	const unsigned char uc = c;
-	unsigned char *su;
+	uint8_t *bufptr = (uint8_t *)ptr;
 
-	for (su = s; n > 0; ++su, --n) {
-		*su = uc;
+	for (size_t i = 0; i < n; i++) {
+		bufptr[i] = c;
 	}
 
-	return s;
+	return ptr;
 }

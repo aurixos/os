@@ -1,7 +1,7 @@
 #include <arch/cpu.h>
 #include <arch/x86_64/cpu/isr.h>
 #include <arch/x86_64/cpu/cpu_utils.h>
-#include <arch/x86_64/drivers/pic/pic.h>
+#include <arch/x86_64/drivers/apic/pic.h>
 #include <aurix.h>
 
 #include <stddef.h>
