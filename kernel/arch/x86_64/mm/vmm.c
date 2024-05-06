@@ -45,7 +45,7 @@ void vmm_init(void)
 		}
 	}
 
-	klog("setting up page tables");
+	klog("setting cr3 to 0x%lx (old cr3: 0x%lx)", VIRT_TO_PHYS((uint64_t)kernel_pt), read_cr3());
 	write_cr3(VIRT_TO_PHYS((uint64_t)kernel_pt));
 	klog("done");
 }
@@ -58,13 +58,13 @@ void vmm_map(page_table_t *page_table, uintptr_t phys, uintptr_t virt, uint64_t 
 	}
 
 	// level 4 page mapping index
-	uint16_t pml4_index = (virt & (0x1fful << 39)) >> 39;
+	uint16_t pml4_index = (virt << 39) & 0x1ff;
 	// page directory table index
-	uint16_t pdpt_index = (virt & (0x1fful << 30)) >> 30;
+	uint16_t pdpt_index = (virt << 30) & 0x1ff;
 	// page directory index
-	uint16_t pd_index = (virt & (0x1fful << 21)) >> 21;
+	uint16_t pd_index = (virt << 21) & 0x1ff;
 	// page table index
-	uint16_t pt_index = (virt & (0x1fful << 12)) >> 12;
+	uint16_t pt_index = (virt << 12) & 0x1ff;
 
 	uint64_t *pml4 = page_table;
 	if (!(pml4[pml4_index] & PTE_PRESENT)) {
@@ -82,6 +82,9 @@ void vmm_map(page_table_t *page_table, uintptr_t phys, uintptr_t virt, uint64_t 
 	}
 
 	uint64_t *pt = (uint64_t *)PHYS_TO_VIRT(pd[pd_index] & ~(0x1ff));
+	if (!(pt[pt_index] & PTE_PRESENT)) {
+		pt[pt_index] = (uint64_t)VIRT_TO_PHYS(pmm_allocz(1)) | flags;
+	}
 
 	// set mapping
 	pt[pt_index] = phys | flags | type;
