@@ -28,7 +28,7 @@ export ASFLAGS ?=
 export LDFLAGS ?=
 
 include arch/$(ARCH)/config.mk
-QEMU_FLAGS ?= -m 2G -serial stdio
+QEMU_FLAGS ?= -m 256M -serial stdio
 
 # Check if architecture is supported
 # @todo: this should be better

@@ -51,7 +51,7 @@ void cpu_exception_handler(struct interrupt_frame frame)
 		// @todo: get cpu id when smp is implemented
 		int cpu_id = 1;
 
-		_klog("\npanic(cpu %d, 0x%.16lx): type %i (%s), register dump:\n", cpu_id, frame.rip, frame.vector, exception_strings[frame.vector]);
+		_klog("\npanic(cpu %d, 0x%.16lx): type %i (%s), error 0x%x, register dump:\n", cpu_id, frame.rip, frame.vector, exception_strings[frame.vector], frame.err);
 		
 		_klog("cr0: 0x%.16lx, cr2: 0x%.16lx, cr3: 0x%.16lx, cr4: 0x%.16lx\n",
 		  read_cr0(), read_cr2(), read_cr3(), read_cr4());

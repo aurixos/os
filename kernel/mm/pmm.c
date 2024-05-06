@@ -1,6 +1,6 @@
 #include <boot/boot.h>
 #include <data/bmap.h>
-#include <mm/pmm.h>
+#include <mm/mm.h>
 #include <aurix.h>
 
 #include <stdint.h>
@@ -56,8 +56,10 @@ void pmm_init()
 	for (uint64_t i = 0; i < memmap->entry_count; i++) {
 		struct limine_memmap_entry *entry = memmap->entries[i];
 
+#ifdef _DEBUG
 		klog("entry %i base 0x%lx, length %lu, type %s", i, entry->base,
 			 entry->length, get_entry_type(entry->type));
+#endif
 
 		if (entry->type != LIMINE_MEMMAP_USABLE &&
 				entry->type != LIMINE_MEMMAP_BOOTLOADER_RECLAIMABLE &&
@@ -144,11 +146,16 @@ void *pmm_allocz(size_t npages)
 
 void pmm_free(void *ptr, size_t npages)
 {
-	uint64_t index = PAGE_TO_BIT(ptr);
+	uint64_t index = PAGE_TO_BIT(VIRT_TO_PHYS(ptr));
 
 	for (size_t i = 0; i < npages; i++) {
 		bitmap_clear(&pmm_info.bitmap, index + i);
 	}
 
 	pmm_info.used_pages -= npages;
+}
+
+size_t pmm_get_highest_page(void)
+{
+	return pmm_info.mem_top;
 }

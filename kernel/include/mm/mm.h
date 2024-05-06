@@ -4,6 +4,9 @@
 #include <boot/boot.h>
 #include <arch/mm.h>
 
+#include <mm/pmm.h>
+#include <mm/vmm.h>
+
 #define ALIGN_DOWN(addr, align) ((addr) & ~((align)-1))
 #define ALIGN_UP(addr, align) (((addr) + (align)-1) & ~((align)-1))
 

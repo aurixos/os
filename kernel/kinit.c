@@ -2,7 +2,6 @@
 #include <acpi/acpi.h>
 #include <boot/boot.h>
 #include <mm/mm.h>
-#include <mm/pmm.h>
 #include <time/timer.h>
 #include <aurix.h>
 
@@ -17,14 +16,7 @@ void _start(void)
 	cpu_enable_interrupts();
 
 	pmm_init();
-
-#if _DEBUG
-	// pmm test
-	void *ptr = pmm_allocz(1);
-	memset(ptr, 0x41, 2);
-	klog("%s", ptr);
-	pmm_free(ptr, 1);
-#endif
+	vmm_init();
 
 	acpi_init(rsdp_request.response->address);
 

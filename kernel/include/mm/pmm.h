@@ -2,7 +2,8 @@
 #define _MM_PMM_H
 
 #include <data/bmap.h>
-#include <mm/mm.h>
+
+#include <stddef.h>
 
 struct pmm_info {
 	bitmap_t bitmap;
@@ -15,5 +16,7 @@ void pmm_init(void);
 void *pmm_alloc(size_t npages);
 void *pmm_allocz(size_t npages);
 void pmm_free(void *ptr, size_t npages);
+
+size_t pmm_get_highest_page(void);
 
 #endif /* _MM_PMM_H */
