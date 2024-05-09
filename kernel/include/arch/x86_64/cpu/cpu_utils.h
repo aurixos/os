@@ -117,7 +117,7 @@ static inline void write_cr2(uint64_t val)
 static inline void write_cr3(uint64_t val)
 {
 	__asm__ volatile("mov %0, %%cr3"
-					:: "r"(val));
+					:: "r"(val) : "memory");
 }
 
 static inline void write_cr4(uint64_t val)

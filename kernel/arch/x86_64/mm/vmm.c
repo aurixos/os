@@ -27,20 +27,19 @@ void vmm_init(void)
 		switch (entry->type) {
 			case LIMINE_MEMMAP_KERNEL_AND_MODULES:
 				uint64_t kernel_virt = kernel_addr_request.response->virtual_base + entry->base - kernel_addr_request.response->physical_base;
-				vmm_map_range(NULL, entry->base, kernel_virt, entry->length, VMM_FLAGS_KERNEL_RW, VMM_TYPE_UNCACHEABLE);
-				klog("entry %d, phys: 0x%lx, virt: 0x%lx, size: %u", i, entry->base, kernel_virt, KB_TO_PAGES(entry->length));
+				vmm_map_range(NULL, entry->base, kernel_virt, SIZE_TO_PAGES(entry->length), VMM_FLAGS_KERNEL_RW, VMM_TYPE_UNCACHEABLE);
+				klog("entry %d, phys: 0x%lx, virt: 0x%lx, size: %u", i, entry->base, kernel_virt, SIZE_TO_PAGES(entry->length));
 				break;
 			case LIMINE_MEMMAP_FRAMEBUFFER:
-				vmm_map_range(NULL, entry->base, PHYS_TO_VIRT(entry->base), entry->length, VMM_FLAGS_KERNEL_RW, VMM_TYPE_WRITE_THROUGH);
-				klog("entry %d, phys: 0x%lx, virt: 0x%lx, size: %u", i, entry->base, PHYS_TO_VIRT(entry->base), KB_TO_PAGES(entry->length));
+				vmm_map_range(NULL, entry->base, PHYS_TO_VIRT(entry->base), SIZE_TO_PAGES(entry->length), VMM_FLAGS_KERNEL_RW, VMM_TYPE_WRITE_THROUGH);
+				klog("entry %d, phys: 0x%lx, virt: 0x%lx, size: %u", i, entry->base, PHYS_TO_VIRT(entry->base), SIZE_TO_PAGES(entry->length));
 				break;
 			case LIMINE_MEMMAP_BOOTLOADER_RECLAIMABLE:
-				break;
 			case LIMINE_MEMMAP_RESERVED:
 				break;
 			default:
-				vmm_map_range(NULL, entry->base, PHYS_TO_VIRT(entry->base), entry->length, VMM_FLAGS_USER_RW, VMM_TYPE_UNCACHEABLE);
-				klog("entry %d, phys: 0x%lx, virt: 0x%lx, size: %u", i, entry->base, PHYS_TO_VIRT(entry->base), KB_TO_PAGES(entry->length));
+				vmm_map_range(NULL, entry->base, PHYS_TO_VIRT(entry->base), SIZE_TO_PAGES(entry->length), VMM_FLAGS_USER_RW, VMM_TYPE_UNCACHEABLE);
+				klog("entry %d, phys: 0x%lx, virt: 0x%lx, size: %u", i, entry->base, PHYS_TO_VIRT(entry->base), SIZE_TO_PAGES(entry->length));
 				break;
 		}
 	}

@@ -74,7 +74,7 @@ void pmm_init()
 		}
 	}
 
-	pmm_info.used_pages = KB_TO_PAGES(pmm_info.mem_top);
+	pmm_info.used_pages = SIZE_TO_PAGES(pmm_info.mem_top);
 	pmm_info.bitmap.size = ALIGN_UP(ALIGN_DOWN(pmm_info.mem_top, PAGE_SIZE) / PAGE_SIZE / 32, PAGE_SIZE);
 
 	for (uint64_t i = 0; i < memmap->entry_count; i++) {
