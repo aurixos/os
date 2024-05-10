@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include <stddef.h>
 
-static uint64_t *kernel_pt;
+uint64_t *kernel_pt;
 
 void vmm_init(void)
 {
@@ -20,6 +20,11 @@ void vmm_init(void)
 		for (;;);
 	}
 
+	vmm_map_range(NULL, 0, 0x100000000, 0, VMM_FLAGS_KERNEL_RW, VMM_TYPE_UNCACHEABLE);
+	klog("identity mapped 4gb");
+	vmm_map_range(NULL, 0, 0x100000000, hhdm_request.response->offset, VMM_FLAGS_KERNEL_RW, VMM_TYPE_UNCACHEABLE);
+	klog("mapped 4gb to higher half");
+
 	// map memory
 	for (size_t i = 0; i < memmap->entry_count; i++) {
 		struct limine_memmap_entry *entry = memmap->entries[i];
@@ -27,18 +32,21 @@ void vmm_init(void)
 		switch (entry->type) {
 			case LIMINE_MEMMAP_KERNEL_AND_MODULES:
 				uint64_t kernel_virt = kernel_addr_request.response->virtual_base + entry->base - kernel_addr_request.response->physical_base;
-				vmm_map_range(NULL, entry->base, kernel_virt, SIZE_TO_PAGES(entry->length), VMM_FLAGS_KERNEL_RW, VMM_TYPE_UNCACHEABLE);
+				vmm_map_range(NULL, entry->base, entry->base + entry->length, kernel_virt, VMM_FLAGS_KERNEL_RW, VMM_TYPE_UNCACHEABLE);
 				klog("entry %d, phys: 0x%lx, virt: 0x%lx, size: %u", i, entry->base, kernel_virt, SIZE_TO_PAGES(entry->length));
 				break;
 			case LIMINE_MEMMAP_FRAMEBUFFER:
-				vmm_map_range(NULL, entry->base, PHYS_TO_VIRT(entry->base), SIZE_TO_PAGES(entry->length), VMM_FLAGS_KERNEL_RW, VMM_TYPE_WRITE_THROUGH);
+				vmm_map_range(NULL, entry->base, entry->base + entry->length, PHYS_TO_VIRT(entry->base), VMM_FLAGS_KERNEL_RW, VMM_TYPE_WRITE_THROUGH);
 				klog("entry %d, phys: 0x%lx, virt: 0x%lx, size: %u", i, entry->base, PHYS_TO_VIRT(entry->base), SIZE_TO_PAGES(entry->length));
 				break;
 			case LIMINE_MEMMAP_BOOTLOADER_RECLAIMABLE:
 			case LIMINE_MEMMAP_RESERVED:
 				break;
 			default:
-				vmm_map_range(NULL, entry->base, PHYS_TO_VIRT(entry->base), SIZE_TO_PAGES(entry->length), VMM_FLAGS_USER_RW, VMM_TYPE_UNCACHEABLE);
+				if (entry->base + entry->base < 0x100000000) {
+					continue;
+				}
+				vmm_map_range(NULL, entry->base, entry->base + entry->length, PHYS_TO_VIRT(entry->base), VMM_FLAGS_USER_RW, VMM_TYPE_UNCACHEABLE);
 				klog("entry %d, phys: 0x%lx, virt: 0x%lx, size: %u", i, entry->base, PHYS_TO_VIRT(entry->base), SIZE_TO_PAGES(entry->length));
 				break;
 		}
@@ -56,34 +64,33 @@ void vmm_map(page_table_t *page_table, uintptr_t phys, uintptr_t virt, uint64_t 
 		page_table = kernel_pt;
 	}
 
+	virt = ALIGN_DOWN(virt, PAGE_SIZE);
+
 	// level 4 page mapping index
-	uint16_t pml4_index = (virt << 39) & 0x1ff;
+	size_t pml4_index = (virt << 39) & 0x1ff;
 	// page directory table index
-	uint16_t pdpt_index = (virt << 30) & 0x1ff;
+	size_t pdpt_index = (virt << 30) & 0x1ff;
 	// page directory index
-	uint16_t pd_index = (virt << 21) & 0x1ff;
+	size_t pd_index = (virt << 21) & 0x1ff;
 	// page table index
-	uint16_t pt_index = (virt << 12) & 0x1ff;
+	size_t pt_index = (virt << 12) & 0x1ff;
 
 	uint64_t *pml4 = page_table;
 	if (!(pml4[pml4_index] & PTE_PRESENT)) {
-		pml4[pml4_index] = (uint64_t)VIRT_TO_PHYS(pmm_allocz(1)) | flags;
+		pml4[pml4_index] = (uint64_t)VIRT_TO_PHYS(pmm_allocz(1)) | flags | type;
 	}
 
 	uint64_t *pdpt = (uint64_t *)PHYS_TO_VIRT((pml4[pml4_index] & ~(0x1ff)));
 	if (!(pdpt[pdpt_index] & PTE_PRESENT)) {
-		pdpt[pdpt_index] = (uint64_t)VIRT_TO_PHYS(pmm_allocz(1)) | flags;
+		pdpt[pdpt_index] = (uint64_t)VIRT_TO_PHYS(pmm_allocz(1)) | flags | type;
 	}
 
 	uint64_t *pd = (uint64_t *)PHYS_TO_VIRT((pdpt[pdpt_index] & ~(0x1ff)));
 	if (!(pd[pd_index] & PTE_PRESENT)) {
-		pd[pd_index] = (uint64_t)VIRT_TO_PHYS(pmm_allocz(1)) | flags;
+		pd[pd_index] = (uint64_t)VIRT_TO_PHYS(pmm_allocz(1)) | flags | type;
 	}
 
 	uint64_t *pt = (uint64_t *)PHYS_TO_VIRT(pd[pd_index] & ~(0x1ff));
-	if (!(pt[pt_index] & PTE_PRESENT)) {
-		pt[pt_index] = (uint64_t)VIRT_TO_PHYS(pmm_allocz(1)) | flags;
-	}
 
 	// set mapping
 	pt[pt_index] = phys | flags | type;
@@ -100,6 +107,8 @@ void vmm_unmap(page_table_t *page_table, uintptr_t virt)
 	if (page_table == NULL) {
 		page_table = kernel_pt;
 	}
+
+	virt = ALIGN_DOWN(virt, PAGE_SIZE);
 
 	// level 4 page mapping index
 	size_t pml4_index = (virt & ((uintptr_t)0x1ff << 39)) >> 39;
