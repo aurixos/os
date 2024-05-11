@@ -67,22 +67,22 @@ void vmm_map(page_table_t *page_table, uintptr_t phys, uintptr_t virt, uint64_t 
 	virt = ALIGN_DOWN(virt, PAGE_SIZE);
 
 	// level 4 page mapping index
-	size_t pml4_index = (virt << 39) & 0x1ff;
+	size_t pml4_index = (virt & (0x1fful << 39)) >> 39;
 	// page directory table index
-	size_t pdpt_index = (virt << 30) & 0x1ff;
+	size_t pdpt_index = (virt & (0x1fful << 30)) >> 30;
 	// page directory index
-	size_t pd_index = (virt << 21) & 0x1ff;
+	size_t pd_index = (virt & (0x1fful << 21)) >> 21;
 	// page table index
-	size_t pt_index = (virt << 12) & 0x1ff;
+	size_t pt_index = (virt & (0x1fful << 12)) >> 12;
 
 	uint64_t *pml4 = page_table;
 	if (!(pml4[pml4_index] & PTE_PRESENT)) {
-		pml4[pml4_index] = (uint64_t)VIRT_TO_PHYS(pmm_allocz(1)) | flags | type;
+		pml4[pml4_index] = (uint64_t)VIRT_TO_PHYS(pmm_allocz(1)) | VMM_FLAGS_USER_RW;
 	}
 
 	uint64_t *pdpt = (uint64_t *)PHYS_TO_VIRT((pml4[pml4_index] & ~(0x1ff)));
 	if (!(pdpt[pdpt_index] & PTE_PRESENT)) {
-		pdpt[pdpt_index] = (uint64_t)VIRT_TO_PHYS(pmm_allocz(1)) | flags | type;
+		pdpt[pdpt_index] = (uint64_t)VIRT_TO_PHYS(pmm_allocz(1)) | VMM_FLAGS_USER_RW;
 	}
 
 	uint64_t *pd = (uint64_t *)PHYS_TO_VIRT((pdpt[pdpt_index] & ~(0x1ff)));
