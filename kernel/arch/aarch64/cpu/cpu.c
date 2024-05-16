@@ -5,13 +5,11 @@
 
 uint64_t MMIO_BASE = 0;
 
-aurix_status cpu_init(void)
+void cpu_early_init(void)
 {
 	// @todo: detect board to set correct MMIO port
 	// defaults to rpi3b
-	MMIO_BASE = 0x3F000000;
+	MMIO_BASE = 0x3f000000;
 
 	uart_init(115200);
-
-	return AURIX_SUCCESS;
 }

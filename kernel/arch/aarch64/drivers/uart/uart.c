@@ -9,7 +9,7 @@ static uint8_t uart_is_ready_to_write(void)
 static void uart_write_byte_blocking(unsigned char c)
 {
 	while (!uart_is_ready_to_write());
-	mmio_write(AUX_MU_IO_REG, (uint8_t)c);
+	mmio_write(AUX_MU_IO_REG, (unsigned int)c);
 }
 
 void uart_init(int baud)

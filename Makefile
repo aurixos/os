@@ -28,7 +28,7 @@ export ASFLAGS ?=
 export LDFLAGS ?=
 
 include arch/$(ARCH)/config.mk
-QEMU_FLAGS ?= -m 2G -serial stdio
+QEMU_FLAGS ?= -m 1G -serial null -serial stdio
 
 # Check if architecture is supported
 # @todo: this should be better
@@ -54,7 +54,7 @@ release_full: release_hdd release_sdcard release_iso # Generates all possible im
 
 .PHONY: run
 run: release_iso # Runs QEMU
-	@$(QEMU) $(QEMU_FLAGS) $(QEMU_ARCH_FLAGS) -cdrom $(RELEASE_ISO)
+	$(QEMU) $(QEMU_FLAGS) $(QEMU_ARCH_FLAGS) -kernel build/output/kernel8.img
 
 # TODO: Maybe add a nice message with instructions here before running qemu?
 .PHONY: rundbg

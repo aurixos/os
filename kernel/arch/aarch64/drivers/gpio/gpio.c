@@ -40,7 +40,7 @@ uint32_t gpio_call(uint32_t pin, uint32_t val, uint32_t base, uint32_t field_siz
 		return 0;
 
 	uint32_t field_count = 32 / field_size;
-	uint32_t reg = base + ((pin / field_count ) * 4);
+	uint32_t reg = base + ((pin / field_count) * 4);
 	uint32_t shift = (pin % field_count) * field_size;
 
 	uint32_t cval = mmio_read(reg);

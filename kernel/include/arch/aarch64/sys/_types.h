@@ -18,6 +18,8 @@ typedef long ptrdiff_t;
 typedef int64_t intmax_t;
 typedef uint64_t uintmax_t;
 
-typedef unsigned int uintptr_t;
+typedef uint64_t uintptr_t;
+
+#define	UINTPTR_MAX 0xffffffffffffffffull
 
 #endif /* _ARCH_SYS_TYPES_H */

@@ -1,6 +1,6 @@
 ifndef ($(BOARD))
-override BOARD := virt
-$(info Emulation board not specified, defaulting to virt...)
+override BOARD := raspi3b
+$(info Emulation board not specified, defaulting to $(BOARD)...)
 endif
 
 include arch/aarch64/$(BOARD)/qemu.mk
