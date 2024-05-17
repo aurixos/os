@@ -1,0 +1,1 @@
+ENTRY(aurixdrv_init)

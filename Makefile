@@ -47,7 +47,7 @@ else
 endif
 
 .PHONY: all
-all: bootloader kernel # Builds the entire OS
+all: bootloader kernel drivers # Builds the entire OS
 
 .PHONY: release_full
 release_full: release_hdd release_sdcard release_iso # Generates all possible images
@@ -79,6 +79,11 @@ bootloader: # Builds the bootloader
 kernel: # Builds the kernel
 	@printf ">>> Building kernel...\n"
 	@$(MAKE) -C kernel
+
+.PHONY: drivers
+drivers: # Builds all drivers
+	@printf ">>> Building drivers...\n"
+	@$(MAKE) -C drivers
 
 .PHONY: help
 help: # Print help
