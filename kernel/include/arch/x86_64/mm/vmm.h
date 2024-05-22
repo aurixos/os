@@ -13,6 +13,7 @@
 #define PTE_DIRTY (1 << 6)
 #define PTE_PAT (1 << 7)
 #define PTE_GLOBAL (1 << 8)
+#define PTE_NOEXEC (1ull << 63)
 
 // flag combinations
 #define VMM_FLAGS_KERNEL_RO (PTE_PRESENT)
@@ -28,9 +29,9 @@
 #define VMM_TYPE_WRITE_BACK (PTE_PAT | PTE_CACHE_DISABLE)
 #define VMM_TYPE_UNCACHED (PTE_PAT | PTE_CACHE_DISABLE | PTE_WRITE_THROUGH)
 
-typedef uint64_t page_table_t;
+typedef uint64_t page_map_t;
 
-void vmm_map(page_table_t *page_table, uintptr_t phys, uintptr_t virt, uint64_t flags, uint64_t type);
-void vmm_unmap(page_table_t *page_table, uintptr_t virt);
+void vmm_map(page_map_t *page_table, uintptr_t phys, uintptr_t virt, uint64_t flags);
+void vmm_unmap(page_map_t *page_table, uintptr_t virt);
 
 #endif /* _ARCH_MM_VMM_H */

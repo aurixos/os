@@ -16,7 +16,7 @@ void _start(void)
 	cpu_enable_interrupts();
 
 	pmm_init();
-	// vmm_init();
+	vmm_init();
 
 	acpi_init(rsdp_request.response->address);
 

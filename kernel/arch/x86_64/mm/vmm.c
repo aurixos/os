@@ -9,12 +9,17 @@
 #include <stdint.h>
 #include <stddef.h>
 
-uint64_t *kernel_pt;
+uint64_t *kernel_pt = NULL;
+
+extern char _linker_start_text[];
+extern char _linker_end_text[];
+extern char _linker_start_rodata[];
+extern char _linker_end_rodata[];
+extern char _linker_start_data[];
+extern char _linker_end_data[];
 
 void vmm_init(void)
 {
-	struct limine_memmap_response *memmap = memmap_request.response;
-
 	// set up kernel page table
 	kernel_pt = (uint64_t *)pmm_allocz(1);
 	if (kernel_pt == NULL) {
@@ -23,60 +28,47 @@ void vmm_init(void)
 		for (;;);
 	}
 
-	vmm_map_range(NULL, 0, 0x100000000, 0, VMM_FLAGS_KERNEL_RW, VMM_TYPE_UNCACHEABLE);
-	klog("identity mapped 4gb");
-	vmm_map_range(NULL, 0, 0x100000000, hhdm_request.response->offset, VMM_FLAGS_KERNEL_RW, VMM_TYPE_UNCACHEABLE);
-	klog("mapped 4gb to higher half");
+	uintptr_t phys_base = kernel_addr_request.response->physical_base;
+	uintptr_t virt_base = kernel_addr_request.response->virtual_base;
 
-	// map memory
-	for (size_t i = 0; i < memmap->entry_count; i++) {
-		struct limine_memmap_entry *entry = memmap->entries[i];
+	uintptr_t kernel_start_text = ALIGN_DOWN((uintptr_t)_linker_start_text, PAGE_SIZE);
+	uintptr_t kernel_end_text = ALIGN_UP((uintptr_t)_linker_end_text, PAGE_SIZE);
+	uintptr_t kernel_start_rodata = ALIGN_DOWN((uintptr_t)_linker_start_rodata, PAGE_SIZE);
+	uintptr_t kernel_end_rodata = ALIGN_UP((uintptr_t)_linker_end_rodata, PAGE_SIZE);
+	uintptr_t kernel_start_data = ALIGN_DOWN((uintptr_t)_linker_start_data, PAGE_SIZE);
+	uintptr_t kernel_end_data = ALIGN_UP((uintptr_t)_linker_end_data, PAGE_SIZE);
 
-		switch (entry->type) {
-			case LIMINE_MEMMAP_KERNEL_AND_MODULES:
-				uint64_t kernel_virt = kernel_addr_request.response->virtual_base + entry->base - kernel_addr_request.response->physical_base;
-				vmm_map_range(NULL, entry->base, entry->base + entry->length, kernel_virt, VMM_FLAGS_KERNEL_RW, VMM_TYPE_UNCACHEABLE);
-				klog("entry %d, phys: 0x%lx, virt: 0x%lx, size: %u", i, entry->base, kernel_virt, SIZE_TO_PAGES(entry->length));
-				break;
-			case LIMINE_MEMMAP_FRAMEBUFFER:
-				vmm_map_range(NULL, entry->base, entry->base + entry->length, PHYS_TO_VIRT(entry->base), VMM_FLAGS_KERNEL_RW, VMM_TYPE_WRITE_THROUGH);
-				klog("entry %d, phys: 0x%lx, virt: 0x%lx, size: %u", i, entry->base, PHYS_TO_VIRT(entry->base), SIZE_TO_PAGES(entry->length));
-				break;
-			case LIMINE_MEMMAP_BOOTLOADER_RECLAIMABLE:
-			case LIMINE_MEMMAP_RESERVED:
-				break;
-			default:
-				if (entry->base + entry->base < 0x100000000) {
-					continue;
-				}
-				vmm_map_range(NULL, entry->base, entry->base + entry->length, PHYS_TO_VIRT(entry->base), VMM_FLAGS_USER_RW, VMM_TYPE_UNCACHEABLE);
-				klog("entry %d, phys: 0x%lx, virt: 0x%lx, size: %u", i, entry->base, PHYS_TO_VIRT(entry->base), SIZE_TO_PAGES(entry->length));
-				break;
-		}
+	// map kernel and 4gb
+	for (uintptr_t text = kernel_start_text; text < kernel_end_text; text += PAGE_SIZE) {
+		vmm_map(kernel_pt, text - virt_base + phys_base, text, VMM_FLAGS_KERNEL_RO);
 	}
+	klog("mapped text");
+	for (uintptr_t rodata = kernel_start_rodata; rodata < kernel_end_rodata; rodata += PAGE_SIZE) {
+		vmm_map(kernel_pt, rodata - virt_base + phys_base, rodata, PTE_PRESENT | PTE_NOEXEC);
+	}
+	klog("mapped rodata");
+	for (uintptr_t data = kernel_start_data; data < kernel_end_data; data += PAGE_SIZE) {
+		vmm_map(kernel_pt, data - virt_base + phys_base, data, VMM_FLAGS_KERNEL_RW | PTE_NOEXEC);
+	}
+	klog("mapped data");
+
+	for (uintptr_t gb = 0; gb < 0x100000000; gb += PAGE_SIZE) {
+		vmm_map(kernel_pt, gb, gb, VMM_FLAGS_KERNEL_RW);
+		vmm_map(kernel_pt, gb, PHYS_TO_VIRT(gb), VMM_FLAGS_KERNEL_RW);
+	}
+	klog("mapped 4gb");
 
 	klog("setting cr3 to 0x%lx (old cr3: 0x%lx)", VIRT_TO_PHYS((uint64_t)kernel_pt), read_cr3());
 	write_cr3(VIRT_TO_PHYS((uint64_t)kernel_pt));
 	klog("done");
 }
 
-void vmm_map(page_table_t *page_table, uintptr_t phys, uintptr_t virt, uint64_t flags, uint64_t type)
+void vmm_map(page_map_t *page_table, uintptr_t phys, uintptr_t virt, uint64_t flags)
 {
-	// so we don't have to extern the kernel_pt variable
-	if (page_table == NULL) {
-		page_table = kernel_pt;
-	}
-
-	virt = ALIGN_DOWN(virt, PAGE_SIZE);
-
-	// level 4 page mapping index
-	size_t pml4_index = (virt & (0x1fful << 39)) >> 39;
-	// page directory table index
-	size_t pdpt_index = (virt & (0x1fful << 30)) >> 30;
-	// page directory index
-	size_t pd_index = (virt & (0x1fful << 21)) >> 21;
-	// page table index
-	size_t pt_index = (virt & (0x1fful << 12)) >> 12;
+	size_t pml4_index = (virt >> 39) & 0x1ff;
+	size_t pdpt_index = (virt >> 30) & 0x1ff;
+	size_t pd_index = (virt >> 21) & 0x1ff;
+	size_t pt_index = (virt >> 12) & 0x1ff;
 
 	uint64_t *pml4 = page_table;
 	if (!(pml4[pml4_index] & PTE_PRESENT)) {
@@ -90,50 +82,40 @@ void vmm_map(page_table_t *page_table, uintptr_t phys, uintptr_t virt, uint64_t 
 
 	uint64_t *pd = (uint64_t *)PHYS_TO_VIRT((pdpt[pdpt_index] & ~(0x1ff)));
 	if (!(pd[pd_index] & PTE_PRESENT)) {
-		pd[pd_index] = (uint64_t)VIRT_TO_PHYS(pmm_allocz(1)) | flags | type;
+		pd[pd_index] = (uint64_t)VIRT_TO_PHYS(pmm_allocz(1)) | VMM_FLAGS_KERNEL_RW;
 	}
 
-	uint64_t *pt = (uint64_t *)PHYS_TO_VIRT(pd[pd_index] & ~(0x1ff));
+	uint64_t *pt = (uint64_t *)PHYS_TO_VIRT((pd[pd_index] & ~(0x1ff)));
+	if (!(pt[pt_index] & PTE_PRESENT)) {
+		pt[pt_index] = (uint64_t)VIRT_TO_PHYS(pmm_allocz(1)) | VMM_FLAGS_KERNEL_RW;
+	}
 
 	// set mapping
-	pt[pt_index] = phys | flags | type;
+	pt[pt_index] = phys | flags;
 }
 
-void vmm_unmap(page_table_t *page_table, uintptr_t virt)
+void vmm_unmap(page_map_t *page_table, uintptr_t virt)
 {
-	// so we don't have to extern the kernel_pt variable
-	if (page_table == NULL) {
-		page_table = kernel_pt;
-	}
+	size_t pml4_index = (virt >> 39) & 0x1ff;
+	size_t pdpt_index = (virt >> 30) & 0x1ff;
+	size_t pd_index = (virt >> 21) & 0x1ff;
+	size_t pt_index = (virt >> 12) & 0x1ff;
 
-	virt = ALIGN_DOWN(virt, PAGE_SIZE);
-
-	// level 4 page mapping index
-	size_t pml4_index = (virt & ((uintptr_t)0x1ff << 39)) >> 39;
-	// page directory table index
-	size_t pdpt_index = (virt & ((uintptr_t)0x1ff << 30)) >> 30;
-	// page directory index
-	size_t pd_index = (virt & ((uintptr_t)0x1ff << 21)) >> 21;
-	// page table index
-	size_t pt_index = (virt & ((uintptr_t)0x1ff << 12)) >> 12;
-
-	// get values based on the indexes
 	uint64_t *pml4 = page_table;
-
-	if (!(pml4[pml4_index] & PTE_PRESENT)) {
+	if (!(pml4[pml4_index] & PTE_PRESENT))
 		return;
-	}
-	uint64_t *pdpt = (uint64_t *)(pml4[pml4_index] & ~(0x1ff));
 
-	if (!(pdpt[pdpt_index] & PTE_PRESENT)) {
+	uint64_t *pdpt = (uint64_t *)PHYS_TO_VIRT((pml4[pml4_index] & ~(0x1ff)));
+	if (!(pdpt[pdpt_index] & PTE_PRESENT))
 		return;
-	}
-	uint64_t *pd = (uint64_t *)(pdpt[pdpt_index] & ~(0x1ff));
 
-	if (!(pd[pd_index] & PTE_PRESENT)) {
+	uint64_t *pd = (uint64_t *)PHYS_TO_VIRT((pdpt[pdpt_index] & ~(0x1ff)));
+	if (!(pd[pd_index] & PTE_PRESENT))
 		return;
-	}
-	uint64_t *pt = (uint64_t *)(pd[pd_index] & ~(0x1ff));
+
+	uint64_t *pt = (uint64_t *)PHYS_TO_VIRT((pd[pd_index] & ~(0x1ff)));
+	if (!(pt[pt_index] & PTE_PRESENT))
+		return;
 
 	// set mapping to not present
 	pt[pt_index] = 0;

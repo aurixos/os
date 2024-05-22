@@ -15,19 +15,29 @@ SECTIONS
 	/* Limine will relocate this to 0xffffffff80000000. */
 	/* Future me, please keep this in mind when
 	/* working on AxBoot. */
-	. = 0;
+	. = 0xffffffff80000000;
+
+	_linker_start_text = .;
 
 	.text : {
 		*(.text .text.*)
 	} :text
 
+	_linker_end_text = .;
+
 	. = ALIGN(CONSTANT(MAXPAGESIZE));
+
+	_linker_start_rodata = .;
 
 	.rodata : {
 		*(.rodata .rodata.*)
 	} :rodata
+	
+	_linker_end_rodata = .;
 
 	. = ALIGN(CONSTANT(MAXPAGESIZE));
+
+	_linker_start_data = .;
 
 	.data : {
 		*(.data .data.*)
@@ -41,6 +51,8 @@ SECTIONS
 		*(COMMON)
 		*(.bss .bss.*)
 	} :data
+
+	_linker_end_data = .;
 
 	/DISCARD/ : {
 		*(.eh_frame)
