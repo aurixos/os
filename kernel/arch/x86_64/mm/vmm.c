@@ -94,11 +94,6 @@ void vmm_map(page_table_t *page_table, uintptr_t phys, uintptr_t virt, uint64_t 
 
 	// set mapping
 	pt[pt_index] = phys | flags | type;
-
-	uint64_t cr3 = PHYS_TO_VIRT(read_cr3());
-	if (cr3 == (uint64_t)kernel_pt) {
-		invlpg((void *)virt);
-	}
 }
 
 void vmm_unmap(page_table_t *page_table, uintptr_t virt)
