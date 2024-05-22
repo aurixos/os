@@ -13,12 +13,12 @@ void _start(void)
 	// and enumerate the CPU's available functions
 	// (optionally the board we're running on)
 	cpu_early_init();
-	// cpu_enable_interrupts();
+	cpu_enable_interrupts();
 
-	// pmm_init();
+	pmm_init();
 	// vmm_init();
 
-	// acpi_init(rsdp_request.response->address);
+	acpi_init(rsdp_request.response->address);
 
 	klog("kernel init done");
 	for (;;);

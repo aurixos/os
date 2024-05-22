@@ -1,6 +1,7 @@
 #include <boot/boot.h>
 #include <data/bmap.h>
 #include <mm/mm.h>
+#include <mm/pmm.h>
 #include <aurix.h>
 
 #include <stdint.h>

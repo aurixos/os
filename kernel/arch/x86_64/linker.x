@@ -12,23 +12,30 @@ PHDRS
 
 SECTIONS
 {
-	. = 0xffffffff80000000;
+	/* Limine will relocate this to 0xffffffff80000000. */
+	/* Future me, please keep this in mind when
+	/* working on AxBoot. */
+	. = 0;
 
 	.text : {
 		*(.text .text.*)
 	} :text
 
-	. += CONSTANT(MAXPAGESIZE);
+	. = ALIGN(CONSTANT(MAXPAGESIZE));
 
 	.rodata : {
 		*(.rodata .rodata.*)
 	} :rodata
 
-	. += CONSTANT(MAXPAGESIZE);
+	. = ALIGN(CONSTANT(MAXPAGESIZE));
 
 	.data : {
 		*(.data .data.*)
 	} :data
+
+	.dynamic : {
+		*(.dynamic)
+	} :data :dynamic
 
 	.bss : {
 		*(COMMON)

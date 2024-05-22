@@ -1,6 +1,9 @@
 #include <arch/cpu.h>
+#include <arch/mm.h>
 #include <boot/boot.h>
 #include <mm/mm.h>
+#include <mm/pmm.h>
+#include <mm/vmm.h>
 #include <aurix.h>
 
 #include <stdint.h>
