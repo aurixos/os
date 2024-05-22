@@ -15,7 +15,7 @@ SECTIONS
 	/* Limine will relocate this to 0xffffffff80000000. */
 	/* Future me, please keep this in mind when
 	/* working on AxBoot. */
-	. = 0xffffffff80000000;
+	. = 0;
 
 	_linker_start_text = .;
 
