@@ -17,7 +17,7 @@
 <br />
 <div align="center">
 
-[![Project license](https://img.shields.io/github/license/aurixos/os.svg?style=flat-square)](LICENSE)
+[![Project license](https://img.shields.io/github/license/aurixos/os.svg?style=flat-square)](License.txt)
 [![Discord Chat](https://img.shields.io/discord/1234051470182055988)](https://discord.com/invite/hgbZ6wFP4n)
 </div>
 
@@ -109,8 +109,4 @@ _For more information and to report security issues, please refer to our [securi
 
 This project is licensed under the **MIT license**.
 
-See [LICENSE](LICENSE) for more information.
-
-## Acknowledgements
-
-- [The Standard C Library by P. J. Plauger](https://www.amazon.com/Standard-C-Library-P-J-Plauger/dp/0131315099)
+See [License.txt](License.txt) for more information.

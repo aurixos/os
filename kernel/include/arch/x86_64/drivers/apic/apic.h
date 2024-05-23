@@ -1,4 +1,0 @@
-#ifndef _ARCH_DRIVERS_APIC_APIC_H
-#define _ARCH_DRIVERS_APIC_APIC_H
-
-#endif /* _ARCH_DRIVERS_APIC_APIC_H */
