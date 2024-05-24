@@ -33,6 +33,7 @@ QEMU_FLAGS ?= -m 2G -serial stdio
 # Check if architecture is supported
 # @todo: this should be better
 ifeq ($(ARCH),x86_64)
+else ifeq ($(ARCH),i686)
 else ifeq ($(ARCH),aarch64)
 $(warning aarch64 building support is not yet complete!)
 else
