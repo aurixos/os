@@ -1,5 +1,5 @@
 /*++
-Module Name:  osinit.c
+Module Name:  gdt.c
 Project:      AurixOS
 
 Copyright (c) 2024 Jozef Nagy
@@ -18,10 +18,9 @@ SOFTWARE.
 --*/
 
 #include <hal/cpu.h>
+#include <aurix.h>
 
 void
-AxosInit(void)
+HalInitGdt()
 {
-	HalEarlyInitCpu();
-	while(1);
 }

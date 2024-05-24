@@ -1,5 +1,5 @@
 /*++
-Module Name:  osinit.c
+Module Name:  aurixos.h
 Project:      AurixOS
 
 Copyright (c) 2024 Jozef Nagy
@@ -17,11 +17,31 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 --*/
 
-#include <hal/cpu.h>
+#ifndef _AURIXOS_H
+#define _AURIXOS_H
 
-void
-AxosInit(void)
-{
-	HalEarlyInitCpu();
-	while(1);
-}
+#include <axtypes.h>
+#include <axdef.h>
+
+//
+// Calculates the size of an array
+//
+#define ARRAY_SIZE(Array) (sizeof(Array) / sizeof(Array[0]))
+
+//
+// Rounds a number up
+//
+#define ROUND_UP(Value, Align) (((Value) + (Align - 1), Align) & ~((Align) - 1))
+
+//
+// Rounds a number down
+//
+#define ROUND_DOWN(Value, Align) ((Value) & ~((Align) - 1))
+
+//
+// Creates a string out of input text
+//
+#define __priv___STRINGIZE(x...) #x
+#define STRINGIZE(x...) __priv___STRINGIZE(x)
+
+#endif /* _AURIXOS_H */

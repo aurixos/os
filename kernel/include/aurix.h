@@ -1,5 +1,5 @@
 /*++
-Module Name:  osinit.c
+Module Name:  aurix.h
 Project:      AurixOS
 
 Copyright (c) 2024 Jozef Nagy
@@ -17,11 +17,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 --*/
 
-#include <hal/cpu.h>
+#ifndef _AURIX_H
+#define _AURIX_H
 
-void
-AxosInit(void)
-{
-	HalEarlyInitCpu();
-	while(1);
-}
+#include <aurixos.h>
+
+#define ARCH_COMMON(header) STRINGIZE(AURIXOS_ARCH_COMMON/header)
+#define ARCH_INCLUDE(header) STRINGIZE(AURIXOS_ARCH/header)
+
+#endif /* _AURIX_H */

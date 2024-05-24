@@ -1,5 +1,5 @@
 /*++
-Module Name:  osinit.c
+Module Name:  gdt.h
 Project:      AurixOS
 
 Copyright (c) 2024 Jozef Nagy
@@ -17,11 +17,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 --*/
 
-#include <hal/cpu.h>
+#ifndef _HAL_X86_GDT_H
+#define _HAL_X86_GDT_H
 
-void
-AxosInit(void)
+#include <aurix.h>
+
+typedef struct GdtEntry
 {
-	HalEarlyInitCpu();
-	while(1);
-}
+#ifdef __i686__
+	UINT16 LimitLower;
+	UINT16 BaseLower;
+	UINT8 BaseMiddle;
+	UINT8 Access;
+	UINT8 LimitHigher : 4;
+	UINT8 Flags : 4;
+	UINT8 BaseHigher;
+#elif defined (__amd64__)
+	UINT16 LimitLower;
+	UINT16 BaseLower;
+	UINT8 BaseMiddle;
+	UINT8 Access;
+	UINT8 LimitHigher : 4;
+	UINT8 Flags : 4;
+	UINT8 BaseHigher;
+	UINT32 BaseHighest;
+	// UINT64 Reserved;
+	UINT32 Reserved[2];
+#endif
+} KGdtEntry, *PKGdtEntry;
+
+#endif /* _HAL_X86_GDT_H */

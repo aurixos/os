@@ -1,5 +1,5 @@
 /*++
-Module Name:  osinit.c
+Module Name:  cpu.h
 Project:      AurixOS
 
 Copyright (c) 2024 Jozef Nagy
@@ -17,11 +17,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 --*/
 
-#include <hal/cpu.h>
+#ifndef _HAL_X86_CPU_H
+#define _HAL_X86_CPU_H
 
-void
-AxosInit(void)
-{
-	HalEarlyInitCpu();
-	while(1);
-}
+void HalInitGdt();
+void HalInitIdt();
+
+#endif /* _HAL_X86_CPU_H */

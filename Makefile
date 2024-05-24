@@ -4,10 +4,27 @@ export DEBUG ?= yes
 export GIT_REV := $(shell git rev-parse --short HEAD)
 export AURIXOS_VERSION := $(GIT_REV)
 export AURIXOS_ARCH := $(ARCH)
+ifeq ($(AURIXOS_ARCH),$(filter $(AURIXOS_ARCH),x86_64 i686))
+export AURIXOS_ARCH_COMMON := x86
+else ifeq ($(AURIXOS_ARCH),$(filter $(AURIXOS_ARCH),aarch64 arm32))
+export AURIXOS_ARCH_COMMON := arm
+endif
 ifeq ($(DEBUG),yes)
 export AURIXOS_CONFIGURATION := Debug
 else
 export AURIXOS_CONFIGURATION := Release
+endif
+
+DEFINES := -DAURIXOS_VERSION=$(AURIXOS_VERSION) -DAURIXOS_ARCH=$(AURIXOS_ARCH) -DAURIXOS_ARCH_COMMON=$(AURIXOS_ARCH_COMMON) -DAURIXOS_CONFIGURATION=$(AURIXOS_CONFIGURATION) -DAURIXOS_$(ARCH)
+
+ifeq ($(ARCH),i686)
+DEFINES += -D__i686__
+else ifeq ($(ARCH),x86_64)
+DEFINES += -D__amd64__
+else ifeq ($(ARCH),aarch64)
+DEFINES += -D__aarch64__
+else ifeq ($(ARCH),arm32)
+DEFINES += -D__arm__
 endif
 
 # No matter where the makefile is run, this should always be equal to the root
@@ -23,7 +40,7 @@ RELEASE_SDCARD := $(RELEASE_DIR)/aurixos-sdcard-$(GIT_REV)_$(ARCH).img
 HDD_SIZE ?= $(ARCH_RELEASE_HDD_RECOMMENDED_SIZE)
 
 # User-changeable flags
-export CFLAGS ?= -O2 -g -Wall -Wextra -DAURIXOS_VERSION=$(AURIXOS_VERSION) -DAURIXOS_ARCH=$(AURIXOS_ARCH) -DAURIXOS_CONFIGURATION=$(AURIXOS_CONFIGURATION) -DAURIXOS_$(ARCH)
+export CFLAGS ?= -O2 -g -Wall -Wextra $(DEFINES)
 export ASFLAGS ?= 
 export LDFLAGS ?=
 

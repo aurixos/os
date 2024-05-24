@@ -1,5 +1,5 @@
 /*++
-Module Name:  osinit.c
+Module Name:  axtypes.h
 Project:      AurixOS
 
 Copyright (c) 2024 Jozef Nagy
@@ -17,11 +17,38 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 --*/
 
-#include <hal/cpu.h>
+#ifndef _AXTYPES_H
+#define _AXTYPES_H
 
-void
-AxosInit(void)
+//
+// Standard types
+//
+typedef char CHAR;
+
+typedef signed char INT8;
+typedef unsigned char UINT8;
+typedef signed short INT16;
+typedef unsigned short UINT16;
+typedef signed int INT32;
+typedef unsigned int UINT32;
+// typedef __int64 INT64;
+// typedef unsigned __int64 UINT64;
+
+typedef int INT;
+typedef unsigned UINT;
+
+typedef unsigned char BYTE;
+typedef unsigned short WORD;
+typedef unsigned long DWORD;
+// typedef unsigned __int64 QWORD;
+
+//
+// Boolean
+//
+typedef enum _BOOLEAN
 {
-	HalEarlyInitCpu();
-	while(1);
-}
+	TRUE = 1,
+	FALSE = 0
+} BOOLEAN, *PBOOLEAN;
+
+#endif /* _AXTYPES_H */

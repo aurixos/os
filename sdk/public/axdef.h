@@ -1,5 +1,5 @@
 /*++
-Module Name:  osinit.c
+Module Name:  axdef.h
 Project:      AurixOS
 
 Copyright (c) 2024 Jozef Nagy
@@ -17,11 +17,35 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 --*/
 
-#include <hal/cpu.h>
+#ifndef _AXDEF_H
+#define _AXDEF_H
 
-void
-AxosInit(void)
-{
-	HalEarlyInitCpu();
-	while(1);
-}
+//
+// Calling conventions
+//
+#define AXAPI __stdcall
+#define CDECL __cdecl
+#define FASTCALL __fastcall
+#define CALLBACK __stdcall
+
+//
+// Variable modifiers
+//
+#define CONST const
+#define EXTERN extern
+#define STATIC static
+#define VOLATILE volatile
+
+//
+// NULL (...self-explanatory)
+//
+#define NULL ((VOID*)0)
+
+//
+// Compiler attributes
+//
+#define PACKED __attribute__((packed))
+#define ALIGNED(Align) __attribute__((aligned(Align)))
+#define SECTION(Section) __attribute__((section(Section)))
+
+#endif /* _AXDEF_H */

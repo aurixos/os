@@ -4,7 +4,7 @@ ifeq ($(DEBUG),yes)
 override INTERNAL_CFLAGS += -g -D_DEBUG
 endif
 
-INCLUDE_DIRS := include include/$(ARCH) libc
+INCLUDE_DIRS := include $(ROOT_DIR)/sdk/public
 
 override INTERNAL_ASFLAGS += $(foreach d, $(INCLUDE_DIRS), -I$d)
 override INTERNAL_CFLAGS += $(foreach d, $(INCLUDE_DIRS), -I$d)
