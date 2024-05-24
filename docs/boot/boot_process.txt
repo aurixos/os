@@ -10,5 +10,5 @@ at this point). Memory management is also initialized, and all cores
 are started up and initialized if the system has multiple cores.
 
 --
-Phase 2 loads all device drivers and starts up credential manager
-together with a login prompt.
+Phase 2 marks phase 1 code as free memory, loads all device drivers
+and starts up credential manager together with a login prompt.
