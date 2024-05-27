@@ -71,8 +71,8 @@ all: bootloader kernel drivers # Builds the entire OS
 release_full: release_hdd release_sdcard release_iso # Generates all possible images
 
 .PHONY: run
-run: release_iso # Runs QEMU
-	$(QEMU) $(QEMU_FLAGS) $(QEMU_ARCH_FLAGS) -cdrom $(RELEASE_ISO)
+run: release_hdd # Runs QEMU
+	$(QEMU) $(QEMU_FLAGS) $(QEMU_ARCH_FLAGS) -hda $(RELEASE_HDD)
 
 # TODO: Maybe add a nice message with instructions here before running qemu?
 .PHONY: rundbg
@@ -121,9 +121,9 @@ $(RELEASE_HDD): bootloader kernel
 
 $(RELEASE_SDCARD): bootloader kernel
 	@printf ">>> Generating SD Card image..."
-	$(error SD Card file generation is not supported yet!)
-	@mkdir -p $(RELEASE_DIR)
-	@bash arch/$(ARCH)/generate_sdcard.sh $(RELEASE_SDCARD)
+	$(warning SD Card file generation is not supported yet!)
+#	@mkdir -p $(RELEASE_DIR)
+#	@bash arch/$(ARCH)/generate_sdcard.sh $(RELEASE_SDCARD)
 
 .PHONY: clean
 clean:
