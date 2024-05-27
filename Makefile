@@ -18,13 +18,13 @@ endif
 DEFINES := -DAURIXOS_VERSION=$(AURIXOS_VERSION) -DAURIXOS_ARCH=$(AURIXOS_ARCH) -DAURIXOS_ARCH_COMMON=$(AURIXOS_ARCH_COMMON) -DAURIXOS_CONFIGURATION=$(AURIXOS_CONFIGURATION) -DAURIXOS_$(ARCH)
 
 ifeq ($(ARCH),i686)
-DEFINES += -D__i686__
-else ifeq ($(ARCH),x86_64)
-DEFINES += -D__amd64__
-else ifeq ($(ARCH),aarch64)
-DEFINES += -D__aarch64__
+DEFINES += -D__i686__ -D_X32
 else ifeq ($(ARCH),arm32)
-DEFINES += -D__arm__
+DEFINES += -D__arm__ -D_X32
+else ifeq ($(ARCH),x86_64)
+DEFINES += -D__amd64__ -D_X64
+else ifeq ($(ARCH),aarch64)
+DEFINES += -D__aarch64__ -D_X64
 endif
 
 # No matter where the makefile is run, this should always be equal to the root

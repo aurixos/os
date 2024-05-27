@@ -1,5 +1,5 @@
 /*++
-Module Name:  entry.c
+Module Name:  com.h
 Project:      AurixOS
 
 Copyright (c) 2024 Jozef Nagy
@@ -17,20 +17,29 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 --*/
 
-#include <efi.h>
-#include <axboot.h>
+#ifndef _COM_H
+#define _COM_H
 
-#include <com.h>
+typedef struct _COM_PORT {
+	UINT8 Index;
+	UINT32 BaudRate;
+	BOOLEAN IsInitialized;
+} COM_PORT, *PCOM_PORT;
 
-EFI_STATUS
-AxBootEntry(EFI_HANDLE ImageHandle,
-			EFI_SYSTEM_TABLE *SystemTable)
-{
-	(void)ImageHandle;
-	(void)SystemTable;
+enum {
+	COM1 = 0x3f8,
+	COM2 = 0x2f8,
+	COM3 = 0x3e8,
+	COM4 = 0x2e8,
+	COM5 = 0x5f8,
+	COM6 = 0x4f8,
+	COM7 = 0x5e8,
+	COM8 = 0x4e8
+};
 
-	ComInitializeCom(COM1, 115200);
+AXBOOT_STATUS
+ComInitializeCom(
+	UINT16 ComPort,
+	UINT32 BaudRate);
 
-	while (1);
-	return EFI_SUCCESS;
-}
+#endif /* _COM_H */

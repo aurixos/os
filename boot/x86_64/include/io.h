@@ -1,5 +1,5 @@
 /*++
-Module Name:  entry.c
+Module Name:  io.h
 Project:      AurixOS
 
 Copyright (c) 2024 Jozef Nagy
@@ -17,20 +17,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 --*/
 
-#include <efi.h>
+#ifndef _IO_H
+#define _IO_H
+
 #include <axboot.h>
 
-#include <com.h>
+UINT8
+IoInByte(
+	UINT16 Port);
 
-EFI_STATUS
-AxBootEntry(EFI_HANDLE ImageHandle,
-			EFI_SYSTEM_TABLE *SystemTable)
-{
-	(void)ImageHandle;
-	(void)SystemTable;
+void
+IoOutByte(
+	UINT16 Port,
+	UINT8 Value);
 
-	ComInitializeCom(COM1, 115200);
-
-	while (1);
-	return EFI_SUCCESS;
-}
+#endif /* _IO_H */

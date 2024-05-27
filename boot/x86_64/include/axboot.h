@@ -1,5 +1,5 @@
 /*++
-Module Name:  entry.c
+Module Name:  axboot.h
 Project:      AurixOS
 
 Copyright (c) 2024 Jozef Nagy
@@ -17,20 +17,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 --*/
 
-#include <efi.h>
-#include <axboot.h>
+#ifndef _AXBOOT_H
+#define _AXBOOT_H
 
-#include <com.h>
+#include <aurixos.h>
 
-EFI_STATUS
-AxBootEntry(EFI_HANDLE ImageHandle,
-			EFI_SYSTEM_TABLE *SystemTable)
-{
-	(void)ImageHandle;
-	(void)SystemTable;
+typedef ULONG AXBOOT_STATUS;
 
-	ComInitializeCom(COM1, 115200);
-
-	while (1);
-	return EFI_SUCCESS;
-}
+#endif /* _AXBOOT_H */
