@@ -20,27 +20,39 @@ SOFTWARE.
 #ifndef _AXTYPES_H
 #define _AXTYPES_H
 
+#if defined (_X32)
+#define __int64 long long
+#elif defined (_X64)
+#define __int64 long
+#endif
+
 //
 // Standard types
 //
-typedef char CHAR;
+typedef signed char INT8, *PINT8;
+typedef unsigned char UINT8, *PUINT8;
+typedef signed short INT16, *PINT16;
+typedef unsigned short UINT16, *PUINT16;
+typedef signed int INT32, *PINT32;
+typedef unsigned int UINT32, *PUINT32;
+typedef __int64 INT64, *PINT64;
+typedef unsigned __int64 UINT64, *PUINT64;
 
-typedef signed char INT8;
-typedef unsigned char UINT8;
-typedef signed short INT16;
-typedef unsigned short UINT16;
-typedef signed int INT32;
-typedef unsigned int UINT32;
-// typedef __int64 INT64;
-// typedef unsigned __int64 UINT64;
-
-typedef int INT;
-typedef unsigned UINT;
+typedef void VOID, *PVOID;
+typedef char CHAR, *PCHAR;
+typedef signed int INT, *PINT;
+typedef unsigned int UINT, *PUINT;
+typedef signed long INTN, *PINTN;
+typedef unsigned long UINTN, *PUINTN;
+typedef signed long LONG, *PLONG;
+typedef unsigned long ULONG, *PULONG;
+typedef signed long long LONGLONG, *PLONGLONG;
+typedef unsigned long long ULONGLONG, *PULONGLONG;
 
 typedef unsigned char BYTE;
 typedef unsigned short WORD;
 typedef unsigned long DWORD;
-// typedef unsigned __int64 QWORD;
+typedef unsigned __int64 QWORD;
 
 //
 // Boolean

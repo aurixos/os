@@ -25,9 +25,6 @@ SOFTWARE.
 #include ARCH_COMMON(cpu.h)
 //#include ARCH_INCLUDE(cpu.h)
 
-#include ARCH_COMMON(gdt.h)
-//#include ARCH_INCLUDE(idt.h)
-
 void
 HalEarlyInitCpu(void);
 

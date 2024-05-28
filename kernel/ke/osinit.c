@@ -20,7 +20,7 @@ SOFTWARE.
 #include <hal/cpu.h>
 
 void
-AxosInit(void)
+AxosInit()
 {
 	HalEarlyInitCpu();
 	while(1);

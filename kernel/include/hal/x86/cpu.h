@@ -20,7 +20,50 @@ SOFTWARE.
 #ifndef _HAL_X86_CPU_H
 #define _HAL_X86_CPU_H
 
-void HalInitGdt();
-void HalInitIdt();
+#include <aurix.h>
+
+//
+// GDT Entry
+//
+typedef struct _KGDT_ENTRY
+{
+	UINT16 LimitLower;
+	UINT16 BaseLower;
+	UINT8 BaseMiddle;
+	UINT8 Access;
+	UINT8 LimitHigher : 4;
+	UINT8 Flags : 4;
+	UINT8 BaseHigher;
+} PACKED KGDT_ENTRY, *PKGDT_ENTRY;
+
+//
+// GDT Descriptor
+//
+typedef struct _KGDT_DESCRIPTOR
+{
+	UINT16 Size;
+#if defined (__i686__)
+	UINT Base;
+#elif defined (__amd64__)
+	UINT64 Base;
+#endif
+} PACKED KGDT_DESCRIPTOR, *PKGDT_DESCRIPTOR;
+
+//// ** INITIALIZATION ** ////
+
+void pHalInitGdt();
+void pHalInitIdt();
+
+//// ** PRIVATE FUNCTIONS ** ////
+
+void
+pHalSetGdtEntry(PKGDT_ENTRY Entry,
+				UINT32 Base,
+				UINT32 Limit,
+				UINT8 Access,
+				UINT8 Flags);
+
+void
+pHalLoadGdt(PKGDT_DESCRIPTOR Descriptor);
 
 #endif /* _HAL_X86_CPU_H */
