@@ -40,6 +40,8 @@ typedef unsigned __int64 UINT64, *PUINT64;
 
 typedef void VOID, *PVOID;
 typedef char CHAR, *PCHAR;
+typedef signed short SHORT, *PSHORT;
+typedef unsigned short USHORT, *PUSHORT;
 typedef signed int INT, *PINT;
 typedef unsigned int UINT, *PUINT;
 typedef signed long INTN, *PINTN;

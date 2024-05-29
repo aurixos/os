@@ -22,6 +22,16 @@ SOFTWARE.
 
 #include <aurix.h>
 
+//// ** MACROS ** ////
+
+//
+// IDT Types
+//
+#define IDT_INTERRUPT_GATE			0x8E
+#define IDT_TRAP_GATE				0x8F
+
+//// ** STRUCTURES ** ////
+
 //
 // GDT Entry
 //
@@ -41,13 +51,52 @@ typedef struct _KGDT_ENTRY
 //
 typedef struct _KGDT_DESCRIPTOR
 {
-	UINT16 Size;
+	USHORT Size;
 #if defined (__i686__)
 	UINT Base;
 #elif defined (__amd64__)
-	UINT64 Base;
+	ULONG Base;
 #endif
 } PACKED KGDT_DESCRIPTOR, *PKGDT_DESCRIPTOR;
+
+//
+// IDT Entry
+//
+typedef struct _KIDT_ENTRY
+{
+#if defined (__i686__)
+	UINT16 BaseLower;
+	UINT16 Selector;
+	UINT8 Reserved;
+	UINT8 Flags;
+	UINT16 BaseHigher;
+#elif defined (__amd64__)
+	UINT16 BaseLower;
+	UINT16 Selector;
+	UINT8 Ist;
+	UINT8 Flags;
+	UINT16 BaseMiddle;
+	UINT32 BaseHigher;
+	UINT32 Reserved;
+#endif
+} PACKED KIDT_ENTRY, *PKIDT_ENTRY;
+
+//
+// IDT Descriptor
+//
+typedef struct _KIDT_DESCRIPTOR
+{
+	USHORT Size;
+#if defined (__i686__)
+	UINT Base;
+#elif defined (__amd64__)
+	ULONG Base;
+#endif
+} PACKED KIDT_DESCRIPTOR, *PKIDT_DESCRIPTOR;
+
+//// ** EXTERN VARIABLES ** ////
+
+EXTERN PVOID pgHalIsrHandlers[];
 
 //// ** INITIALIZATION ** ////
 
@@ -64,6 +113,16 @@ pHalSetGdtEntry(PKGDT_ENTRY Entry,
 				UINT8 Flags);
 
 void
+pHalSetIdtEntry(PKIDT_ENTRY Entry,
+				PVOID Handler,
+				UINT8 Flags);
+
+EXTERN
+void
 pHalLoadGdt(PKGDT_DESCRIPTOR Descriptor);
+
+EXTERN
+void
+pHalLoadIdt(PKIDT_DESCRIPTOR Descriptor);
 
 #endif /* _HAL_X86_CPU_H */

@@ -81,7 +81,11 @@ pHalInitGdt()
 #endif
 
 	GdtDescriptor.Size = sizeof(GdtEntries) - 1;
-	GdtDescriptor.Base = (UINT64)&GdtEntries;
+#if defined (__i686__)
+	GdtDescriptor.Base = (UINT)&GdtEntries;
+#elif defined (__amd64__)
+	GdtDescriptor.Base = (ULONG)&GdtEntries;
+#endif
 
 	pHalLoadGdt(&GdtDescriptor);
 }
@@ -105,4 +109,53 @@ pHalSetGdtEntry(PKGDT_ENTRY Entry,
 void
 pHalInitIdt()
 {
+	ALIGNED(0x1000) KIDT_ENTRY IdtEntries[256];
+	KIDT_DESCRIPTOR IdtDescriptor;
+
+	//
+	// Set up exception handlers
+	//
+	for(INT Index = 0; Index < 32; Index++)
+	{
+		pHalSetIdtEntry(&IdtEntries[Index], pgHalIsrHandlers[Index], IDT_TRAP_GATE);
+	}
+
+	//
+	// Set up ISR handlers
+	//
+	for(INT Index = 32; Index < 256; Index++)
+	{
+		pHalSetIdtEntry(&IdtEntries[Index], pgHalIsrHandlers[Index], IDT_INTERRUPT_GATE);
+	}
+
+	IdtDescriptor.Size = sizeof(IdtEntries) - 1;
+#if defined (__i686__)
+	IdtDescriptor.Base = (UINT)&IdtEntries;
+#elif defined (__amd64__)
+	IdtDescriptor.Base = (ULONG)&IdtEntries;
+#endif
+
+	pHalLoadIdt(&IdtDescriptor);
+}
+
+void
+pHalSetIdtEntry(PKIDT_ENTRY Entry,
+				PVOID Handler,
+				UINT8 Flags)
+{
+	Entry->Reserved = 0;
+
+#if defined (__i686__)
+	Entry->BaseLower = ((UINT32)Handler) & 0xFFFF;
+	Entry->Selector = 0x08;
+	Entry->Flags = Flags;
+	Entry->BaseHigher = (((UINT32)Handler) >> 16) & 0xFFFF;
+#elif defined (__amd64__)
+	Entry->BaseLower = ((UINT64)Handler) & 0xFFFF;
+	Entry->Selector = 0x08;
+	Entry->Ist = 0;
+	Entry->Flags = Flags;
+	Entry->BaseMiddle = (((UINT64)Handler) >> 16) & 0xFFFF;
+	Entry->BaseHigher = ((UINT64)Handler) >> 32;
+#endif
 }
