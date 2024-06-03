@@ -17,7 +17,12 @@ KERNEL_OBJS := $(CFILES:%.c=$(BUILD_DIR)/%.c.o) $(ASFILES:%.asm=$(BUILD_DIR)/%.a
 HEADER_DEPS := $(CFILES:.c=.d)
 
 .PHONY: all
-all: $(BUILD_DIR)/output/$(KERNEL_FILE)
+all: $(KERNEL_FILE)
+
+.PHONY: install
+install: all
+	@mkdir -p $(SYSROOT_DIR)/System
+	@cp $(KERNEL_FILE) $(SYSROOT_DIR)/System/
 
 $(BUILD_DIR)/%.c.o: %.c
 	@mkdir -p $(@D)
@@ -29,7 +34,7 @@ $(BUILD_DIR)/%.asm.o: %.asm
 	@printf "  AS $<\n"
 	@$(AS) $(INTERNAL_ASFLAGS) $(ASFLAGS) $< -o $@
 
-$(BUILD_DIR)/output/$(KERNEL_FILE): $(KERNEL_OBJS)
+$(KERNEL_FILE): $(KERNEL_OBJS)
 	@mkdir -p $(@D)
 	@printf "  LD $(notdir $@)\n"
 	@$(LD) -T$(ROOT_DIR)/kernel/$(ARCH)/linker.x $(INTERNAL_LDFLAGS) $(LDFLAGS) $^ -o $@

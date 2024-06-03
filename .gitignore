@@ -1,5 +1,6 @@
 build/
 release/
+sysroot/
 .vscode/
 
 .DS_Store

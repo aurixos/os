@@ -1,3 +1,5 @@
+MAKEFLAGS += --no-print-directory --silent
+
 export ARCH ?= x86_64
 export DEBUG ?= yes
 
@@ -32,6 +34,7 @@ endif
 export ROOT_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 export BUILD_DIR := $(ROOT_DIR)/build
 export RELEASE_DIR := $(ROOT_DIR)/release
+export SYSROOT_DIR := $(ROOT_DIR)/sysroot
 
 RELEASE_ISO := $(RELEASE_DIR)/aurixos-cdrom-$(GIT_REV)_$(ARCH).iso
 RELEASE_HDD := $(RELEASE_DIR)/aurixos-hdd-$(GIT_REV)_$(ARCH).img
@@ -71,8 +74,8 @@ all: bootloader kernel drivers # Builds the entire OS
 release_full: release_hdd release_sdcard release_iso # Generates all possible images
 
 .PHONY: run
-run: release_hdd # Runs QEMU
-	$(QEMU) $(QEMU_FLAGS) $(QEMU_ARCH_FLAGS) -hda $(RELEASE_HDD)
+run: release_iso # Runs QEMU
+	$(QEMU) $(QEMU_FLAGS) $(QEMU_ARCH_FLAGS) -cdrom $(RELEASE_ISO)
 
 # TODO: Maybe add a nice message with instructions here before running qemu?
 .PHONY: rundbg
@@ -103,23 +106,32 @@ drivers: # Builds all drivers
 	@printf ">>> Building drivers...\n"
 	@$(MAKE) -C drivers
 
+.PHONY: sysroot
+sysroot: boot kernel drivers # Generates the sysroot
+	@printf ">>> Generating sysroot..."
+	@cp -r base/ $(SYSROOT_DIR)
+	@$(MAKE) -C boot/$(ARCH) install
+	@$(MAKE) -C kernel install
+#	@$(MAKE) -C drivers install
+	@printf " done.\n"
+
 .PHONY: help
 help: # Print help
 	@grep '^[^.#]\+:\s\+.*#' Makefile | \
 	$(SED) "s/\(.\+\):\s*\(.*\) #\s*\(.*\)/`printf "\033[93m"`\1`printf "\033[0m"`	\3 [\2]/" | \
 	expand -t20
 
-$(RELEASE_ISO): bootloader kernel
+$(RELEASE_ISO): bootloader kernel sysroot
 	@printf ">>> Generating ISO image..."
 	@mkdir -p $(RELEASE_DIR)
 	@bash arch/$(ARCH)/generate_iso.sh $(RELEASE_ISO)
 
-$(RELEASE_HDD): bootloader kernel
+$(RELEASE_HDD): bootloader kernel sysroot
 	@printf ">>> Generating HDD image..."
 	@mkdir -p $(RELEASE_DIR)
 	@bash arch/$(ARCH)/generate_hdd.sh $(RELEASE_HDD) $(HDD_SIZE)
 
-$(RELEASE_SDCARD): bootloader kernel
+$(RELEASE_SDCARD): bootloader kernel sysroot
 	@printf ">>> Generating SD Card image..."
 	$(warning SD Card file generation is not supported yet!)
 #	@mkdir -p $(RELEASE_DIR)
@@ -127,4 +139,4 @@ $(RELEASE_SDCARD): bootloader kernel
 
 .PHONY: clean
 clean:
-	@rm -rf $(RELEASE_DIR) $(BUILD_DIR)
+	@rm -rf $(RELEASE_DIR) $(BUILD_DIR) $(SYSROOT_DIR)

@@ -1,6 +1,6 @@
-override BOOT_FILE := BOOTX64.EFI
+override BOOT_FILE := $(BUILD_DIR)/boot/BOOTX64.EFI
 
-override INCLUDE_DIRS := libefi include ../../sdk/public
+override INCLUDE_DIRS := libefi include ../../../sdk/public
 
 override CC := clang
 override LD := clang

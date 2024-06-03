@@ -65,7 +65,6 @@ else
 	mount "$loopback_efi" "$tempmountdir"
 fi
 
-cp -r "$BUILD_DIR"/output/* "$tempmountdir"
 cp -r "$ROOT_DIR"/sysroot/* "$tempmountdir"
 
 # unmount all partitions
@@ -78,5 +77,9 @@ elif [ "$unamestr" = 'Darwin' ]; then
 fi
 
 rm -r "$tempmountdir"
+
+# add BIOS stage1 code and magic number at the end of the sector
+dd if=$BUILD_DIR/boot/stage1-hdd.bin of=$disk_name conv=notrunc bs=446 count=1
+dd if=$BUILD_DIR/boot/stage1-hdd.bin of=$disk_name conv=notrunc bs=1 count=2 skip=510 seek=510
 
 printf " done.\n"

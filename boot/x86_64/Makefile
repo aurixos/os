@@ -1,25 +1,22 @@
-include config.mk
-
-ifeq ($(DEBUG),yes)
-INTERNAL_CFLAGS += -g -D_DEBUG
-endif
-
-CFILES := $(shell find . -type f -name '*.c')
-
-BOOT_OBJS := $(CFILES:%.c=$(BUILD_DIR)/%.c.o)
-
-HEADER_DEPS := $(CFILES:.c=.d)
-
 .PHONY: all
-all: $(BUILD_DIR)/output/EFI/BOOT/$(BOOT_FILE)
+all: bios-cd bios-hdd uefi
 
--include $(HEADER_DEPS)
-$(BUILD_DIR)/%.c.o: %.c
-	@mkdir -p $(@D)
-	@printf "  CC $<\n"
-	@$(CC) $(INTERNAL_CFLAGS) $(CFLAGS) -c $< -o $@
+.PHONY: bios
+bios: bios-cd bios-hdd
 
-$(BUILD_DIR)/output/EFI/BOOT/$(BOOT_FILE): $(BOOT_OBJS)
-	@mkdir -p $(@D)
-	@printf "  LD $(notdir $@)\n"
-	@$(LD) $(INTERNAL_LDFLAGS) $(LDFLAGS) $^ -o $@
+.PHONY: bios-cd
+bios-cd:
+	@$(MAKE) -C bios BOOTLOADER_TYPE=cd
+
+.PHONY: bios-hdd
+bios-hdd:
+	@$(MAKE) -C bios BOOTLOADER_TYPE=hdd
+
+.PHONY: uefi
+uefi:
+	@$(MAKE) -C uefi
+
+.PHONY: install
+install: bios uefi
+	@$(MAKE) -C bios install
+	@$(MAKE) -C uefi install

@@ -7,4 +7,6 @@ fi
 
 disk_name=$1
 
-printf " unsupported, skipping.\n"
+xorriso -as mkisofs -no-emul-boot -boot-load-size 4 -boot-info-table -b $BUILD_DIR/boot/stage1-cd.bin -e EFI/BOOT/BOOTX64.EFI $SYSROOT_DIR -o $disk_name 2>/dev/null
+
+printf " done.\n"
