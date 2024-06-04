@@ -40,6 +40,9 @@
 
 ---
 
+> [!IMPORTANT]  
+> We're currently switching from Limine to our own custom bootloader. To see the progress, please switch to the `x86_64-bootloader` branch.
+
 ## About
 
 AurixOS is a general-purpose operating system, meant to take security, performance and usability to the next level.
