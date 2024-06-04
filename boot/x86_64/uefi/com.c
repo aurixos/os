@@ -66,3 +66,28 @@ ComInitializeCom(
 	IoOutByte(ComPort + 4, 0x0F);
 	return 0;
 }
+
+CHAR
+ComReadChar(
+	UINT16 Port)
+{
+	//
+	// Wait until we're ready to read
+	//
+	while(!(IoInByte(Port + 5) & 0x01));
+
+	return IoInByte(Port);
+}
+
+void
+ComWriteChar(
+	UINT16 Port,
+	CHAR Byte)
+{
+	//
+	// Wait until we're ready to write
+	//
+	while(!(IoInByte(Port + 5) & 0x20));
+
+	IoOutByte(Port, Byte);
+}

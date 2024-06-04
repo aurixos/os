@@ -42,4 +42,13 @@ ComInitializeCom(
 	UINT16 ComPort,
 	UINT32 BaudRate);
 
+CHAR
+ComReadChar(
+	UINT16 Port);
+
+void
+ComWriteChar(
+	UINT16 Port,
+	CHAR Byte);
+
 #endif /* _COM_H */
