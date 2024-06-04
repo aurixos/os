@@ -21,15 +21,26 @@ SOFTWARE.
 #include <axboot.h>
 
 #include <com.h>
+#include <print.h>
+
+EFI_HANDLE gImageHandle;
+EFI_SYSTEM_TABLE *gSystemTable;
 
 EFI_STATUS
 AxBootEntry(EFI_HANDLE ImageHandle,
 			EFI_SYSTEM_TABLE *SystemTable)
 {
-	(void)ImageHandle;
-	(void)SystemTable;
+	gImageHandle = ImageHandle;
+	gSystemTable = SystemTable;
 
+	gSystemTable->ConOut->ClearScreen(gSystemTable->ConOut);
+
+	//
+	// TODO: Initialize a port if debug mode is enabled
+	// based on configuration file.
+	//
 	ComInitializeCom(COM1, 115200);
+	EfiPrint(L"AxBoot v1.0 (c) 2024 Jozef Nagy\r\n");
 
 	while (1);
 	return EFI_SUCCESS;

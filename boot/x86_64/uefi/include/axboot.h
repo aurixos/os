@@ -22,6 +22,11 @@ SOFTWARE.
 
 #include <aurixos.h>
 
+#include <efi.h>
+
+extern EFI_HANDLE gImageHandle;
+extern EFI_SYSTEM_TABLE *gSystemTable;
+
 typedef ULONG AXBOOT_STATUS;
 
 #endif /* _AXBOOT_H */

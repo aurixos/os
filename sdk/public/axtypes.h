@@ -44,6 +44,8 @@ typedef unsigned __int64 UINT64;
 
 typedef signed int INT;
 typedef unsigned UINT;
+typedef INT64 INTN;
+typedef UINT64 UINTN;
 
 typedef   signed __int64 LONG;
 typedef unsigned __int64 ULONG;
