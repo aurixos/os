@@ -23,6 +23,8 @@ SOFTWARE.
 #include <io.h>
 #include <com.h>
 
+UINT16 pDebugPort = 0;
+
 AXBOOT_STATUS
 ComInitializeCom(
 	UINT16 ComPort,
@@ -64,6 +66,12 @@ ComInitializeCom(
 	// Set UART to normal operation
 	//
 	IoOutByte(ComPort + 4, 0x0F);
+
+	//
+	// Set this port as the debug port
+	//
+	pDebugPort = ComPort;
+
 	return 0;
 }
 
@@ -79,7 +87,7 @@ ComReadChar(
 	return IoInByte(Port);
 }
 
-void
+VOID
 ComWriteChar(
 	UINT16 Port,
 	CHAR Byte)
@@ -90,4 +98,20 @@ ComWriteChar(
 	while(!(IoInByte(Port + 5) & 0x20));
 
 	IoOutByte(Port, Byte);
+}
+
+VOID
+ComOutputDebugString(
+	CHAR16 *String)
+{
+	//
+	// Check if a COM port has been initialized yet
+	//
+	if (pDebugPort == 0)
+		return;
+
+	while(*String)
+	{
+		ComWriteChar(pDebugPort, *String++);
+	}
 }

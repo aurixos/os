@@ -51,4 +51,8 @@ ComWriteChar(
 	UINT16 Port,
 	CHAR Byte);
 
+VOID
+ComOutputDebugString(
+	CHAR16 *String);
+
 #endif /* _COM_H */

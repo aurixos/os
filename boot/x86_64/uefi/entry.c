@@ -18,29 +18,36 @@ SOFTWARE.
 --*/
 
 #include <efi.h>
+#include <efilib.h>
 #include <axboot.h>
 
 #include <com.h>
 #include <print.h>
 
-EFI_HANDLE gImageHandle;
-EFI_SYSTEM_TABLE *gSystemTable;
-
 EFI_STATUS
 AxBootEntry(EFI_HANDLE ImageHandle,
 			EFI_SYSTEM_TABLE *SystemTable)
 {
-	gImageHandle = ImageHandle;
-	gSystemTable = SystemTable;
+	EFI_STATUS Status;
 
-	gSystemTable->ConOut->ClearScreen(gSystemTable->ConOut);
+	EfiLibInitialize(ImageHandle, SystemTable);
+
+	//
+	// Clear the screen and disable the UEFI watchdog
+	//
+	g_SystemTable->ConOut->ClearScreen(g_SystemTable->ConOut);
+	Status = g_SystemTable->BootServices->SetWatchdogTimer(0, 0, 0, NULL);
+	if(EFI_ERROR(Status))
+	{
+		EfiPrintDebug(L"WARNING: Failed to disable UEFI watchdog\r\n");
+	}
 
 	//
 	// TODO: Initialize a port if debug mode is enabled
 	// based on configuration file.
 	//
 	ComInitializeCom(COM1, 115200);
-	EfiPrint(L"AxBoot v1.0 (c) 2024 Jozef Nagy\r\n");
+	EfiPrintDebug(L"AxBoot v1.0 (c) 2024 Jozef Nagy\r\n");
 
 	while (1);
 	return EFI_SUCCESS;

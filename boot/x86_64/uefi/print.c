@@ -17,29 +17,42 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 --*/
 
-#include <aurixos.h>
-
 #include <axboot.h>
 #include <efi.h>
+#include <efilib.h>
+
 #include <com.h>
 #include <print.h>
 
 VOID
 EfiOutputString(CHAR16 *String)
 {
-	while(*String)
-	{
-		ComWriteChar(COM1, *String++);
-	}
+	g_SystemTable->ConOut->OutputString(g_SystemTable->ConOut, String);
 }
 
 VOID
 EfiPrint(CHAR16 *Format, ...)
 {
 	VA_LIST Args;
+	va_start(Args, Format);
+	pEfiPrintFormat(EfiOutputString, Format, Args);
+	va_end(Args);
+}
+
+VOID
+EfiPrintDebug(CHAR16 *Format, ...)
+{
+	VA_LIST Args;
+	va_start(Args, Format);
+	pEfiPrintFormat(ComOutputDebugString, Format, Args);
+	va_end(Args);
+}
+
+VOID
+pEfiPrintFormat(VOID (*Callback)(CHAR16 *), CHAR16 *Format, VA_LIST Args)
+{
 	CHAR16 CharString[2];
 
-	va_start(Args, Format);
 	CharString[0] = L'\0';
 	CharString[1] = L'\0';
 
@@ -49,33 +62,31 @@ EfiPrint(CHAR16 *Format, ...)
 
 			if (Format[i] == L'c') {
 				CharString[0] = va_arg(Args, int);
-				EfiOutputString(CharString);
+				Callback(CharString);
 			} else if (Format[i] == L's') {
 				CHAR16 *String = va_arg(Args, CHAR16 *);
-				EfiOutputString(String);
+				Callback(String);
 			} else if (Format[i] == L'd') {
 				INT32 Number = va_arg(Args, INT32);
-				EfiPrintInteger(Number, 10, TRUE);
+				pEfiPrintInteger(Callback, Number, 10, TRUE);
 			} else if (Format[i] == L'x') {
 				UINTN Number = va_arg(Args, UINTN);
-				EfiPrintInteger(Number, 16, FALSE);
+				pEfiPrintInteger(Callback, Number, 16, FALSE);
 			} else if (Format[i] == L'u') {
 				UINT32 Number = va_arg(Args, UINT32);
-				EfiPrintInteger(Number, 10, FALSE);
+				pEfiPrintInteger(Callback, Number, 10, FALSE);
 			} else {
-				EfiOutputString(L"%?");
+				Callback(L"%?");
 			}
 		} else {
 			CharString[0] = Format[i];
-			EfiOutputString(CharString);
+			Callback(CharString);
 		}
 	}
-
-	va_end(Args);
 }
 
 INT32
-EfiPrintInteger(UINTN Number, UINT8 Base, BOOLEAN IsSigned)
+pEfiPrintInteger(VOID (*Callback)(CHAR16 *), UINTN Number, UINT8 Base, BOOLEAN IsSigned)
 {
 	const CHAR16 *Digits = L"0123456789ABCDEF";
 	CHAR16 Buffer[24];
@@ -112,6 +123,6 @@ EfiPrintInteger(UINTN Number, UINT8 Base, BOOLEAN IsSigned)
 		Buffer[j] = Temp;
 	}
 
-	EfiOutputString(Buffer);
+	Callback(Buffer);
 	return RetVal;
 }
