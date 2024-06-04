@@ -47,5 +47,6 @@ SOFTWARE.
 #define PACKED __attribute__((packed))
 #define ALIGNED(Align) __attribute__((aligned(Align)))
 #define SECTION(Section) __attribute__((section(Section)))
+#define NORETURN __attribute__((noreturn))
 
 #endif /* _AXDEF_H */
