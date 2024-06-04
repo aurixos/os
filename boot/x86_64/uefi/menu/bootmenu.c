@@ -1,5 +1,5 @@
 /*++
-Module Name:  axboot.h
+Module Name:  bootmenu.c
 Project:      AurixOS
 
 Copyright (c) 2024 Jozef Nagy
@@ -17,16 +17,16 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 --*/
 
-#ifndef _AXBOOT_H
-#define _AXBOOT_H
-
-#include <aurixos.h>
-
+#include <axboot.h>
 #include <efi.h>
+#include <efilib.h>
 
-EXTERN EFI_HANDLE g_ImageHandle;
-EXTERN EFI_SYSTEM_TABLE *g_SystemTable;
+#include <print.h>
+#include <menu/bootmenu.h>
+#include <input/kbd.h>
 
-typedef ULONG AXBOOT_STATUS;
-
-#endif /* _AXBOOT_H */
+VOID
+MenuShowBootMenu()
+{
+	while(1);
+}

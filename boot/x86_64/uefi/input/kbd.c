@@ -1,5 +1,5 @@
 /*++
-Module Name:  axboot.h
+Module Name:  kbd.c
 Project:      AurixOS
 
 Copyright (c) 2024 Jozef Nagy
@@ -17,16 +17,29 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 --*/
 
-#ifndef _AXBOOT_H
-#define _AXBOOT_H
-
-#include <aurixos.h>
-
+#include <axboot.h>
 #include <efi.h>
+#include <efilib.h>
 
-EXTERN EFI_HANDLE g_ImageHandle;
-EXTERN EFI_SYSTEM_TABLE *g_SystemTable;
+#include <input/kbd.h>
 
-typedef ULONG AXBOOT_STATUS;
+EFI_INPUT_KEY
+InputGetKey()
+{
+	EFI_EVENT Event[1];
+	EFI_INPUT_KEY Key;
+	UINTN Index = 0;
 
-#endif /* _AXBOOT_H */
+	Key.ScanCode = 0;
+	Key.UnicodeChar = u'\0';
+
+	Event[0] = g_SystemTable->ConIn->WaitForKey;
+	g_SystemTable->BootServices->WaitForEvent(1, Event, &Index);
+
+	if(Index == 0)
+	{
+		g_SystemTable->ConIn->ReadKeyStroke(g_SystemTable->ConIn, &Key);
+	}
+
+	return Key;
+}

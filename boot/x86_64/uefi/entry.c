@@ -22,7 +22,11 @@ SOFTWARE.
 #include <axboot.h>
 
 #include <com.h>
+#include <menu/bootmenu.h>
 #include <print.h>
+
+EFI_HANDLE g_ImageHandle;
+EFI_SYSTEM_TABLE *g_SystemTable;
 
 EFI_STATUS
 AxBootEntry(EFI_HANDLE ImageHandle,
@@ -30,7 +34,8 @@ AxBootEntry(EFI_HANDLE ImageHandle,
 {
 	EFI_STATUS Status;
 
-	EfiLibInitialize(ImageHandle, SystemTable);
+	g_ImageHandle = ImageHandle;
+	g_SystemTable = SystemTable;
 
 	//
 	// TODO: Initialize a port if debug mode is enabled
@@ -46,6 +51,20 @@ AxBootEntry(EFI_HANDLE ImageHandle,
 		EfiPrintDebug(L"WARNING: Failed to disable UEFI watchdog\r\n");
 	}
 
-	while (1);
+	//
+	// Now we get to the best part: A boot menu.
+	// This function should return ONLY if something went wrong.
+	// What will happen in that case is left open for discussion,
+	// so for now we just print an error message and reboot after 10 seconds.
+	//
+	MenuShowBootMenu();
+
+	g_SystemTable->ConOut->ClearScreen(g_SystemTable->ConOut);
+	EfiPrint(L"\r\nAn error has occured and AxBoot cannot continue working properly.\r\n");
+	EfiPrint(L"The system will reboot in 10 seconds...");
+
+    g_SystemTable->BootServices->Stall(10 * 1000000);
+	g_SystemTable->RuntimeServices->ResetSystem(EfiResetWarm, EFI_SUCCESS, 0, NULL);
+
 	return EFI_SUCCESS;
 }

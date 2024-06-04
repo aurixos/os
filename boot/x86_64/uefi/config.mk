@@ -6,6 +6,7 @@ override CC := clang
 override LD := clang
 
 override INTERNAL_CFLAGS := -target x86_64-unknown-windows \
+							-fshort-wchar \
 							-D_AXBOOT \
 							$(foreach d, $(INCLUDE_DIRS), -I$d)
 

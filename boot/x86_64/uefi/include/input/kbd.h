@@ -1,5 +1,5 @@
 /*++
-Module Name:  axboot.h
+Module Name:  kbd.h
 Project:      AurixOS
 
 Copyright (c) 2024 Jozef Nagy
@@ -17,16 +17,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 --*/
 
-#ifndef _AXBOOT_H
-#define _AXBOOT_H
-
-#include <aurixos.h>
+#ifndef _INPUT_KBD_H
+#define _INPUT_KBD_H
 
 #include <efi.h>
 
-EXTERN EFI_HANDLE g_ImageHandle;
-EXTERN EFI_SYSTEM_TABLE *g_SystemTable;
+EFI_INPUT_KEY
+InputGetKey();
 
-typedef ULONG AXBOOT_STATUS;
-
-#endif /* _AXBOOT_H */
+#endif /* _INPUT_KBD_H */
