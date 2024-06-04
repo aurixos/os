@@ -29,11 +29,27 @@ jmp 0x0000:AxBootEntry
 ;; without UEFI on x86_64.
 ;;
 
-sErrorUnbootable: db "Error: AurixOS can only be booted via UEFI on x86_64!", 0x0d, 0x0a, 0
-sPressToReboot: db ""
+sErrorUnbootable: db 0x0d, 0x0a, 0x0d, 0x0a, "Error: AurixOS can only be booted via UEFI on x86_64!", 0x0d, 0x0a, 0
+sPressToReboot: db "Press Ctrl+Alt+Del to reboot", 0
 
 AxBootEntry:
+	;;
+	;; Set 80x50 text mode and clear the screen
+	;;
+	mov ax, 0x03
+	int 0x10
+	xor bx, bx
+	mov ax, 0x1112
+	int 0x10
+	mov ah, 0
+	int 0x10
+
+	;;
+	;; Display an error message and halt
+	;;
 	mov si, sErrorUnbootable
+	call PrintString
+	mov si, sPressToReboot
 	call PrintString
 	jmp AxBootHalt
 

@@ -6,7 +6,17 @@ if [[ -z $1 ]]; then
 fi
 
 disk_name=$1
+efi_img=$BUILD_DIR/efi.img
 
-xorriso -as mkisofs -no-emul-boot -boot-load-size 4 -boot-info-table -b $BUILD_DIR/boot/stage1-cd.bin -e EFI/BOOT/BOOTX64.EFI $SYSROOT_DIR -o $disk_name 2>/dev/null
+# Create a 1.44MB EFI image
+dd if=/dev/zero of=$efi_img bs=1k count=1440 2>/dev/null
+mformat -i $efi_img -f 1440 ::
+mmd -i $efi_img ::/EFI
+mmd -i $efi_img ::/EFI/BOOT
+mcopy -i $efi_img $SYSROOT_DIR/EFI/BOOT/BOOTX64.EFI ::/EFI/BOOT
+cp $efi_img $SYSROOT_DIR/efi.img
+
+# Create the ISO itself
+xorriso -as mkisofs -no-emul-boot -boot-load-size 4 -b System/boot/axb1-cd.bin -c System/boot/bootcat.cat -eltorito-alt-boot -e efi.img $SYSROOT_DIR -o $disk_name 2>/dev/null
 
 printf " done.\n"

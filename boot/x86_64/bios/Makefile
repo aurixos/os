@@ -12,13 +12,15 @@ BOOT_OBJS := $(CFILES:%.c=$(BUILD_DIR)/boot/bios/%.c.o) \
 
 HEADER_DEPS := $(CFILES:.c=.d)
 
+BOOT_FILES_STAGE1 := $(BOOT_FILE_STAGE1_CD) $(BOOT_FILE_STAGE1_HDD) # $(BOOT_FILE_STAGE1_PXE)
+
 .PHONY: all
 all: boot_stage1 boot_stage2
 
 .PHONY: install
 install: boot_stage2
 	@mkdir -p $(SYSROOT_DIR)/System/boot
-	@cp $(BOOT_FILE_STAGE2) $(SYSROOT_DIR)/System/boot/
+	@cp $(BOOT_FILES_STAGE1) $(BOOT_FILE_STAGE2) $(SYSROOT_DIR)/System/boot/
 
 .PHONY: boot_stage1
 boot_stage1: boot_stage1_cd boot_stage1_hdd # boot_stage1_pxe

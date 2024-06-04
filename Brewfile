@@ -9,6 +9,7 @@ brew "git"
 brew "make"
 brew "gptfdisk"
 brew "xorriso"
+brew "mtools"
 brew "qemu"
 brew "zig"
 brew "gsed" if OS.mac?
@@ -22,6 +23,7 @@ brew "gsed" if OS.mac?
 
 brew "x86_64-elf-binutils"
 brew "x86_64-elf-gcc"
+brew "clang"
 brew "nasm"
 
 ####
