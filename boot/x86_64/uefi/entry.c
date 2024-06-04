@@ -33,21 +33,18 @@ AxBootEntry(EFI_HANDLE ImageHandle,
 	EfiLibInitialize(ImageHandle, SystemTable);
 
 	//
-	// Clear the screen and disable the UEFI watchdog
+	// TODO: Initialize a port if debug mode is enabled
+	// based on configuration file.
 	//
+	ComInitializeCom(COM1, 115200);
 	g_SystemTable->ConOut->ClearScreen(g_SystemTable->ConOut);
+	EfiPrintDebug(L"AxBoot v1.0 (c) 2024 Jozef Nagy\r\n");
+
 	Status = g_SystemTable->BootServices->SetWatchdogTimer(0, 0, 0, NULL);
 	if(EFI_ERROR(Status))
 	{
 		EfiPrintDebug(L"WARNING: Failed to disable UEFI watchdog\r\n");
 	}
-
-	//
-	// TODO: Initialize a port if debug mode is enabled
-	// based on configuration file.
-	//
-	ComInitializeCom(COM1, 115200);
-	EfiPrintDebug(L"AxBoot v1.0 (c) 2024 Jozef Nagy\r\n");
 
 	while (1);
 	return EFI_SUCCESS;
