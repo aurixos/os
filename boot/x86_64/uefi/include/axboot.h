@@ -24,6 +24,9 @@ SOFTWARE.
 
 #include <efi.h>
 
+#define AXBOOT_VERSION_STR L"0.1"
+#define AXBOOT_COPYRIGHT_STR L"(c) 2024 Jozef Nagy"
+
 EXTERN EFI_HANDLE g_ImageHandle;
 EXTERN EFI_SYSTEM_TABLE *g_SystemTable;
 

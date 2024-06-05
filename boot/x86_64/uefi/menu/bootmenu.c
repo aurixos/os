@@ -25,8 +25,109 @@ SOFTWARE.
 #include <menu/bootmenu.h>
 #include <input/kbd.h>
 
+typedef struct _BOOT_ENTRY
+{
+	CHAR16 *Name;
+	CHAR16 *KernelPath;
+} BOOT_ENTRY, *PBOOT_ENTRY;
+
 VOID
 MenuShowBootMenu()
 {
-	while(1);
+	BOOLEAN ShouldRun = TRUE;
+	UINT SelectedEntry = 0;
+	BOOT_ENTRY BootEntries[1] = {
+		{
+			L"AurixOS",
+			L"/System/axkrnl",
+		},
+	};
+
+	while(ShouldRun)
+	{
+		//
+		// Get info about the screen
+		//
+		UINTN Cols = 0;
+		UINTN Rows = 0;
+		g_SystemTable->ConOut->ClearScreen(g_SystemTable->ConOut);
+		g_SystemTable->ConOut->QueryMode(g_SystemTable->ConOut, g_SystemTable->ConOut->Mode->Mode, &Cols, &Rows);
+
+		//
+		// Show some nice info
+		//
+		EfiPrint(L"AxBoot v%s-%s %s\r\n\r\n", AXBOOT_VERSION_STR, AURIXOS_CONFIGURATION, AXBOOT_COPYRIGHT_STR);
+
+		EfiPrint(L"Press F1 to Shutdown\r\n");
+		EfiPrint(L"Press F2 to Reboot\r\n");
+		EfiPrint(L"Use ↑/↓ to navigate the menu\r\n");
+		EfiPrint(L"Press ENTER to boot selected OS\r\n");
+		EfiPrint(L"Press S to spawn a shell\r\n\r\n\r\n");
+
+		for(UINTN EntryIndex = 0; EntryIndex < ARRAY_SIZE(BootEntries); EntryIndex++)
+		{
+			if(EntryIndex == SelectedEntry)
+			{
+				EfiPrint(L" > %s <\r\n", BootEntries[EntryIndex].Name);
+			}
+			else
+			{
+				EfiPrint(L"   %s\r\n", BootEntries[EntryIndex].Name);
+			}
+		}
+
+		EFI_INPUT_KEY Key = InputGetKey();
+		switch(Key.ScanCode)
+		{
+			//
+			// F1 - Shutdown
+			//
+			case EFI_SCANCODE_FN1:
+				g_SystemTable->RuntimeServices->ResetSystem(EfiResetShutdown, 0, 0, NULL);
+				break;
+			//
+			// F2 - Warm Reboot
+			//
+			case EFI_SCANCODE_FN2:
+				g_SystemTable->RuntimeServices->ResetSystem(EfiResetWarm, 0, 0, NULL);
+				break;
+			//
+			// Arrow Up - Scroll up
+			//
+			case EFI_SCANCODE_ARROW_UP:
+				break;
+			//
+			// Arrow Down - Scroll down
+			//
+			case EFI_SCANCODE_ARROW_DOWN:
+				break;
+			default:
+				//
+				// Enter - boot current selection
+				//
+				if(Key.UnicodeChar == L'\r')
+				{
+					g_SystemTable->ConOut->ClearScreen(g_SystemTable->ConOut);
+					EfiPrintDebug(L"Booting \"%s\"...\r\n", BootEntries[SelectedEntry].Name);
+					EfiPrint(L"Booting \"%s\"...\r\n", BootEntries[SelectedEntry].Name);
+					while(1);
+				}
+				//
+				// S - Run shell
+				//
+				else if(Key.UnicodeChar == L's' || Key.UnicodeChar == L's')
+				{
+					g_SystemTable->ConOut->ClearScreen(g_SystemTable->ConOut);
+					EfiPrintDebug(L"Running shell...\r\n");
+					EfiPrint(L">");
+					while(1);
+				}
+				break;
+		}
+
+		//
+		// TODO: Get rid of this
+		//
+		while(1);
+	}
 }

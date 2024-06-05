@@ -37,13 +37,19 @@ AxBootEntry(EFI_HANDLE ImageHandle,
 	g_ImageHandle = ImageHandle;
 	g_SystemTable = SystemTable;
 
+	g_SystemTable->ConOut->Reset(g_SystemTable->ConOut, EFI_FALSE);
+	g_SystemTable->ConOut->ClearScreen(g_SystemTable->ConOut);
+
+	//
+	// Set default colors (white foreground / black background)
+	//
+	g_SystemTable->ConOut->SetAttribute(g_SystemTable->ConOut, EFI_TEXT_ATTR(EFI_WHITE, EFI_BLACK));
+
 	//
 	// TODO: Initialize a port if debug mode is enabled
 	// based on configuration file.
 	//
 	ComInitializeCom(COM1, 115200);
-	g_SystemTable->ConOut->ClearScreen(g_SystemTable->ConOut);
-	EfiPrintDebug(L"AxBoot v1.0 (c) 2024 Jozef Nagy\r\n");
 
 	Status = g_SystemTable->BootServices->SetWatchdogTimer(0, 0, 0, NULL);
 	if(EFI_ERROR(Status))
