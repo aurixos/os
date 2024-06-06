@@ -29,6 +29,8 @@ typedef struct _BOOT_ENTRY
 {
 	CHAR16 *Name;
 	CHAR16 *KernelPath;
+
+	UINT16 NameLength;
 } BOOT_ENTRY, *PBOOT_ENTRY;
 
 VOID
@@ -37,54 +39,70 @@ MenuShowBootMenu()
 	BOOLEAN ShouldRun = TRUE;
 	UINT SelectedEntry = 0;
 	UINT MaximumEntries = 0;
+
+	//
+	// TODO: Automatically calculate the
+	// string lengths
+	//
 	BOOT_ENTRY BootEntries[3] = {
 		{
-			L"Test Entry #1",
+			L"AurixOS",
 			L"",
+
+			7,
 		},
 		{
-			L"Test Entry #2",
+			L"Windows 10",
 			L"",
+
+			10,
 		},
 		{
-			L"Test Entry #3",
+			L"Linux",
 			L"",
+
+			5,
 		},
 	};
 
 	MaximumEntries = ARRAY_SIZE(BootEntries);
 
+	//
+	// Clear the screen and show some nice info
+	//
+	g_SystemTable->ConOut->ClearScreen(g_SystemTable->ConOut);
+
+	//
+	// Show some nice info
+	//
+	EfiPrint(L"AxBoot v%s-%s %s\r\n\r\n", AXBOOT_VERSION_STR, AURIXOS_CONFIGURATION, AXBOOT_COPYRIGHT_STR);
+
+	EfiPrint(L"Press F1 to Shutdown\r\n");
+	EfiPrint(L"Press F2 to Reboot\r\n");
+	EfiPrint(L"Use ↑/↓ to navigate the menu\r\n");
+	EfiPrint(L"Press ENTER to boot selected OS\r\n");
+	EfiPrint(L"Press S to spawn a shell\r\n\r\n\r\n");
+
+	//
+	// Draw all entries
+	//
+	for(UINTN EntryIndex = 0; EntryIndex < MaximumEntries; EntryIndex++)
+	{
+		g_SystemTable->ConOut->SetCursorPosition(g_SystemTable->ConOut, 3, 9 + EntryIndex);
+		EfiPrint(L"%s", BootEntries[EntryIndex].Name);
+	}
+
 	while(ShouldRun)
 	{
 		//
-		// Get info about the screen
+		// Highlight selected entry
 		//
-		UINTN Cols = 0;
-		UINTN Rows = 0;
-		g_SystemTable->ConOut->ClearScreen(g_SystemTable->ConOut);
-		g_SystemTable->ConOut->QueryMode(g_SystemTable->ConOut, g_SystemTable->ConOut->Mode->Mode, &Cols, &Rows);
-
-		//
-		// Show some nice info
-		//
-		EfiPrint(L"AxBoot v%s-%s %s\r\n\r\n", AXBOOT_VERSION_STR, AURIXOS_CONFIGURATION, AXBOOT_COPYRIGHT_STR);
-
-		EfiPrint(L"Press F1 to Shutdown\r\n");
-		EfiPrint(L"Press F2 to Reboot\r\n");
-		EfiPrint(L"Use ↑/↓ to navigate the menu\r\n");
-		EfiPrint(L"Press ENTER to boot selected OS\r\n");
-		EfiPrint(L"Press S to spawn a shell\r\n\r\n\r\n");
-
 		for(UINTN EntryIndex = 0; EntryIndex < MaximumEntries; EntryIndex++)
 		{
-			if(EntryIndex == SelectedEntry)
-			{
-				EfiPrint(L" > %s <\r\n", BootEntries[EntryIndex].Name);
-			}
-			else
-			{
-				EfiPrint(L"   %s\r\n", BootEntries[EntryIndex].Name);
-			}
+			g_SystemTable->ConOut->SetCursorPosition(g_SystemTable->ConOut, 1, 9 + EntryIndex);
+			EfiPrint((EntryIndex == SelectedEntry) ? L">" : L" ");
+			g_SystemTable->ConOut->SetCursorPosition(g_SystemTable->ConOut, 4 + BootEntries[EntryIndex].NameLength, 9 + EntryIndex);
+			EfiPrint((EntryIndex == SelectedEntry) ? L"<" : L" ");
 		}
 
 		EFI_INPUT_KEY Key = InputGetKey();
@@ -153,10 +171,5 @@ MenuShowBootMenu()
 				}
 				break;
 		}
-
-		//
-		// TODO: Get rid of this
-		//
-		//while(1);
 	}
 }
