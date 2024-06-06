@@ -36,12 +36,23 @@ MenuShowBootMenu()
 {
 	BOOLEAN ShouldRun = TRUE;
 	UINT SelectedEntry = 0;
-	BOOT_ENTRY BootEntries[1] = {
+	UINT MaximumEntries = 0;
+	BOOT_ENTRY BootEntries[3] = {
 		{
-			L"AurixOS",
-			L"/System/axkrnl",
+			L"Test Entry #1",
+			L"",
+		},
+		{
+			L"Test Entry #2",
+			L"",
+		},
+		{
+			L"Test Entry #3",
+			L"",
 		},
 	};
+
+	MaximumEntries = ARRAY_SIZE(BootEntries);
 
 	while(ShouldRun)
 	{
@@ -64,7 +75,7 @@ MenuShowBootMenu()
 		EfiPrint(L"Press ENTER to boot selected OS\r\n");
 		EfiPrint(L"Press S to spawn a shell\r\n\r\n\r\n");
 
-		for(UINTN EntryIndex = 0; EntryIndex < ARRAY_SIZE(BootEntries); EntryIndex++)
+		for(UINTN EntryIndex = 0; EntryIndex < MaximumEntries; EntryIndex++)
 		{
 			if(EntryIndex == SelectedEntry)
 			{
@@ -95,11 +106,29 @@ MenuShowBootMenu()
 			// Arrow Up - Scroll up
 			//
 			case EFI_SCANCODE_ARROW_UP:
+				if(SelectedEntry <= 0)
+				{
+					SelectedEntry = MaximumEntries - 1;
+				}
+				else
+				{
+					SelectedEntry--;
+				}
+				EfiPrintDebug(L"SelectedEntry: %d", SelectedEntry);
 				break;
 			//
 			// Arrow Down - Scroll down
 			//
 			case EFI_SCANCODE_ARROW_DOWN:
+				if(SelectedEntry + 1 >= MaximumEntries)
+				{
+					SelectedEntry = 0;
+				}
+				else
+				{
+					SelectedEntry++;
+				}
+				EfiPrintDebug(L"SelectedEntry: %d", SelectedEntry);
 				break;
 			default:
 				//
@@ -128,6 +157,6 @@ MenuShowBootMenu()
 		//
 		// TODO: Get rid of this
 		//
-		while(1);
+		//while(1);
 	}
 }
