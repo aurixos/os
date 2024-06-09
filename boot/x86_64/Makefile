@@ -1,16 +1,9 @@
 .PHONY: all
-all: bios-cd bios-hdd uefi
+all: bios uefi
 
 .PHONY: bios
-bios: bios-cd bios-hdd
-
-.PHONY: bios-cd
-bios-cd:
-	@$(MAKE) -C bios BOOTLOADER_TYPE=cd
-
-.PHONY: bios-hdd
-bios-hdd:
-	@$(MAKE) -C bios BOOTLOADER_TYPE=hdd
+bios:
+	@$(MAKE) -C bios
 
 .PHONY: uefi
 uefi:
