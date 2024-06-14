@@ -1,5 +1,3 @@
-override KERNEL_FILE := System/axkrnl
-
 override AS := nasm
 override CC := x86_64-elf-gcc
 override LD := x86_64-elf-ld

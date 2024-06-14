@@ -1,9 +1,6 @@
-ifndef ($(BOARD))
-override BOARD := raspi3b
-$(info Emulation board not specified, defaulting to $(BOARD)...)
-endif
+export BOARD ?= raspi4b
 
-include arch/aarch64/$(BOARD)/qemu.mk
+-include arch/aarch64/$(BOARD)/qemu.mk
 
 QEMU := qemu-system-aarch64
 QEMU_ARCH_FLAGS := $(QEMU_BOARD_FLAGS)

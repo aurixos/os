@@ -4,6 +4,8 @@ ifeq ($(DEBUG),yes)
 override INTERNAL_CFLAGS += -g -D_DEBUG
 endif
 
+KERNEL_FILE := $(BUILD_DIR)/axkrnl
+
 INCLUDE_DIRS := include include/arch/$(ARCH) libc
 
 override INTERNAL_ASFLAGS += $(foreach d, $(INCLUDE_DIRS), -I$d)
@@ -21,7 +23,13 @@ KERNEL_OBJS := $(ARCH_CFILES:%.c=$(BUILD_DIR)/%.c.o) $(CFILES:%.c=$(BUILD_DIR)/%
 HEADER_DEPS := $(CFILES:.c=.d)
 
 .PHONY: all
-all: $(BUILD_DIR)/output/$(KERNEL_FILE)
+all: $(KERNEL_FILE)
+
+.PHONY: install
+install: $(KERNEL_FILE)
+	@mkdir -p $(SYSROOT_DIR)/System
+	@printf "  INSTALL $(notdir $(KERNEL_FILE))\n"
+	@cp $(KERNEL_FILE) $(SYSROOT_DIR)/System/
 
 $(BUILD_DIR)/%.c.o: %.c
 	@mkdir -p $(@D)
@@ -33,7 +41,7 @@ $(BUILD_DIR)/%.asm.o: %.asm
 	@printf "  AS $<\n"
 	@$(AS) $(INTERNAL_ASFLAGS) $(ASFLAGS) $< -o $@
 
-$(BUILD_DIR)/output/$(KERNEL_FILE): $(KERNEL_OBJS)
+$(KERNEL_FILE): $(KERNEL_OBJS)
 	@mkdir -p $(@D)
 	@printf "  LD $(notdir $@)\n"
 	@$(LD) -T$(ROOT_DIR)/kernel/arch/$(ARCH)/linker.x $(INTERNAL_LDFLAGS) $(LDFLAGS) $^ -o $@

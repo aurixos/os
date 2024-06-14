@@ -5,10 +5,10 @@ if [[ -z $1 ]]; then
 	exit 1
 fi
 
-disk_name=$1
-disk_size=$2
+sysroot_size=$(du -hsm kernel | cut -f 1)
 
-minimum_disk_size=128
+disk_name=$1
+disk_size=$(($sysroot_size + $efi_partition_size + 2))
 
 unamestr=$(uname)
 
@@ -16,13 +16,6 @@ unamestr=$(uname)
 if ! [[ "$unamestr" =~ ^('Linux'|'Darwin') ]]; then
 	printf " failed. (unsupported host)\n"
 	exit 128
-fi
-
-if [[ $disk_size -lt $minimum_disk_size ]]; then
-	printf " failed. (specified disk size is less than minimum)\n"
-	printf "Specified size: $disk_size\n"
-	printf "Minimum size: $minimum_disk_size\n"
-	exit 1
 fi
 
 # create a disk image
@@ -35,8 +28,13 @@ y
 n p
 1
 
-+128M
++$efi_partition_size\M
 ef00
+n p
+2
+
+
+0700
 w
 y
 EOF
@@ -65,7 +63,7 @@ else
 	mount "$loopback_efi" "$tempmountdir"
 fi
 
-cp -r "$BUILD_DIR"/output/* "$tempmountdir"
+# Copy system root to the newly created image
 cp -r "$ROOT_DIR"/sysroot/* "$tempmountdir"
 
 # unmount all partitions
