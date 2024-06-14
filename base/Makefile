@@ -1,2 +1,3 @@
 .PHONY: install
 install:
+	@:
