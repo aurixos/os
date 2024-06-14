@@ -9,10 +9,11 @@ export BUILD_DIR := $(ROOT_DIR)/build
 export RELEASE_DIR := $(ROOT_DIR)/release
 export SYSROOT_DIR := $(ROOT_DIR)/sysroot
 
+export GIT_REV := $(shell git rev-parse --short HEAD)
+
 LIVE_ISO := $(RELEASE_DIR)/aurixos-livecd-$(GIT_REV)_$(ARCH).iso
 LIVE_HDD := $(RELEASE_DIR)/aurixos-liveusb-$(GIT_REV)_$(ARCH).img
 
-export GIT_REV := $(shell git rev-parse --short HEAD)
 export AURIXOS_VERSION := $(GIT_REV)
 
 export AURIXOS_ARCH := $(ARCH)

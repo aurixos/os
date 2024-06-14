@@ -73,11 +73,11 @@ To build AurixOS, simply run `make` in the root directory of this repository.
 To change the build architecture, run `make ARCH=arch`, where `arch` is the target architecture (Default is set to `x86_64`).
 
 Building AurixOS images is also supported with Make recipes:
-- `release_iso` builds a CD-ROM image (.iso)
-- `release_usb` builds a USB image (.img)
+- `livecd` builds a CD-ROM image (.iso)
+- `livehdd` builds a HDD image (.img)
 
 All images reside in the `release/` directory and follow this naming scheme:
-`aurixos-[MEDIA]-[GIT_REV]_[ARCH].iso`
+`aurixos-live[MEDIA]-[GIT_REV]_[ARCH].iso`
 
 `make help` shows you all available build options
 
