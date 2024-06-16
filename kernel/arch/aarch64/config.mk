@@ -1,5 +1,3 @@
-override KERNEL_FILE := kernel8.img
-
 override AS := aarch64-elf-as
 override CC := aarch64-elf-gcc
 override LD := aarch64-elf-ld
