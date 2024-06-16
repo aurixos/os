@@ -3,6 +3,7 @@
 export ROOT_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
 export ARCH ?= x86_64
+export MACH ?= pc
 export DEBUG ?= yes
 
 export BUILD_DIR := $(ROOT_DIR)/build
@@ -11,8 +12,8 @@ export SYSROOT_DIR := $(ROOT_DIR)/sysroot
 
 export GIT_REV := $(shell git rev-parse --short HEAD)
 
-LIVE_ISO := $(RELEASE_DIR)/aurixos-livecd-$(GIT_REV)_$(ARCH).iso
-LIVE_HDD := $(RELEASE_DIR)/aurixos-liveusb-$(GIT_REV)_$(ARCH).img
+LIVE_ISO := $(RELEASE_DIR)/aurixos-livecd-$(GIT_REV)_$(ARCH)-$(MACH).iso
+LIVE_HDD := $(RELEASE_DIR)/aurixos-liveusb-$(GIT_REV)_$(ARCH)-$(MACH).img
 
 export AURIXOS_VERSION := $(GIT_REV)
 
@@ -56,12 +57,13 @@ liveall: livehdd livecd # Generates both CD and HDD live images
 sysroot: all # Builds system root folder structure
 	@printf ">>> Building system root...\n"
 	@mkdir -p $(SYSROOT_DIR)
-	@$(MAKE) -C base install
+	@$(MAKE) -C boot/$(ARCH) install
 	@$(MAKE) -C kernel install
+	@$(MAKE) -C base install
 
 .PHONY: run
 run: livecd # Runs QEMU
-	$(QEMU) $(QEMU_FLAGS) $(QEMU_ARCH_FLAGS) -cdrom $(LIVE_ISO)
+	@$(QEMU) $(QEMU_FLAGS) $(QEMU_ARCH_FLAGS) -cdrom $(LIVE_ISO)
 
 # TODO: Maybe add a nice message with instructions here before running qemu?
 .PHONY: rundbg

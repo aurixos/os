@@ -1,15 +1,8 @@
-include config.mk
-
-ASFILES := $(shell find . -type f -name '*.S')
-
-BOOT_OBJS := $(ASFILES:%.S=$(BUILD_DIR)/%.S.o)
-
 .PHONY: all
-all: $(BUILD_DIR)/$(BOOT_FILE)
+all:
+	@:
 
-$(BUILD_DIR)/%.S.o: %.S
-	@mkdir -p $(@D)
-	@printf "  AS $<\n"
-	@$(AS) $(INTERNAL_ASFLAGS) $(ASFLAGS) -c $< -o $@
-
-$(BUILD_DIR)/$(BOOT_FILE): $(BOOT_OBJS)
+install:
+	@mkdir -p $(SYSROOT_DIR)
+	@printf "  INSTALL config.txt\n"
+	@install config.txt $(SYSROOT_DIR)

@@ -1,4 +1,0 @@
-#ifndef _ARCH_AARCH64_ACPI_MADT_H
-#define _ARCH_AARCH64_ACPI_MADT_H
-
-#endif /* _ARCH_AARCH64_ACPI_MADT_H */

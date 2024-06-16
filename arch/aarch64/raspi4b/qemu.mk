@@ -1,1 +1,0 @@
-QEMU_BOARD_FLAGS := -M raspi4b

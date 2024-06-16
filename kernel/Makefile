@@ -6,19 +6,26 @@ endif
 
 KERNEL_FILE := $(BUILD_DIR)/axkrnl
 
-INCLUDE_DIRS := include include/arch/$(ARCH) libc
+INCLUDE_DIRS := . ./machine/$(MACH) libc
 
 override INTERNAL_ASFLAGS += $(foreach d, $(INCLUDE_DIRS), -I$d)
 override INTERNAL_CFLAGS += $(foreach d, $(INCLUDE_DIRS), -I$d)
 
 ARCH_CFILES := $(shell find arch/$(ARCH) -type f -name '*.c')
-ARCH_ASFILES := $(shell find arch/$(ARCH) -type f -name '*.asm')
+ARCH_ASFILES := $(shell find arch/$(ARCH) -type f -name '*.S')
 
-CFILES := $(shell find . -type f -name '*.c' -not -path "./arch/*")
-ASFILES := $(shell find . -type f -name '*.asm' -not -path "./arch/*")
+MACH_CFILES := $(shell find machine/$(MACH) -type f -name '*.c')
+MACH_ASFILES := $(shell find machine/$(MACH) -type f -name '*.S')
 
-KERNEL_OBJS := $(ARCH_CFILES:%.c=$(BUILD_DIR)/%.c.o) $(CFILES:%.c=$(BUILD_DIR)/%.c.o) \
-				$(ARCH_ASFILES:%.asm=$(BUILD_DIR)/%.asm.o) $(ASFILES:%.asm=$(BUILD_DIR)/%.asm.o)
+CFILES := $(shell find . -type f -name '*.c' -not -path "./arch/*" -not -path "./machine/*")
+ASFILES := $(shell find . -type f -name '*.S' -not -path "./arch/*" -not -path "./machine/*")
+
+KERNEL_OBJS := $(ARCH_CFILES:%.c=$(BUILD_DIR)/%.c.o) \
+				$(MACH_CFILES:%.c=$(BUILD_DIR)/%.c.o) \
+				$(CFILES:%.c=$(BUILD_DIR)/%.c.o) \
+				$(ARCH_ASFILES:%.S=$(BUILD_DIR)/%.S.o) \
+				$(MACH_ASFILES:%.S=$(BUILD_DIR)/%.S.o) \
+				$(ASFILES:%.S=$(BUILD_DIR)/%.S.o)
 
 HEADER_DEPS := $(CFILES:.c=.d)
 
@@ -36,10 +43,10 @@ $(BUILD_DIR)/%.c.o: %.c
 	@printf "  CC $<\n"
 	@$(CC) $(INTERNAL_CFLAGS) $(CFLAGS) -c $< -o $@
 
-$(BUILD_DIR)/%.asm.o: %.asm
+$(BUILD_DIR)/%.S.o: %.S
 	@mkdir -p $(@D)
 	@printf "  AS $<\n"
-	@$(AS) $(INTERNAL_ASFLAGS) $(ASFLAGS) $< -o $@
+	@$(AS) $(INTERNAL_ASFLAGS) $(ASFLAGS) -c $< -o $@
 
 $(KERNEL_FILE): $(KERNEL_OBJS)
 	@mkdir -p $(@D)

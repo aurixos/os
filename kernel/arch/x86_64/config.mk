@@ -1,9 +1,9 @@
-override AS := nasm
+override AS := x86_64-elf-gcc
 override CC := x86_64-elf-gcc
 override LD := x86_64-elf-ld
 override OBJCOPY := aarch64-elf-objcopy
 
-override INTERNAL_ASFLAGS := -felf64
+override INTERNAL_ASFLAGS := $(CFLAGS)
 
 override INTERNAL_CFLAGS := -std=c99 \
 							-ffreestanding \
