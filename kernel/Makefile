@@ -43,5 +43,12 @@ $(BUILD_DIR)/%.asm.o: %.asm
 
 $(KERNEL_FILE): $(KERNEL_OBJS)
 	@mkdir -p $(@D)
+ifeq ($(ARCH),aarch64)
+	@$(LD) -T$(ROOT_DIR)/kernel/arch/$(ARCH)/linker.x $(INTERNAL_LDFLAGS) $(LDFLAGS) $^ -o $(BUILD_DIR)/kernel8.elf
+	@printf "  LD kernel8.elf\n"
+	@$(OBJCOPY) -O binary $(BUILD_DIR)/kernel8.elf $@
+	@printf "  OBJCOPY $(notdir $@)\n"
+else
 	@printf "  LD $(notdir $@)\n"
 	@$(LD) -T$(ROOT_DIR)/kernel/arch/$(ARCH)/linker.x $(INTERNAL_LDFLAGS) $(LDFLAGS) $^ -o $@
+endif

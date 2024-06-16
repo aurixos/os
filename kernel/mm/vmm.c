@@ -13,7 +13,7 @@ void vmm_map_range(page_map_t *page_table, uintptr_t phys_start, uintptr_t phys_
 	}
 
 	for (size_t i = ALIGN_DOWN(phys_start, PAGE_SIZE); i < ALIGN_UP(phys_end, PAGE_SIZE); i += PAGE_SIZE) {
-		vmm_map(page_table, i, i + offset, flags);
+		// vmm_map(page_table, i, i + offset, flags);
 	}
 }
 
@@ -24,6 +24,6 @@ void vmm_unmap_range(page_map_t *page_table, uintptr_t virt, size_t npages)
 	}
 
 	for (size_t i = 0; i < npages * PAGE_SIZE; i += PAGE_SIZE) {
-		vmm_unmap(page_table, virt + i);
+		// vmm_unmap(page_table, virt + i);
 	}
 }

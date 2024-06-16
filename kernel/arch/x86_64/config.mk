@@ -1,6 +1,7 @@
 override AS := nasm
 override CC := x86_64-elf-gcc
 override LD := x86_64-elf-ld
+override OBJCOPY := aarch64-elf-objcopy
 
 override INTERNAL_ASFLAGS := -felf64
 
