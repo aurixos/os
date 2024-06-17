@@ -5,7 +5,7 @@ if [[ -z $1 ]]; then
 	exit 1
 fi
 
-sysroot_size=$(du -hsm kernel | cut -f 1)
+#sysroot_size=$(du -hsm kernel | cut -f 1)
 
 disk_name=$1
 disk_size=32
@@ -23,6 +23,19 @@ dd if=/dev/zero of="$disk_name" bs=1M count="$disk_size" >/dev/null 2>&1
 
 tempmountdir=$(mktemp -d 2>/dev/null)
 
+# create an MBR partition table
+fdisk "$disk_name" >/dev/null 2>&1 << EOF
+o
+n
+p
+1
+
+
+t
+b
+w
+EOF
+
 # mount disk
 if [ "$unamestr" = 'Linux' ]; then
 	echo "Linux HDD Generation not implemented yet"
@@ -35,25 +48,6 @@ elif [ "$unamestr" = 'Darwin' ]; then
 	loopback_dir="$loopback"s1
 fi
 
-# create an MBR partition table
-if [ "$unamestr" = 'Linux' ]; then
-	fdisk "$loopback" >/dev/null 2>&1 << EOF
-n
-p
-1
-
-
-b
-w
-EOF
-elif [ "$unamestr" == 'Darwin' ]; then
-	fdisk -ie "$loopback" >/dev/null 2>&1 << EOF
-y
-auto dos
-write
-quit
-EOF
-fi
 
 # format EFI partition
 mkfs.vfat -F32 -n "AURIXOS" "$loopback_dir" >/dev/null 2>&1
