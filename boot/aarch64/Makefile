@@ -5,7 +5,7 @@ all:
 install: bootcode.bin fixup.dat start.elf
 	@mkdir -p $(SYSROOT_DIR)
 	@printf "  INSTALL config.txt\n"
-	@install config.txt $(SYSROOT_DIR)
+	@cp -r $^ config.txt $(SYSROOT_DIR)
 
 bootcode.bin:
 	@printf "  WGET $@"

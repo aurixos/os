@@ -8,7 +8,7 @@ fi
 #sysroot_size=$(du -hsm kernel | cut -f 1)
 
 disk_name=$1
-disk_size=32
+disk_size=64
 
 unamestr=$(uname)
 
