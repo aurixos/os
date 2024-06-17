@@ -1,5 +1,6 @@
-#include <dev/uart.h>
 #include <aurix.h>
+#include <dev/uart.h>
+#include ARCH_INCLUDE(cpu/irq.h)
 
 void kinit(void)
 {
@@ -7,7 +8,9 @@ void kinit(void)
 	uart_sendstr("\n\n");
 	uart_sendstr("Welcome to AurixOS!\n");
 
-	for (;;) {
-		uart_send(uart_recv());
-	}
+	irq_init_vectors();
+	enable_interrupt_controller();
+	irq_enable();
+
+	for (;;);
 }

@@ -17,7 +17,7 @@ void uart_init()
 
 	REGS_AUX->enables = 1;
 	REGS_AUX->mu_control = 0;
-	REGS_AUX->mu_ier = 0;
+	REGS_AUX->mu_ier = 2;
 	REGS_AUX->mu_lcr = 3;
 	REGS_AUX->mu_mcr = 0;
 	REGS_AUX->mu_baudrate = SYSTEM_CLOCK_FREQ / (8 * (115200 + 1));
