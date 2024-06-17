@@ -52,7 +52,7 @@ void handle_irq()
 #if MACHINE_VERSION == 3
 	irq = REGS_IRQ->irq0_pending_0;
 #elif MACHINE_VERSION == 4
-	irq = REGS_IRQ->irq_pending_1;
+	irq = REGS_IRQ->irq0_pending_1;
 #endif
 
 	while (irq) {
