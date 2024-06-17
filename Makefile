@@ -30,7 +30,7 @@ export ASFLAGS ?=
 export LDFLAGS ?=
 
 -include arch/$(ARCH)/config.mk
-QEMU_FLAGS ?= -m 2G -serial stdio
+QEMU_FLAGS ?= -m 1G -serial none -serial stdio
 
 # Check if architecture is supported
 # @todo: this should be better
@@ -62,8 +62,8 @@ sysroot: all # Builds system root folder structure
 	@$(MAKE) -C base install
 
 .PHONY: run
-run: livecd # Runs QEMU
-	@$(QEMU) $(QEMU_FLAGS) $(QEMU_ARCH_FLAGS) -cdrom $(LIVE_ISO)
+run: #livehdd # Runs QEMU
+	@$(QEMU) $(QEMU_FLAGS) $(QEMU_ARCH_FLAGS) -hda $(LIVE_HDD)
 
 # TODO: Maybe add a nice message with instructions here before running qemu?
 .PHONY: rundbg

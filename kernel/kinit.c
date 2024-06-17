@@ -3,8 +3,8 @@
 
 void kinit(void)
 {
-	//uart_init();
-	//uart_sendstr("Welcome to AurixOS!\n");
+	// uart_init();
+	// uart_sendstr("Welcome to AurixOS!\n");
 
 	for (;;);
 }
