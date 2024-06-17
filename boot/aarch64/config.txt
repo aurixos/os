@@ -1,4 +1,6 @@
 arm_64bit=1
 enable_uart=1
 
+armstub=armstub.bin
+
 kernel=System/axkrnl

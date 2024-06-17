@@ -4,7 +4,10 @@
 void kinit(void)
 {
 	uart_init();
+	uart_sendstr("\n\n");
 	uart_sendstr("Welcome to AurixOS!\n");
 
-	for (;;);
+	for (;;) {
+		uart_send(uart_recv());
+	}
 }
