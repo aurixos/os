@@ -11,9 +11,12 @@ void irq_disable();
 #include <machine.h>
 #include <stdint.h>
 
-// video core
 enum vc_irqs {
-	AUX_IRQ = (1 << 29)
+	SYS_TIMER_IRQ_1 = 1,
+	SYS_TIMER_IRQ_2 = 2,
+	SYS_TIMER_IRQ_3 = 4,
+	SYS_TIMER_IRQ_4 = 8,
+	AUX_IRQ = (1 << 29),
 };
 
 struct arm_irq_regs_2711 {

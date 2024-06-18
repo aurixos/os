@@ -1,5 +1,6 @@
 #include <aurix.h>
 #include <dev/uart.h>
+#include <time/timer.h>
 #include ARCH_INCLUDE(cpu/irq.h)
 
 void kinit(void)
@@ -11,6 +12,8 @@ void kinit(void)
 	irq_init_vectors();
 	enable_interrupt_controller();
 	irq_enable();
+
+	timer_init();
 
 	for (;;);
 }

@@ -1,5 +1,6 @@
 #include <arch/aarch64/utils/utils.h>
 #include <arch/aarch64/dev/aux.h>
+#include <arch/aarch64/dev/timer.h>
 #include <dev/uart.h>
 #include <machine.h>
 #include "entry.h"
@@ -39,9 +40,9 @@ void show_invalid_entry_message(u32 type, u64 esr, u64 addr)
 void enable_interrupt_controller()
 {
 #if MACHINE_VERSION == 3
-	REGS_IRQ->irq0_enable_1 = AUX_IRQ;
+	REGS_IRQ->irq0_enable_1 = AUX_IRQ | SYS_TIMER_IRQ_1 | SYS_TIMER_IRQ_3;
 #elif MACHINE_VERSION == 4
-	REGS_IRQ->irq0_enable_0 = AUX_IRQ;
+	REGS_IRQ->irq0_enable_0 = AUX_IRQ | SYS_TIMER_IRQ_1 | SYS_TIMER_IRQ_3;
 #endif
 }
 
@@ -64,6 +65,18 @@ void handle_irq()
 				uart_send(uart_recv());
 				//klog("\n");
 			}
+		}
+		
+		if (irq & SYS_TIMER_IRQ_1) {
+			irq &= ~SYS_TIMER_IRQ_1;
+
+			handle_timer_1();
+		}
+		
+		if (irq & SYS_TIMER_IRQ_3) {
+			irq &= ~SYS_TIMER_IRQ_3;
+
+			handle_timer_3();
 		}
 	}
 }
