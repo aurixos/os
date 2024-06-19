@@ -7,5 +7,8 @@
 #define MACHINE_VERSION 4
 
 #define SYSTEM_CLOCK_FREQ (500000000)
+#define CORE_CLOCK_FREQ (1500000000)
+
+void machine_init();
 
 #endif /* _MACHINE_MACHINE_H */
