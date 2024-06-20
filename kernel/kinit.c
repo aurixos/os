@@ -2,7 +2,7 @@
 #include <dev/uart.h>
 #include <time/timer.h>
 #include <machine.h>
-#include ARCH_INCLUDE(dev/i2c.h)
+#include ARCH_INCLUDE(dev/i2c/i2c.h)
 #include ARCH_INCLUDE(cpu/irq.h)
 
 void kinit(void)

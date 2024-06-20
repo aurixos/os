@@ -1,6 +1,6 @@
 #include <arch/aarch64/utils/utils.h>
-#include "aux.h"
-#include "gpio.h"
+#include <arch/aarch64/dev/gpio/gpio.h>
+#include <arch/aarch64/dev/aux.h>
 #include <dev/uart.h>
 
 #include <stdint.h>

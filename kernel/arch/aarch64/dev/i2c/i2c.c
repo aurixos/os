@@ -1,4 +1,4 @@
-#include "gpio.h"
+#include <arch/aarch64/dev/gpio/gpio.h>
 #include "i2c.h"
 
 #include <stdint.h>

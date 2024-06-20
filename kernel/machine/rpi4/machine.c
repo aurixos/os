@@ -1,5 +1,5 @@
-#include <arch/aarch64/dev/i2c.h>
-#include <arch/aarch64/dev/spi.h>
+#include <arch/aarch64/dev/i2c/i2c.h>
+#include <arch/aarch64/dev/spi/spi.h>
 #include <arch/aarch64/mbox/mailbox.h>
 #include <machine.h>
 

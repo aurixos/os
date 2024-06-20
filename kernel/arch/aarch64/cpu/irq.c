@@ -1,6 +1,6 @@
 #include <arch/aarch64/utils/utils.h>
 #include <arch/aarch64/dev/aux.h>
-#include <arch/aarch64/dev/timer.h>
+#include <arch/aarch64/dev/timer/timer.h>
 #include <dev/uart.h>
 #include <machine.h>
 #include "entry.h"
