@@ -1,1 +1,0 @@
-override BOOT_FILE := BOOTX64.EFI
