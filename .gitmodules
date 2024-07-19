@@ -1,0 +1,3 @@
+[submodule "boot"]
+	path = boot
+	url = https://github.com/aurixos/axboot.git

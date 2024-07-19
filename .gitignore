@@ -1,6 +1,7 @@
 build/
 release/
 sysroot/
+ovmf/
 .vscode/
 
 .DS_Store
