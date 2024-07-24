@@ -1,0 +1,74 @@
+/*********************************************************************************/
+/* Module Name:  file.c                                                          */
+/* Project:      AurixOS                                                         */
+/*                                                                               */
+/* Copyright (c) 2024 Jozef Nagy                                                 */
+/*                                                                               */
+/* This source is subject to the MIT License.                                    */
+/* See License.txt in the root of this repository.                               */
+/* All other rights reserved.                                                    */
+/*                                                                               */
+/* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR    */
+/* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,      */
+/* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE   */
+/* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER        */
+/* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, */
+/* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE */
+/* SOFTWARE.                                                                     */
+/*********************************************************************************/
+
+#include <firmware/firmware.h>
+#include <lib/string.h>
+#include <efi.h>
+#include <efilib.h>
+
+#include <stdint.h>
+#include <stddef.h>
+
+FILE *firmware_file_open(FILE *directory, const char *path)
+{
+	EFI_STATUS Status;
+	CHAR16 wpath[4096];
+
+	FILE *file;
+	if (directory == NULL) {
+		gFileSystem->OpenVolume(gFileSystem, &directory);
+	}
+
+	mbstowcs(wpath, &path, strlen(path));
+	wpath[strlen(path)] = '\0';
+
+	Status = directory->Open(directory, &file, wpath, EFI_FILE_MODE_READ, 0);
+	if (EFI_ERROR(Status)) {
+		return NULL;
+	}
+
+	return file;
+}
+
+int firmware_file_close(FILE *file)
+{
+	if (file == NULL) {
+		return -1;
+	}
+
+	return file->Close(file);
+}
+
+int firmware_file_read(FILE *file, size_t size, void *buffer)
+{
+	if (file == NULL || size < 0 || buffer == NULL) {
+		return -1;
+	}
+
+	return file->Read(file, &size, buffer);
+}
+
+int firmware_file_write(FILE *file, size_t size, void *buffer)
+{
+	if (file == NULL || size < 0 || buffer == NULL) {
+		return -1;
+	}
+
+	return file->Write(file, &size, buffer);
+}

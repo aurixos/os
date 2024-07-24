@@ -1,3 +1,3 @@
-[submodule "boot"]
-	path = boot
-	url = https://github.com/aurixos/axboot.git
+[submodule "boot/uefi/libefi"]
+	path = boot/uefi/libefi
+	url = https://github.com/aurixos/efi
