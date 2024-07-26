@@ -1,5 +1,5 @@
 /*********************************************************************************/
-/* Module Name:  globals.h                                                       */
+/* Module Name:  power.c                                                         */
 /* Project:      AurixOS                                                         */
 /*                                                                               */
 /* Copyright (c) 2024 Jozef Nagy                                                 */
@@ -17,13 +17,23 @@
 /* SOFTWARE.                                                                     */
 /*********************************************************************************/
 
-#ifndef _UEFI_FIRMWARE_GLOBALS_H
-#define _UEFI_FIRMWARE_GLOBALS_H
-
+#include <uefi/firmware/globals.h>
 #include <efi.h>
+#include <efilib.h>
 
-extern EFI_SIMPLE_FILE_SYSTEM_PROTOCOL *gFileSystem;
-extern EFI_SYSTEM_TABLE *gSystemTable;
-extern EFI_HANDLE gImageHandle;
+#include <stddef.h>
 
-#endif /* _UEFI_FIRMWARE_GLOBALS_H */
+void fw_shutdown(void)
+{
+	gSystemTable->RuntimeServices->ResetSystem(EfiResetShutdown, EFI_SUCCESS, 0, NULL);
+}
+
+void fw_reboot(void)
+{
+	gSystemTable->RuntimeServices->ResetSystem(EfiResetWarm, EFI_SUCCESS, 0, NULL);
+}
+
+void fw_reboot_cold(void)
+{
+	gSystemTable->RuntimeServices->ResetSystem(EfiResetCold, EFI_SUCCESS, 0, NULL);
+}
