@@ -87,7 +87,9 @@ Alternatively, you can boot AurixOS on a physical machine by running `dd if=rele
 ## Support
 
 If you have any questions, feel free to open a [GitHub issue](https://github.com/aurixos/os/issues/new?assignees=&labels=question&template=04_SUPPORT_QUESTION.md&title=support%3A+).
-Alternatively, you can visit us over on out [Discord server](https://discord.com/invite/hgbZ6wFP4n)!
+Alternatively, you can visit us:
+- on our [Discord server](https://discord.com/invite/hgbZ6wFP4n)
+- on #aurixos at [irc.libera.chat](https://libera.chat/) ([Kiwi IRC](https://kiwiirc.com/client/irc.libera.chat/?&theme=cli#aurixos))
 
 ## Contributing
 
