@@ -25,7 +25,7 @@
 #include <stdint.h>
 #include <stddef.h>
 
-FILE *firmware_file_open(FILE *directory, const char *path)
+FILE *fw_file_open(FILE *directory, const char *path)
 {
 	EFI_STATUS Status;
 	CHAR16 wpath[4096];
@@ -46,7 +46,7 @@ FILE *firmware_file_open(FILE *directory, const char *path)
 	return file;
 }
 
-int firmware_file_close(FILE *file)
+int fw_file_close(FILE *file)
 {
 	if (file == NULL) {
 		return -1;
@@ -55,7 +55,7 @@ int firmware_file_close(FILE *file)
 	return file->Close(file);
 }
 
-int firmware_file_read(FILE *file, size_t size, void *buffer)
+int fw_file_read(FILE *file, size_t size, void *buffer)
 {
 	if (file == NULL || size < 0 || buffer == NULL) {
 		return -1;
@@ -64,11 +64,26 @@ int firmware_file_read(FILE *file, size_t size, void *buffer)
 	return file->Read(file, &size, buffer);
 }
 
-int firmware_file_write(FILE *file, size_t size, void *buffer)
+int fw_file_write(FILE *file, size_t size, void *buffer)
 {
 	if (file == NULL || size < 0 || buffer == NULL) {
 		return -1;
 	}
 
 	return file->Write(file, &size, buffer);
+}
+
+int fw_file_size(FILE *file)
+{
+	EFI_STATUS status;
+	EFI_FILE_INFO file_info;
+	EFI_GUID fi_guid = EFI_FILE_INFO_GUID;
+	EFI_UINTN buffer_size = sizeof(EFI_FILE_INFO);
+
+	status = file->GetInfo(file, &fi_guid, &buffer_size, &file_info);
+	if (EFI_ERROR(status)) {
+		return 0;
+	}
+
+	return file_info.FileSize;
 }

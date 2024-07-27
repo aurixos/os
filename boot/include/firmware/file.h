@@ -21,10 +21,13 @@
 #define _FIRMWARE_FILE_H
 
 #include <arch/firmware/file.h>
+#include <stddef.h>
 
-FILE *firmware_file_open(FILE *directory, const char *path);
-int firmware_file_close(FILE *file);
-int firmware_file_read(FILE *file, size_t size, void *buffer);
-int firmware_file_write(FILE *file, size_t size, void *buffer);
+FILE *fw_file_open(FILE *directory, const char *path);
+int fw_file_close(FILE *file);
+int fw_file_read(FILE *file, size_t size, void *buffer);
+int fw_file_write(FILE *file, size_t size, void *buffer);
+
+int fw_file_size(FILE *file);
 
 #endif /* _FIRMWARE_FILE_H */

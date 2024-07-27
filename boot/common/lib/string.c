@@ -18,9 +18,20 @@
 /*********************************************************************************/
 
 #include <lib/string.h>
+#include <firmware/memory.h>
 
 #include <stdint.h>
 #include <stddef.h>
+
+void *malloc(size_t size)
+{
+    return fw_allocmem(size);
+}
+
+void free(void *p)
+{
+    fw_free(p);
+}
 
 size_t mbstowcs(wchar_t *dest, const char **src, size_t len)
 {

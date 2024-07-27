@@ -21,11 +21,15 @@
 #include <efilib.h>
 
 #include <menu/menu.h>
+#include <loader/loader.h>
+#include <loader/elf.h>
 
 EFI_STATUS AxBootEntry(EFI_HANDLE ImageHandle,
                        EFI_SYSTEM_TABLE *SystemTable)
 {
-    menu_main();
+    //menu_main();
+
+    loader_load(KernelElf, ProtocolAbp, "/System/axkrnl");
 
     return EFI_SUCCESS;
 }

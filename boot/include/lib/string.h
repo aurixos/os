@@ -22,6 +22,13 @@
 
 #include <stddef.h>
 
+//* FIRMWARE SPECIFIC *//
+
+void *malloc(size_t n);
+void free(void *p);
+
+//! FIRMWARE SPECIFIC !//
+
 size_t mbstowcs(wchar_t *dest, const char **src, size_t len);
 
 size_t strlen(const char *str);

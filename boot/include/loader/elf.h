@@ -1,5 +1,5 @@
 /*********************************************************************************/
-/* Module Name:  config.c                                                        */
+/* Module Name:  elf.h                                                        */
 /* Project:      AurixOS                                                         */
 /*                                                                               */
 /* Copyright (c) 2024 Jozef Nagy                                                 */
@@ -17,52 +17,73 @@
 /* SOFTWARE.                                                                     */
 /*********************************************************************************/
 
-#include <config/config.h>
-#include <firmware/file.h>
-//#include <lib/string.h>
-//#include <print.h>
-#include <axboot.h>
+#ifndef _LOADER_ELF_ELF_H
+#define _LOADER_ELF_ELF_H
 
-#include <stdint.h>
-#include <stddef.h>
+#define EI_NIDENT 16
+#define EI_MAG0 0
+#define EI_MAG1 1
+#define EI_MAG2 2
+#define EI_MAG3 3
+#define EI_CLASS 4
+#define EI_DATA 5
+#define EI_VERSION 6
 
-char *config_paths[] = {
-	"\\axboot.cfg",
-	"\\System\\axboot.cfg",
-	"\\EFI\\axboot.cfg",
-	"\\EFI\\BOOT\\axboot.cfg",
-};
+#define ELFMAG0 0x7f
+#define ELFMAG1 'E'
+#define ELFMAG2 'L'
+#define ELFMAG3 'F'
 
-void config_init(void)
+#define ELFCLASS64 2
+#define ELFDATA2LSB 1
+#define EV_CURRENT 1
+
+#define ET_EXEC 2
+#define EM_X86_64 62
+
+#define PT_LOAD 1
+#define PT_PHDR 6
+
+typedef unsigned short elf_half;
+typedef unsigned int elf_word;
+typedef unsigned long long elf_xword;
+typedef unsigned long long elf_addr;
+typedef unsigned long long elf_off;
+
+typedef struct
 {
-	FILE *config_file = NULL;
-	char config_buffer[4096];
-	
-	for (size_t i = 0; i < ARRAY_LENGTH(config_paths); i++) {
-		config_file = fw_file_open(NULL, config_paths[i]);
-		if (config_file != NULL) {
-			break;
-		}
-	}
+    unsigned char ident[EI_NIDENT];
+    elf_half type;
+    elf_half machine;
+    elf_word version;
+    elf_addr entry;
+    elf_off phoff;
+    elf_off shoff;
+    elf_word flags;
+    elf_half ehsize;
+    elf_half phentsize;
+    elf_half phnum;
+    elf_half shentsize;
+    elf_half shnum;
+    elf_half shstrndx;
+} __attribute__((packed)) Elf64Hdr;
 
-	if (config_file == NULL) {
-		//print("No configuration file found! Please refer to the AxBoot documentation.\n");
-		//print("Entering console...\n\n");
-		//console();
-	}
+typedef struct
+{
+    elf_word type;
+    elf_word flags;
+    elf_off offset;
+    elf_addr vaddr;
+    elf_addr paddr;
+    elf_xword filesz;
+    elf_xword memsz;
+    elf_xword align;
+} __attribute__((packed)) Elf64Phdr;
 
-	fw_file_read(config_file, 4096, config_buffer);
+typedef struct {
+    void *entry_point;
+} ElfExecHandle;
 
-	// TODO: parse configuration file
+ElfExecHandle *loader_load_elf(const void *kernel);
 
-	/*
-	if (config_errors != 0 || config_get_menu_root() == NULL) {
-		//print("\nConfiguration invalid!\n");
-		//print("Please correct your config file.\n");
-		//print("Entering console...\n\n");
-		//console();
-	}
-	*/
-
-	fw_file_close(config_file);
-}
+#endif /* _LOADER_ELF_ELF_H */

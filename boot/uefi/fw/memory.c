@@ -16,3 +16,31 @@
 /* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE */
 /* SOFTWARE.                                                                     */
 /*********************************************************************************/
+
+#include <firmware/memory.h>
+#include <firmware/firmware.h>
+#include <efi.h>
+#include <efilib.h>
+
+#include <stddef.h>
+
+void *fw_allocmem(size_t size)
+{
+	void *ptr = NULL;
+	EFI_STATUS status;
+
+	status = gSystemTable->BootServices->AllocatePool(EfiLoaderData, (EFI_UINTN)size, &ptr);
+	if (EFI_ERROR(status)) {
+		return NULL;
+	}
+
+	return ptr;
+}
+
+void fw_free(void *p)
+{
+	if (p == NULL)
+		return;
+
+	gSystemTable->BootServices->FreePool(p);
+}
