@@ -19,6 +19,7 @@
 
 #include <efi.h>
 
+EFI_LOADED_IMAGE_PROTOCOL *gLoadedImageProtocol;
 EFI_SIMPLE_FILE_SYSTEM_PROTOCOL *gFileSystem;
 EFI_SYSTEM_TABLE *gSystemTable;
 EFI_HANDLE gImageHandle;

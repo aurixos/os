@@ -17,10 +17,40 @@
 /* SOFTWARE.                                                                     */
 /*********************************************************************************/
 
+#include <firmware/firmware.h>
 #include <efi.h>
 #include <efilib.h>
 
 #include <stdint.h>
 #include <stddef.h>
 
-extern EFI_SIMPLE_FILE_SYSTEM_PROTOCOL *gFileSystem;
+int firmware_init(void)
+{
+	EFI_STATUS Status;
+	EFI_GUID LoadedImageProtocolGuid = EFI_LOADED_IMAGE_PROTOCOL_GUID;
+	EFI_GUID SimpleFsProtocolGuid = EFI_SIMPLE_FILE_SYSTEM_PROTOCOL_GUID;
+
+	Status = gSystemTable->BootServices->OpenProtocol(gImageHandle,
+				&LoadedImageProtocolGuid,
+				(VOID **)&gLoadedImageProtocol,
+				gImageHandle,
+				NULL,
+				EFI_OPEN_PROTOCOL_BY_HANDLE_PROTOCOL);
+	if (EFI_ERROR(Status)) {
+		// TODO: Error handling
+		return 1;
+	}
+
+	Status = gSystemTable->BootServices->OpenProtocol(gLoadedImageProtocol->DeviceHandle,
+				&SimpleFsProtocolGuid,
+				(VOID **)&gFileSystem,
+				gImageHandle,
+				NULL,
+				EFI_OPEN_PROTOCOL_BY_HANDLE_PROTOCOL);
+	if (EFI_ERROR(Status)) {
+		// TODO: Error handling
+		return 1;
+	}
+
+	return 0;
+}

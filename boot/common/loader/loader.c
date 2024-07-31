@@ -19,6 +19,7 @@
 
 #include <lib/string.h>
 #include <loader/loader.h>
+#include <firmware/firmware.h>
 #include <firmware/file.h>
 
 void loader_load(int type, int protocol, const char *filepath)
@@ -27,7 +28,7 @@ void loader_load(int type, int protocol, const char *filepath)
 	uint64_t filesize;
 	FILE *file;
 	void *filebuf;
-	
+
 	file = fw_file_open(NULL, filepath);
 	if (file == NULL) {
 		// TODO: Error handling

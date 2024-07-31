@@ -23,4 +23,6 @@
 #include <uefi/firmware/globals.h>
 #include <firmware/file.h>
 
+int firmware_init(void);
+
 #endif /* _FIRMWARE_FIRMWARE_H */

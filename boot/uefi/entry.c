@@ -42,9 +42,14 @@ EFI_STATUS AxBootEntry(EFI_HANDLE ImageHandle,
         //printdbg("Couldn't disable UEFI watchdog!\n");
     }
 
+    firmware_init();
+
     //menu_main();
 
-    loader_load(KernelElf, ProtocolAbp, "/System/axkrnl");
+    loader_load(KernelElf, ProtocolAbp, "\\System\\axkrnl");
+
+    gSystemTable->ConOut->OutputString(gSystemTable->ConOut, L"Tried to return from main()! Halting...\r\n");
+    while(1);
 
     return EFI_SUCCESS;
 }

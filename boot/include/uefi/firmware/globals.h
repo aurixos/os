@@ -22,6 +22,7 @@
 
 #include <efi.h>
 
+extern EFI_LOADED_IMAGE_PROTOCOL *gLoadedImageProtocol;
 extern EFI_SIMPLE_FILE_SYSTEM_PROTOCOL *gFileSystem;
 extern EFI_SYSTEM_TABLE *gSystemTable;
 extern EFI_HANDLE gImageHandle;

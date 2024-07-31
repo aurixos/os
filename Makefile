@@ -20,11 +20,17 @@ boot:
 	@printf ">>> Building UEFI bootloader...\n"
 	@$(MAKE) -C boot uefi
 
+.PHONY: kernel
+kernel:
+	@printf ">>> Building kernel...\n"
+	@$(MAKE) -C kernel
+
 .PHONY: install
-install: boot
+install: boot kernel
 	@printf ">>> Building sysroot...\n"
 	@mkdir -p $(SYSROOT_DIR)
 	@$(MAKE) -C boot install
+	@$(MAKE) -C kernel install
 
 ovmf:
 	@printf ">>> Downloading OVMF images...\n"

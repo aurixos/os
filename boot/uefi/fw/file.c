@@ -29,10 +29,14 @@ FILE *fw_file_open(FILE *directory, const char *path)
 {
 	EFI_STATUS Status;
 	CHAR16 wpath[4096];
-
 	FILE *file;
+
 	if (directory == NULL) {
-		gFileSystem->OpenVolume(gFileSystem, &directory);
+		Status = gFileSystem->OpenVolume(gFileSystem, &directory);
+		if (EFI_ERROR(Status)) {
+			// TODO: Error handling
+			return NULL;
+		}
 	}
 
 	mbstowcs(wpath, &path, strlen(path));
@@ -42,6 +46,7 @@ FILE *fw_file_open(FILE *directory, const char *path)
 	if (EFI_ERROR(Status)) {
 		return NULL;
 	}
+
 
 	return file;
 }
