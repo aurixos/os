@@ -1,5 +1,5 @@
 /*********************************************************************************/
-/* Module Name:  entry.c                                                         */
+/* Module Name:  print.c                                                         */
 /* Project:      AurixOS                                                         */
 /*                                                                               */
 /* Copyright (c) 2024 Jozef Nagy                                                 */
@@ -17,40 +17,15 @@
 /* SOFTWARE.                                                                     */
 /*********************************************************************************/
 
+#include <firmware/firmware.h>
+#include <lib/string.h>
 #include <efi.h>
 #include <efilib.h>
 
-#include <firmware/firmware.h>
-#include <menu/menu.h>
-#include <loader/loader.h>
-#include <loader/elf.h>
-#include <print.h>
-
-EFI_STATUS uefi_entry(EFI_HANDLE ImageHandle,
-                       EFI_SYSTEM_TABLE *SystemTable)
+void printstr(const char *str)
 {
-    EFI_STATUS Status;
-
-    gImageHandle = ImageHandle;
-    gSystemTable = SystemTable;
-
-    // clear the screen
-    gSystemTable->ConOut->ClearScreen(gSystemTable->ConOut);
-
-    // disable UEFI watchdog
-    Status = gSystemTable->BootServices->SetWatchdogTimer(0, 0, 0, NULL);
-    if (EFI_ERROR(Status)) {
-        debug("Couldn't disable UEFI watchdog!\n");
-    }
-
-    firmware_init();
-
-    //menu_main();
-
-    loader_load(KernelElf, ProtocolAbp, "\\System\\axkrnl");
-
-    log("Tried to return from main()! Halting...\r\n");
-    while(1);
-
-    return EFI_SUCCESS;
+	CHAR16 wstr[4096];
+	mbstowcs(wstr, &str, strlen(str));
+	wstr[strlen(str)] = '\0';
+	gSystemTable->ConOut->OutputString(gSystemTable->ConOut, wstr);
 }

@@ -47,7 +47,7 @@ UEFI_LDFLAGS := $(LDFLAGS) \
 				-target $(ARCH)-unknown-windows \
 				-fuse-ld=lld-link \
 				-Wl,-subsystem:efi_application \
-				-Wl,-entry:AxBootEntry
+				-Wl,-entry:uefi_entry
 
 UEFI_CFILES := $(shell find uefi -name '*.c') $(shell find arch/$(ARCH)/uefi -name '*.c')
 UEFI_ASFILES := $(shell find uefi -name '*.S') $(shell find arch/$(ARCH)/uefi -name '*.S')

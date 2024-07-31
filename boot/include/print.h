@@ -1,5 +1,5 @@
 /*********************************************************************************/
-/* Module Name:  entry.c                                                         */
+/* Module Name:  print.c                                                         */
 /* Project:      AurixOS                                                         */
 /*                                                                               */
 /* Copyright (c) 2024 Jozef Nagy                                                 */
@@ -17,40 +17,19 @@
 /* SOFTWARE.                                                                     */
 /*********************************************************************************/
 
-#include <efi.h>
-#include <efilib.h>
+#ifndef _PRINT_H
+#define _PRINT_H
 
-#include <firmware/firmware.h>
-#include <menu/menu.h>
-#include <loader/loader.h>
-#include <loader/elf.h>
-#include <print.h>
+#include <stdarg.h>
+#include <stdint.h>
+#include <stdbool.h>
 
-EFI_STATUS uefi_entry(EFI_HANDLE ImageHandle,
-                       EFI_SYSTEM_TABLE *SystemTable)
-{
-    EFI_STATUS Status;
+int log(char *fmt, ...);
+int debug(char *fmt, ...);
+int vfprintf(void (*print_callback)(const char *), char *fmt, va_list args);
 
-    gImageHandle = ImageHandle;
-    gSystemTable = SystemTable;
+void _print_num(void (*print_callback)(const char *), uint64_t num, uint8_t base, bool is_signed);
 
-    // clear the screen
-    gSystemTable->ConOut->ClearScreen(gSystemTable->ConOut);
+void printstr(const char *str);
 
-    // disable UEFI watchdog
-    Status = gSystemTable->BootServices->SetWatchdogTimer(0, 0, 0, NULL);
-    if (EFI_ERROR(Status)) {
-        debug("Couldn't disable UEFI watchdog!\n");
-    }
-
-    firmware_init();
-
-    //menu_main();
-
-    loader_load(KernelElf, ProtocolAbp, "\\System\\axkrnl");
-
-    log("Tried to return from main()! Halting...\r\n");
-    while(1);
-
-    return EFI_SUCCESS;
-}
+#endif /* _PRINT_H */
