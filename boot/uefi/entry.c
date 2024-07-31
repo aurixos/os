@@ -20,6 +20,7 @@
 #include <efi.h>
 #include <efilib.h>
 
+#include <firmware/firmware.h>
 #include <menu/menu.h>
 #include <loader/loader.h>
 #include <loader/elf.h>
@@ -27,6 +28,20 @@
 EFI_STATUS AxBootEntry(EFI_HANDLE ImageHandle,
                        EFI_SYSTEM_TABLE *SystemTable)
 {
+    EFI_STATUS Status;
+
+    gImageHandle = ImageHandle;
+    gSystemTable = SystemTable;
+
+    // clear the screen
+    gSystemTable->ConOut->ClearScreen(gSystemTable->ConOut);
+
+    // disable UEFI watchdog
+    Status = gSystemTable->BootServices->SetWatchdogTimer(0, 0, 0, NULL);
+    if (EFI_ERROR(Status)) {
+        //printdbg("Couldn't disable UEFI watchdog!\n");
+    }
+
     //menu_main();
 
     loader_load(KernelElf, ProtocolAbp, "/System/axkrnl");
