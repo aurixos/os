@@ -24,7 +24,7 @@
 #include <stdarg.h>
 #include <stdbool.h>
 
-int log(char *fmt, ...)
+int log(const char *fmt, ...)
 {
 	va_list args;
 	int ret;
@@ -36,7 +36,7 @@ int log(char *fmt, ...)
 	return ret;
 }
 
-int debug(char *fmt, ...)
+int debug(const char *fmt, ...)
 {
 	va_list args;
 	int ret;
@@ -49,7 +49,7 @@ int debug(char *fmt, ...)
 	return ret;
 }
 
-int vfprintf(void (*print_callback)(const char *), char *fmt, va_list args)
+int vfprintf(void (*print_callback)(const char *), const char *fmt, va_list args)
 {
 	size_t i;
 
@@ -85,6 +85,11 @@ int vfprintf(void (*print_callback)(const char *), char *fmt, va_list args)
 				case 'o': {
 					uint64_t n = va_arg(args, uint64_t);
 					_print_num(print_callback, n, 8, false);
+					break;
+				}
+				case 'x': {
+					uint64_t n = va_arg(args, uint64_t);
+					_print_num(print_callback, n, 16, false);
 					break;
 				}
 				default: {

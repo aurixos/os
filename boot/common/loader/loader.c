@@ -21,6 +21,7 @@
 #include <loader/loader.h>
 #include <firmware/firmware.h>
 #include <firmware/file.h>
+#include <print.h>
 
 void loader_load(int type, int protocol, const char *filepath)
 {
@@ -32,6 +33,7 @@ void loader_load(int type, int protocol, const char *filepath)
 	file = fw_file_open(NULL, filepath);
 	if (file == NULL) {
 		// TODO: Error handling
+		log("ERROR: Couldn't open file '%s'.\r\n", filepath);
 		return;
 	}
 
@@ -39,6 +41,7 @@ void loader_load(int type, int protocol, const char *filepath)
 	filesize = fw_file_size(file);
 	if (filesize == 0) {
 		// TODO: Error handling
+		log("ERROR: Couldn't read '%s'.\r\n", filepath);
 		return;
 	}
 
@@ -46,6 +49,7 @@ void loader_load(int type, int protocol, const char *filepath)
 
 	if (fw_file_read(file, filesize, filebuf) != 0) {
 		// TODO: Error handling
+		log("ERROR: Couldn't read '%s'.\r\n", filepath);
 		return;
 	}
 

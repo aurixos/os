@@ -19,6 +19,7 @@
 
 #include <firmware/firmware.h>
 #include <lib/string.h>
+#include <print.h>
 #include <efi.h>
 #include <efilib.h>
 
@@ -29,12 +30,15 @@ FILE *fw_file_open(FILE *directory, const char *path)
 {
 	EFI_STATUS Status;
 	CHAR16 wpath[4096];
-	FILE *file;
+	FILE *file = NULL;
+
+	debug("Opening file '%s'...\r\n", path);
 
 	if (directory == NULL) {
 		Status = gFileSystem->OpenVolume(gFileSystem, &directory);
 		if (EFI_ERROR(Status)) {
 			// TODO: Error handling
+			log("ERROR: %x\r\n", Status);
 			return NULL;
 		}
 	}
@@ -44,9 +48,10 @@ FILE *fw_file_open(FILE *directory, const char *path)
 
 	Status = directory->Open(directory, &file, wpath, EFI_FILE_MODE_READ, 0);
 	if (EFI_ERROR(Status)) {
+		// TODO: Error handling
+		log("ERROR: %x\r\n", Status);
 		return NULL;
 	}
-
 
 	return file;
 }
