@@ -38,7 +38,7 @@ FILE *fw_file_open(FILE *directory, const char *path)
 		Status = gFileSystem->OpenVolume(gFileSystem, &directory);
 		if (EFI_ERROR(Status)) {
 			// TODO: Error handling
-			log("ERROR: %x\r\n", Status);
+			log("Error when opening volume: %x\r\n", Status);
 			return NULL;
 		}
 	}
@@ -46,10 +46,10 @@ FILE *fw_file_open(FILE *directory, const char *path)
 	mbstowcs(wpath, &path, strlen(path));
 	wpath[strlen(path)] = '\0';
 
-	Status = directory->Open(directory, &file, wpath, EFI_FILE_MODE_READ, 0);
+	Status = directory->Open(directory, &file, wpath, EFI_FILE_MODE_READ, EFI_FILE_READ_ONLY | EFI_FILE_SYSTEM);
 	if (EFI_ERROR(Status)) {
 		// TODO: Error handling
-		log("ERROR: %x\r\n", Status);
+		log("Error when opening file '%s': %x\r\n", path, Status);
 		return NULL;
 	}
 

@@ -16,6 +16,9 @@ mformat -i $uefi_image -f 1440 :: >/dev/null 2>&1
 mmd -i $uefi_image ::/EFI >/dev/null 2>&1
 mmd -i $uefi_image ::/EFI/BOOT >/dev/null 2>&1
 mcopy -i $uefi_image $SYSROOT_DIR/EFI/BOOT/BOOTX64.EFI ::/EFI/BOOT >/dev/null 2>&1
+## !FIXME: Huge hack! Make a filesystem.
+mmd -i $uefi_image ::/System >/dev/null 2>&1
+mcopy -i $uefi_image $SYSROOT_DIR/System/axkrnl ::/System >/dev/null 2>&1
 
 # Create directory structure
 mkdir -p $tempmountdir/boot
