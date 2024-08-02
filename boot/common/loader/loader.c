@@ -19,6 +19,7 @@
 
 #include <lib/string.h>
 #include <loader/loader.h>
+#include <loader/elf.h>
 #include <firmware/firmware.h>
 #include <firmware/file.h>
 #include <print.h>
@@ -32,7 +33,6 @@ void loader_load(int type, int protocol, const char *filepath)
 
 	file = fw_file_open(NULL, filepath);
 	if (file == NULL) {
-		// TODO: Error handling
 		log("ERROR: Couldn't open file '%s'.\r\n", filepath);
 		return;
 	}
@@ -40,7 +40,6 @@ void loader_load(int type, int protocol, const char *filepath)
 	// allocate memory for file
 	filesize = fw_file_size(file);
 	if (filesize == 0) {
-		// TODO: Error handling
 		log("ERROR: Couldn't read '%s'.\r\n", filepath);
 		return;
 	}
@@ -48,17 +47,32 @@ void loader_load(int type, int protocol, const char *filepath)
 	filebuf = malloc(filesize);
 
 	if (fw_file_read(file, filesize, filebuf) != 0) {
-		// TODO: Error handling
 		log("ERROR: Couldn't read '%s'.\r\n", filepath);
 		return;
 	}
 
 	fw_file_close(file);
 
+	// FIXME: Change this to *not* be ELF-specific. Obviously.
+	ElfExecHandle *handle;
+
 	switch (type) {
 		case KernelElf:
+			handle = elf_load(filebuf);
 			break;
 		default:
+			handle = NULL;
 			break;
 	}
+
+	if (handle == NULL) {
+		log("ERROR: elf_load() returned NULL!\r\n");
+		return;
+	}
+
+	// TODO: DON'T DO THIS (yet)!
+	gSystemTable->BootServices->ExitBootServices(gImageHandle, 0);
+	void (*entry)() = (void (*)())(uintptr_t)handle->entry_point;
+
+	entry();
 }

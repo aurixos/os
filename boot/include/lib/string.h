@@ -33,4 +33,7 @@ size_t mbstowcs(wchar_t *dest, const char **src, size_t len);
 
 size_t strlen(const char *str);
 
+void *memset(void *dest, int val, size_t len);
+void *memcpy(void *dest, void *src, size_t len);
+
 #endif /* _LIB_STRING_H */

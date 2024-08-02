@@ -84,6 +84,6 @@ typedef struct {
     void *entry_point;
 } ElfExecHandle;
 
-ElfExecHandle *loader_load_elf(const void *kernel);
+ElfExecHandle *elf_load(void *kernel);
 
 #endif /* _LOADER_ELF_ELF_H */

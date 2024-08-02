@@ -25,53 +25,73 @@
 
 void *malloc(size_t size)
 {
-    return fw_allocmem(size);
+	return fw_allocmem(size);
 }
 
 void free(void *p)
 {
-    fw_free(p);
+	fw_free(p);
 }
 
 size_t mbstowcs(wchar_t *dest, const char **src, size_t len)
 {
-    char *lsrc = (char *)*src;
-    size_t count = len;
+	char *lsrc = (char *)*src;
+	size_t count = len;
 
-    if (dest == NULL) {
-        return 0;
-    }
+	if (dest == NULL) {
+		return 0;
+	}
 
-    while (count) {
-        if ((*dest = *lsrc) == 0) {
-            lsrc = NULL;
-            break;
-        }
+	while (count) {
+		if ((*dest = *lsrc) == 0) {
+			lsrc = NULL;
+			break;
+		}
 
-        if (*dest >= 0x80) {
-            return -1;
-        }
+		if (*dest >= 0x80) {
+			return -1;
+		}
 
-        lsrc++;
-        dest++;
-        count--;
-    }
+		lsrc++;
+		dest++;
+		count--;
+	}
 
-    return len - count;
+	return len - count;
 }
 
 size_t strlen(const char *str)
 {
-    size_t count;
+	size_t count;
 
-    if (str == NULL) {
-        return 0;
-    }
+	if (str == NULL) {
+		return 0;
+	}
 
-    do {
-        count++;
-    } while (str[count] != '\0');
+	do {
+		count++;
+	} while (str[count] != '\0');
 
-    return count;
+	return count;
 }
 
+void *memset(void *dest, int val, size_t len)
+{
+	unsigned char *ptr = dest;
+	while (len-- > 0) {
+		*ptr++ = (unsigned char)val;
+	}
+	return dest;
+}
+
+void *memcpy(void *dest, void *src, size_t len)
+{
+	char *d = (char *)dest;
+	const char *s = (const char *)src;
+
+	while (len-- > 0) {
+		*d++ = *s++;
+	}
+
+	return dest;
+}
