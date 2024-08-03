@@ -19,8 +19,8 @@
 
 #include <config/config.h>
 #include <firmware/file.h>
-//#include <lib/string.h>
-//#include <print.h>
+#include <lib/string.h>
+#include <print.h>
 #include <axboot.h>
 
 #include <stdint.h>
@@ -35,8 +35,9 @@ char *config_paths[] = {
 
 void config_init(void)
 {
-	FILE *config_file = NULL;
-	char config_buffer[4096];
+	FILE *config_file;
+	char *config_buffer;
+	int filesize;
 	
 	for (size_t i = 0; i < ARRAY_LENGTH(config_paths); i++) {
 		config_file = fw_file_open(NULL, config_paths[i]);
@@ -51,9 +52,18 @@ void config_init(void)
 		//console();
 	}
 
-	fw_file_read(config_file, 4096, config_buffer);
+	filesize = fw_file_size(config_file);
+	config_buffer = malloc(filesize);
+	if (config_buffer == NULL) {
+		log("Entering console...\r\n\r\n");
+		//console();
+	}
+
+	fw_file_read(config_file, filesize, config_buffer);
 
 	// TODO: parse configuration file
+
+	free(config_buffer);
 
 	/*
 	if (config_errors != 0 || config_get_menu_root() == NULL) {
