@@ -49,6 +49,8 @@ int debug(const char *fmt, ...)
 	return ret;
 }
 
+/* Slightly modified version of Queso Fuego's printf implementation */
+/* https://github.com/queso-fuego/uefi-dev/blob/3011ea7347916c753644c73b72b075639564964b/efi_c/efi.c#L325 */
 int vfprintf(void (*print_callback)(const char *), const char *fmt, va_list args)
 {
 	size_t i;
