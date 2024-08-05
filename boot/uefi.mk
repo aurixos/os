@@ -41,7 +41,14 @@ UEFI_LD := clang
 UEFI_CFLAGS := $(CFLAGS) \
 				$(foreach d, $(INCLUDE_DIRS), -I$d) \
 				-target $(ARCH)-unknown-windows \
-				-fshort-wchar
+				-fshort-wchar \
+				-fno-stack-protector \
+				-fno-stack-check \
+				-mgeneral-regs-only \
+				-mno-80387 \
+				-mno-mmx \
+				-mno-sse \
+				-mno-sse2
 
 UEFI_LDFLAGS := $(LDFLAGS) \
 				-target $(ARCH)-unknown-windows \

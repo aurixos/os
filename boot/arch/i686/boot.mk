@@ -31,12 +31,12 @@ install-boot:
 $(BOOTFILE): $(BOOTFILE_CD)
 	@mkdir -p $(@D)
 	@printf "  AS\tbootsect-hdd.bin\n"
-	@$(BOOT_AS) $(ASFLAGS) arch/i686/boot-hdd.asm -o $@
+	@$(BOOT_AS) $(BOOT_ASFLAGS) arch/i686/boot-hdd.asm -o $@
 
 $(BOOTFILE_CD):
 	@mkdir -p $(@D)
 	@printf "  AS\tbootsect-cd.bin\n"
-	@$(BOOT_AS) $(ASFLAGS) arch/i686/boot-cd.asm -o $@
+	@$(BOOT_AS) $(BOOT_ASFLAGS) arch/i686/boot-cd.asm -o $@
 
 #$(BUILD_DIR)/boot/boot/%.c.o: boot/%.c
 #	@mkdir -p $(@D)

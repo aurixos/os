@@ -30,6 +30,7 @@ void loader_load(int type, int protocol, const char *filepath)
 	uint64_t filesize;
 	FILE *file;
 	void *filebuf;
+	void *kernel_entry;
 
 	file = fw_file_open(NULL, filepath);
 	if (file == NULL) {
@@ -53,26 +54,25 @@ void loader_load(int type, int protocol, const char *filepath)
 
 	fw_file_close(file);
 
-	// FIXME: Change this to *not* be ELF-specific. Obviously.
-	ElfExecHandle *handle;
-
 	switch (type) {
 		case KernelElf:
-			handle = elf_load(filebuf);
+			kernel_entry = elf_load(filebuf);
 			break;
 		default:
-			handle = NULL;
+			log("ERROR: Invalid kernel executable type specified!\r\n");
+			return;
 			break;
 	}
 
-	if (handle == NULL) {
+	if (kernel_entry == NULL) {
 		log("ERROR: elf_load() returned NULL!\r\n");
 		return;
 	}
 
 	// TODO: DON'T DO THIS (yet)!
 	gSystemTable->BootServices->ExitBootServices(gImageHandle, 0);
-	void (*entry)() = (void (*)())(uintptr_t)handle->entry_point;
+	void (*entry)() = (void (*)())(uintptr_t)kernel_entry;
 
+	log("Calling entry point 0x%x for '%s'...\r\n", (uint64_t)kernel_entry, filepath);
 	entry();
 }

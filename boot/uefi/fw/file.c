@@ -63,7 +63,7 @@ int fw_file_close(FILE *file)
 	return file->Close(file);
 }
 
-int fw_file_read(FILE *file, size_t size, void *buffer)
+int fw_file_read(FILE *file, uint64_t size, void *buffer)
 {
 	if (file == NULL || size < 0 || buffer == NULL) {
 		return -1;
@@ -72,7 +72,7 @@ int fw_file_read(FILE *file, size_t size, void *buffer)
 	return file->Read(file, &size, buffer);
 }
 
-int fw_file_write(FILE *file, size_t size, void *buffer)
+int fw_file_write(FILE *file, uint64_t size, void *buffer)
 {
 	if (file == NULL || size < 0 || buffer == NULL) {
 		return -1;

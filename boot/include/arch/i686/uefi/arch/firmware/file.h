@@ -17,17 +17,11 @@
 /* SOFTWARE.                                                                     */
 /*********************************************************************************/
 
-#ifndef _FIRMWARE_FILE_H
-#define _FIRMWARE_FILE_H
+#ifndef _UEFI_ARCH_FIRMWARE_FILE_H
+#define _UEFI_ARCH_FIRMWARE_FILE_H
 
-#include <arch/firmware/file.h>
-#include <stddef.h>
+#include <efi.h>
 
-FILE *fw_file_open(FILE *directory, const char *path);
-int fw_file_close(FILE *file);
-int fw_file_read(FILE *file, uint64_t size, void *buffer);
-int fw_file_write(FILE *file, uint64_t size, void *buffer);
+typedef EFI_FILE_PROTOCOL FILE;
 
-int fw_file_size(FILE *file);
-
-#endif /* _FIRMWARE_FILE_H */
+#endif /* _UEFI_ARCH_FIRMWARE_FILE_H */
