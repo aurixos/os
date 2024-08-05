@@ -50,6 +50,16 @@ int elf_validate_header(Elf32_Ehdr *header)
 		return -1;
 	}
 
+	if (header->e_machine != EM_386 &&
+		header->e_machine != EM_X86_64 &&
+		header->e_machine != EM_ARM &&
+		header->e_machine != EM_AARCH64 &&
+		header->e_machine != EM_PPC &&
+		header->e_machine != EM_PPC64) {
+		log("ERROR: Unsupported machine specified!\r\n");
+		return -1;
+	}
+
 	return 0;
 }
 
