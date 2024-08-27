@@ -20,11 +20,6 @@
 #ifndef _LOADER_LOADER_H
 #define _LOADER_LOADER_H
 
-enum LoaderType {
-    EfiChainload, // invalid unless we're in UEFI
-    KernelElf,
-};
-
 enum BootProtocol {
     // 0 if EFI chainload
     ProtocolAbp,
@@ -33,6 +28,6 @@ enum BootProtocol {
     ProtocolLinux,
 };
 
-void loader_load(int type, int protocol, const char *filepath);
+void loader_load(int protocol, const char *filepath);
 
 #endif /* _LOADER_LOADER_H */

@@ -95,3 +95,27 @@ void *memcpy(void *dest, void *src, size_t len)
 
 	return dest;
 }
+
+int memcmp(const void *a, const void *b, size_t len)
+{
+	unsigned char *ap = a;
+    unsigned char *bp = b;
+    int ret = 0;
+
+    if (a == b) {
+        return 0;
+    }
+
+    while (len > 0) {
+        if (*ap != *bp) {
+            ret = (*ap > *bp) ? 1 : -1;
+            break;
+        }
+
+        len--;
+        ap++;
+        bp++;
+    }
+
+    return ret;
+}

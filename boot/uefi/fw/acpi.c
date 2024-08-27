@@ -1,5 +1,5 @@
 /*********************************************************************************/
-/* Module Name:  entry.c                                                         */
+/* Module Name:  acpi.c                                                          */
 /* Project:      AurixOS                                                         */
 /*                                                                               */
 /* Copyright (c) 2024 Jozef Nagy                                                 */
@@ -17,40 +17,31 @@
 /* SOFTWARE.                                                                     */
 /*********************************************************************************/
 
+#include <firmware/acpi.h>
+#include <uefi/firmware/globals.h>
+#include <lib/string.h>
+#include <print.h>
+
 #include <efi.h>
 #include <efilib.h>
 
-#include <firmware/firmware.h>
-#include <menu/menu.h>
-#include <loader/loader.h>
-#include <loader/elf.h>
-#include <print.h>
+#include <stddef.h>
 
-EFI_STATUS uefi_entry(EFI_HANDLE ImageHandle,
-                       EFI_SYSTEM_TABLE *SystemTable)
+void *fw_get_acpi_rsdp(void)
 {
-    EFI_STATUS Status;
+    void *cfgtbl = gSystemTable->ConfigurationTable->VendorTable;
+    EFI_GUID acpi10 = EFI_ACPI_10_TABLE_GUID;
+    EFI_GUID acpi20 = EFI_ACPI_20_TABLE_GUID;
 
-    gImageHandle = ImageHandle;
-    gSystemTable = SystemTable;
-
-    // clear the screen
-    gSystemTable->ConOut->ClearScreen(gSystemTable->ConOut);
-
-    // disable UEFI watchdog
-    Status = gSystemTable->BootServices->SetWatchdogTimer(0, 0, 0, NULL);
-    if (EFI_ERROR(Status)) {
-        debug("Couldn't disable UEFI watchdog!\n");
+    for (EFI_UINTN i = 0; i < gSystemTable->NumberOfTableEntries; i++) {
+        if (!memcmp(&gSystemTable->ConfigurationTable[i].VendorGuid, &acpi10, sizeof(EFI_GUID)) ||
+            !memcmp(&gSystemTable->ConfigurationTable[i].VendorGuid, &acpi20, sizeof(EFI_GUID))) {
+            return &gSystemTable->ConfigurationTable[i];
+        }
     }
 
-    firmware_init();
+    // no rsdp was found
+    log("ERROR: No RSDP was found!\r\n");
 
-    //menu_main();
-
-    loader_load(ProtocolAbp, "\\System\\axkrnl");
-
-    log("Tried to return from main()! Halting...\r\n");
-    while(1);
-
-    return EFI_SUCCESS;
+    return NULL;
 }

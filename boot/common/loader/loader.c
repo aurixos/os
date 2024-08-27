@@ -19,14 +19,13 @@
 
 #include <lib/string.h>
 #include <loader/loader.h>
-#include <loader/elf.h>
+#include <protocol/abp.h>
 #include <firmware/firmware.h>
 #include <firmware/file.h>
 #include <print.h>
 
-void loader_load(int type, int protocol, const char *filepath)
+void loader_load(int protocol, const char *filepath)
 {
-	(void)protocol;
 	uint64_t filesize;
 	FILE *file;
 	void *filebuf;
@@ -54,25 +53,14 @@ void loader_load(int type, int protocol, const char *filepath)
 
 	fw_file_close(file);
 
-	switch (type) {
-		case KernelElf:
-			kernel_entry = elf_load(filebuf);
+	switch (protocol) {
+		case ProtocolAbp:
+			abp_load(filebuf);
 			break;
 		default:
-			log("ERROR: Invalid kernel executable type specified!\r\n");
+			log("ERROR: Invalid protocol specified!\r\n");
 			return;
-			break;
 	}
 
-	if (kernel_entry == NULL) {
-		log("ERROR: elf_load() returned NULL!\r\n");
-		return;
-	}
-
-	// TODO: DON'T DO THIS (yet)!
-	gSystemTable->BootServices->ExitBootServices(gImageHandle, 0);
-	void (*entry)() = (void (*)())(uintptr_t)kernel_entry;
-
-	log("Calling entry point 0x%x for '%s'...\r\n", (uint64_t)kernel_entry, filepath);
-	entry();
+	log("ERROR: Kernel returned!\r\n");
 }

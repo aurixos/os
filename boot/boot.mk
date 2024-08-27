@@ -23,7 +23,9 @@ export BOOT_AS := $(ARCH)-elf-gcc
 export BOOT_CC := $(ARCH)-elf-gcc
 export BOOT_LD := $(ARCH)-elf-ld
 
-export BOOT_ASFLAGS := $(ASFLAGS) $(foreach d, $(INCLUDE_DIRS), -I$d)
+# HACK: Temporary fix
+export BOOT_ASFLAGS := $(foreach d, $(INCLUDE_DIRS), -I$d)
+#export BOOT_ASFLAGS := $(ASFLAGS) $(foreach d, $(INCLUDE_DIRS), -I$d)
 export BOOT_CFLAGS := $(CFLAGS)
 export BOOT_LDFLAGS := $(LDFLAGS)
 

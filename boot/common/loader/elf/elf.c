@@ -22,7 +22,9 @@
 #include <lib/string.h>
 #include <print.h>
 
+#include <stdint.h>
 #include <stddef.h>
+#include <stdbool.h>
 
 int elf_validate_header(Elf32_Ehdr *header)
 {
@@ -39,7 +41,11 @@ int elf_validate_header(Elf32_Ehdr *header)
 		return -1;
 	}
 
-	// TODO: Revise this
+	if (header->e_ident[EI_DATA] != ELFDATA2LSB) {
+		log("ERROR: ELF is not little endian!\r\n");
+		return -1;
+	}
+
 	if (header->e_type != ET_EXEC) {
 		log("ERROR: ELF file is not an executable!\r\n");
 		return -1;
@@ -63,10 +69,12 @@ int elf_validate_header(Elf32_Ehdr *header)
 	return 0;
 }
 
-void *elf_load(void *kernel)
+void *elf_load(void *kernel, bool *is_higherhalf)
 {
 	Elf32_Ehdr *header32 = (Elf32_Ehdr *)kernel;
 	Elf64_Ehdr *header64 = (Elf64_Ehdr *)kernel;
+
+	void *entryp = NULL;
 
 	if (elf_validate_header(header32) != 0) {
 		log("ERROR: Invalid ELF header!\r\n");
@@ -82,6 +90,9 @@ void *elf_load(void *kernel)
 			log("ERROR: No loadable ELF segments found.\r\n");
 			return NULL;
 		}
+
+		entryp = (void *)header32->e_entry;
+		*is_higherhalf = header32->e_entry < 0xc0000000;
 
 		Elf32_Phdr *phdrs32 = (Elf32_Phdr *)(kernel + header32->e_phoff);
 		for (uint16_t i = 0; i < header32->e_phnum; i++) {
@@ -108,6 +119,9 @@ void *elf_load(void *kernel)
 			return NULL;
 		}
 
+		entryp = (void *)header64->e_entry;
+		*is_higherhalf = header64->e_entry < 0xffffffff80000000;
+
 		Elf64_Phdr *phdrs64 = (Elf64_Phdr *)(kernel + header64->e_phoff);
 		for (uint16_t i = 0; i < header64->e_phnum; i++) {
 			Elf64_Phdr *phdr64 = (Elf64_Phdr *)phdrs64;
@@ -129,5 +143,5 @@ void *elf_load(void *kernel)
 		}
 	}
 
-	return (void *)header64->e_entry;
+	return entryp;
 }

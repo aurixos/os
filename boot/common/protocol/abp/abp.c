@@ -1,5 +1,5 @@
 /*********************************************************************************/
-/* Module Name:  entry.c                                                         */
+/* Module Name:  abp.c                                                           */
 /* Project:      AurixOS                                                         */
 /*                                                                               */
 /* Copyright (c) 2024 Jozef Nagy                                                 */
@@ -17,40 +17,40 @@
 /* SOFTWARE.                                                                     */
 /*********************************************************************************/
 
-#include <efi.h>
-#include <efilib.h>
-
-#include <firmware/firmware.h>
-#include <menu/menu.h>
-#include <loader/loader.h>
+#include <protocol/abp.h>
 #include <loader/elf.h>
+#include <firmware/acpi.h>
 #include <print.h>
+#include <axboot.h>
 
-EFI_STATUS uefi_entry(EFI_HANDLE ImageHandle,
-                       EFI_SYSTEM_TABLE *SystemTable)
+#include <stdint.h>
+#include <stddef.h>
+#include <stdbool.h>
+
+typedef void (*entryp)(struct abp_boot_info *);
+
+void abp_load(void *kernel)
 {
-    EFI_STATUS Status;
+    bool higher_half = false;
+    struct abp_boot_info boot_info = {0};
+    entryp kernel_entry;
 
-    gImageHandle = ImageHandle;
-    gSystemTable = SystemTable;
+    // set up basic boot information
+    boot_info.bootloader_name = BOOTLOADER_NAME_STR;
+    boot_info.bootloader_name = BOOTLOADER_VERSION_STR;
+    boot_info.protocol_version = AXBOOT_PROTOCOL_VERSION_STR;
 
-    // clear the screen
-    gSystemTable->ConOut->ClearScreen(gSystemTable->ConOut);
-
-    // disable UEFI watchdog
-    Status = gSystemTable->BootServices->SetWatchdogTimer(0, 0, 0, NULL);
-    if (EFI_ERROR(Status)) {
-        debug("Couldn't disable UEFI watchdog!\n");
+    // get kernel entry point
+    kernel_entry = (entryp)elf_load(kernel, &higher_half);
+    if (kernel_entry == NULL) {
+        return;
     }
 
-    firmware_init();
+    // get ACPI info
+    boot_info.acpi.rsdp = fw_get_acpi_rsdp();
+    if (boot_info.acpi.rsdp == NULL) {
+        return;
+    }
 
-    //menu_main();
-
-    loader_load(ProtocolAbp, "\\System\\axkrnl");
-
-    log("Tried to return from main()! Halting...\r\n");
-    while(1);
-
-    return EFI_SUCCESS;
+    kernel_entry(&boot_info);
 }

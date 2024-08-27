@@ -1,5 +1,5 @@
 /*********************************************************************************/
-/* Module Name:  entry.c                                                         */
+/* Module Name:  acpi.h                                                          */
 /* Project:      AurixOS                                                         */
 /*                                                                               */
 /* Copyright (c) 2024 Jozef Nagy                                                 */
@@ -17,40 +17,9 @@
 /* SOFTWARE.                                                                     */
 /*********************************************************************************/
 
-#include <efi.h>
-#include <efilib.h>
+#ifndef _FIRMWARE_ACPI_H
+#define _FIRMWARE_ACPI_H
 
-#include <firmware/firmware.h>
-#include <menu/menu.h>
-#include <loader/loader.h>
-#include <loader/elf.h>
-#include <print.h>
+void *fw_get_acpi_rsdp(void);
 
-EFI_STATUS uefi_entry(EFI_HANDLE ImageHandle,
-                       EFI_SYSTEM_TABLE *SystemTable)
-{
-    EFI_STATUS Status;
-
-    gImageHandle = ImageHandle;
-    gSystemTable = SystemTable;
-
-    // clear the screen
-    gSystemTable->ConOut->ClearScreen(gSystemTable->ConOut);
-
-    // disable UEFI watchdog
-    Status = gSystemTable->BootServices->SetWatchdogTimer(0, 0, 0, NULL);
-    if (EFI_ERROR(Status)) {
-        debug("Couldn't disable UEFI watchdog!\n");
-    }
-
-    firmware_init();
-
-    //menu_main();
-
-    loader_load(ProtocolAbp, "\\System\\axkrnl");
-
-    log("Tried to return from main()! Halting...\r\n");
-    while(1);
-
-    return EFI_SUCCESS;
-}
+#endif /* _FIRMWARE_ACPI_H */

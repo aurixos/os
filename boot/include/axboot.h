@@ -22,4 +22,7 @@
 
 #define ARRAY_LENGTH(x) ((sizeof(x)) / (sizeof((x[0]))))
 
+#define BOOTLOADER_NAME_STR "AxBoot"
+#define BOOTLOADER_VERSION_STR "0.1"
+
 #endif /* _AXBOOT_H */

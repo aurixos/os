@@ -1,5 +1,5 @@
 /*********************************************************************************/
-/* Module Name:  entry.c                                                         */
+/* Module Name:  abp.h                                                           */
 /* Project:      AurixOS                                                         */
 /*                                                                               */
 /* Copyright (c) 2024 Jozef Nagy                                                 */
@@ -17,40 +17,58 @@
 /* SOFTWARE.                                                                     */
 /*********************************************************************************/
 
-#include <efi.h>
-#include <efilib.h>
+#ifndef _ABP_H
+#define _ABP_H
 
-#include <firmware/firmware.h>
-#include <menu/menu.h>
-#include <loader/loader.h>
-#include <loader/elf.h>
-#include <print.h>
+#include <stdint.h>
 
-EFI_STATUS uefi_entry(EFI_HANDLE ImageHandle,
-                       EFI_SYSTEM_TABLE *SystemTable)
-{
-    EFI_STATUS Status;
+#define AXBOOT_PROTOCOL_VERSION_STR "0.2"
 
-    gImageHandle = ImageHandle;
-    gSystemTable = SystemTable;
+struct acpi_info {
+    void *rsdp;
+    int is_xsdp;
+};
 
-    // clear the screen
-    gSystemTable->ConOut->ClearScreen(gSystemTable->ConOut);
+#define ABP_MEMORY_RESERVED 0xf0
+#define ABP_MEMORY_USABLE 0xf1
+#define ABP_MEMORY_BOOTLOADER_RECLAIMABLE 0xf2
+#define ABP_MEMORY_MMIO 0xf3
+#define ABP_MEMORY_ACPI_NVS 0xf4
+#define ABP_MEMORY_ACPI_RECLAIMABLE 0xf5
+#define ABP_MEMORY_KERNEL 0xf7
+#define ABP_MEMORY_NOT_USABLE 0xff
 
-    // disable UEFI watchdog
-    Status = gSystemTable->BootServices->SetWatchdogTimer(0, 0, 0, NULL);
-    if (EFI_ERROR(Status)) {
-        debug("Couldn't disable UEFI watchdog!\n");
-    }
+struct memory_map {
+    uint64_t base;
+    uint64_t length;
+    uint64_t type;
+};
 
-    firmware_init();
+struct framebuffer_info {
+    void *addr;
+    uint32_t width;
+    uint32_t height;
+    uint16_t bpp;
+};
 
-    //menu_main();
+struct abp_boot_info {
+    // General
+    const char *bootloader_name;
+    const char *bootloader_version;
+    const char *protocol_version;
 
-    loader_load(ProtocolAbp, "\\System\\axkrnl");
+    // ACPI
+    struct acpi_info acpi;
 
-    log("Tried to return from main()! Halting...\r\n");
-    while(1);
+    // Memory
+    struct memory_map *memmap;
+    int memmap_entcnt;
 
-    return EFI_SUCCESS;
-}
+    // Framebuffer
+    struct framebuffer_info *framebuffer;
+    int framebuffer_cnt;
+};
+
+void abp_load(void *kernel);
+
+#endif /* _ABP_H */

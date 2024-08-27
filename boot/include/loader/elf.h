@@ -21,6 +21,7 @@
 #define _LOADER_ELF_ELF_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 //
 // Data types
@@ -368,6 +369,6 @@ typedef struct {
     Elf64_Xword p_align;
 } Elf64_Phdr;
 
-void *elf_load(void *kernel);
+void *elf_load(void *kernel, bool *is_higherhalf);
 
 #endif /* _LOADER_ELF_ELF_H */

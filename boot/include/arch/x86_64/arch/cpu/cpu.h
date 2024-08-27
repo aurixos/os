@@ -1,5 +1,5 @@
 /*********************************************************************************/
-/* Module Name:  entry.c                                                         */
+/* Module Name:  cpu.h                                                           */
 /* Project:      AurixOS                                                         */
 /*                                                                               */
 /* Copyright (c) 2024 Jozef Nagy                                                 */
@@ -17,40 +17,83 @@
 /* SOFTWARE.                                                                     */
 /*********************************************************************************/
 
-#include <efi.h>
-#include <efilib.h>
+#ifndef _ARCH_CPU_CPU_H
+#define _ARCH_CPU_CPU_H
 
-#include <firmware/firmware.h>
-#include <menu/menu.h>
-#include <loader/loader.h>
-#include <loader/elf.h>
-#include <print.h>
+#include <stdint.h>
 
-EFI_STATUS uefi_entry(EFI_HANDLE ImageHandle,
-                       EFI_SYSTEM_TABLE *SystemTable)
+static inline uint64_t read_cr0()
 {
-    EFI_STATUS Status;
-
-    gImageHandle = ImageHandle;
-    gSystemTable = SystemTable;
-
-    // clear the screen
-    gSystemTable->ConOut->ClearScreen(gSystemTable->ConOut);
-
-    // disable UEFI watchdog
-    Status = gSystemTable->BootServices->SetWatchdogTimer(0, 0, 0, NULL);
-    if (EFI_ERROR(Status)) {
-        debug("Couldn't disable UEFI watchdog!\n");
-    }
-
-    firmware_init();
-
-    //menu_main();
-
-    loader_load(ProtocolAbp, "\\System\\axkrnl");
-
-    log("Tried to return from main()! Halting...\r\n");
-    while(1);
-
-    return EFI_SUCCESS;
+	uint64_t val;
+	__asm__ volatile("mov %%cr0, %0"
+					: "=r"(val));
+	return val;
 }
+
+static inline uint64_t read_cr2()
+{
+	uint64_t val;
+	__asm__ volatile("mov %%cr2, %0"
+					: "=r"(val));
+	return val;
+}
+
+static inline uint64_t read_cr3()
+{
+	uint64_t val;
+	__asm__ volatile("mov %%cr3, %0"
+					: "=r"(val));
+	return val;
+}
+
+static inline uint64_t read_cr4()
+{
+	uint64_t val;
+	__asm__ volatile("mov %%cr4, %0"
+					: "=r"(val));
+	return val;
+}
+
+static inline uint64_t read_cr8()
+{
+	uint64_t val;
+	__asm__ volatile("mov %%cr8, %0"
+					: "=r"(val));
+	return val;
+}
+
+////
+// Writing Control Registers
+///
+
+static inline void write_cr0(uint64_t val)
+{
+	__asm__ volatile("mov %0, %%cr0"
+					:: "r"(val));
+}
+
+static inline void write_cr2(uint64_t val)
+{
+	__asm__ volatile("mov %0, %%cr2"
+					:: "r"(val));
+}
+
+static inline void write_cr3(uint64_t val)
+{
+	__asm__ volatile("mov %0, %%cr3"
+					:: "r"(val) : "memory");
+}
+
+static inline void write_cr4(uint64_t val)
+{
+	__asm__ volatile("mov %0, %%cr4"
+					:: "r"(val));
+}
+
+static inline void write_cr8(uint64_t val)
+{
+	__asm__ volatile("mov %0, %%cr8"
+					:: "r"(val));
+}
+
+#endif /* _ARCH_CPU_CPU_H */

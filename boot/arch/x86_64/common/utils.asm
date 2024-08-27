@@ -1,5 +1,5 @@
 /*********************************************************************************/
-/* Module Name:  entry.c                                                         */
+/* Module Name:  utils.asm                                                       */
 /* Project:      AurixOS                                                         */
 /*                                                                               */
 /* Copyright (c) 2024 Jozef Nagy                                                 */
@@ -17,40 +17,45 @@
 /* SOFTWARE.                                                                     */
 /*********************************************************************************/
 
-#include <efi.h>
-#include <efilib.h>
+.code64
+.section .data
 
-#include <firmware/firmware.h>
-#include <menu/menu.h>
-#include <loader/loader.h>
-#include <loader/elf.h>
-#include <print.h>
+.globl read_cr0
+read_cr0:
+    mov %cr0, %rax
+    ret
 
-EFI_STATUS uefi_entry(EFI_HANDLE ImageHandle,
-                       EFI_SYSTEM_TABLE *SystemTable)
-{
-    EFI_STATUS Status;
+.globl write_cr0
+write_cr0:
+    mov %rdi, %cr0
+    ret
 
-    gImageHandle = ImageHandle;
-    gSystemTable = SystemTable;
+.globl read_cr2
+read_cr2:
+    mov %cr2, %rax
+    ret
 
-    // clear the screen
-    gSystemTable->ConOut->ClearScreen(gSystemTable->ConOut);
+.globl write_cr2
+write_cr2:
+    mov %rdi, %cr2
+    ret
 
-    // disable UEFI watchdog
-    Status = gSystemTable->BootServices->SetWatchdogTimer(0, 0, 0, NULL);
-    if (EFI_ERROR(Status)) {
-        debug("Couldn't disable UEFI watchdog!\n");
-    }
+.globl read_cr3
+read_cr3:
+    mov %cr3, %rax
+    ret
 
-    firmware_init();
+.globl write_cr3
+write_cr3:
+    mov %rdi, %cr3
+    ret
 
-    //menu_main();
+.globl read_cr4
+read_cr4:
+    mov %cr4, %rax
+    ret
 
-    loader_load(ProtocolAbp, "\\System\\axkrnl");
-
-    log("Tried to return from main()! Halting...\r\n");
-    while(1);
-
-    return EFI_SUCCESS;
-}
+.globl write_cr4
+write_cr4:
+    mov %rdi, %cr4
+    ret

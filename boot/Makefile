@@ -26,11 +26,12 @@ export INCLUDE_DIRS := include
 export BUILD_DIR ?= build
 export SYSROOT_DIR ?= sysroot
 
-export ASFLAGS :=
-export CFLAGS := -ffreestanding -mno-stack-arg-probe -fno-stack-protector -fno-stack-check -O3 -MMD -MP
+export ASFLAGS := 
+export CFLAGS := -ffreestanding -mno-red-zone -mno-stack-arg-probe -fno-stack-protector -fno-stack-check -O3 -MMD -MP
 export LDFLAGS := -nostdlib
 
-export COMMON_CFILES := $(shell find common -name '*.c')
+export COMMON_CFILES := $(shell find common -name '*.c') $(shell find arch/$(ARCH)/common -name '*.c')
+export COMMON_ASFILES := $(shell find arch/$(ARCH)/common -name '*.asm')
 
 include boot.mk
 include uefi.mk
