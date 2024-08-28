@@ -28,6 +28,11 @@ void *malloc(size_t size)
 	return fw_allocmem(size);
 }
 
+int mallocpage(size_t np, void *base)
+{
+	return fw_allocpage(np, base);
+}
+
 void free(void *p)
 {
 	fw_free(p);

@@ -130,20 +130,44 @@ void *elf_load(void *kernel, bool *is_higherhalf)
 			if (phdr64->p_type == PT_LOAD) {
 				void *file_segment = (void *)((uintptr_t)kernel + phdr64->p_offset);
 				void *memory_segment = (void *)(uintptr_t)phdr64->p_paddr;
+				EFI_PHYSICAL_ADDRESS base;
+
+				if (phdr64->p_memsz == 0) {
+					continue;
+				}
+
+				if (is_higherhalf) {
+					memory_segment = (void *)(uintptr_t)(phdr64->p_vaddr - 0xffffffff80000000);
+					base = phdr64->p_vaddr - 0xffffffff80000000;
+
+					paging_map_range(base, phdr64->p_vaddr, 1);
+				}
+
+				// TODO: Get rid of this
+
+#define EFI_PAGE_SIZE 0x1000
+#define EFI_PAGE_MASK 0xFFF
+#define EFI_PAGE_SHIFT 12
+#define EFI_SIZE_TO_PAGES(Size) (((Size) >> EFI_PAGE_SHIFT) + (((Size) & EFI_PAGE_MASK) ? 1 : 0))
+
+				int stat = mallocpage(EFI_SIZE_TO_PAGES(ROUND_UP(phdr64->p_memsz, PAGE_SIZE)), &base);
+				if (stat != 0) {
+					return NULL;
+				}
 
 				memcpy(memory_segment, file_segment, phdr64->p_filesz);
 
-				uint8_t *extra_zeroes = (uint8_t *)memory_segment + phdr64->p_filesz;
-				uint64_t extra_zeroes_count = phdr64->p_memsz - phdr64->p_filesz;
-
-				if (extra_zeroes_count > 0) {
-					memset(extra_zeroes, 0x00, extra_zeroes_count);
+				if (phdr64->p_memsz - phdr64->p_filesz > 0) {
+					memset((void *)(memory_segment + phdr64->p_filesz), 0x0, phdr64->p_memsz - phdr64->p_filesz);
 				}
 			}
 
 			phdrs64 = (Elf64_Phdr *)((uint8_t *)phdrs64 + header64->e_phentsize);
 		}
+
 	}
+
+	log("Loaded ELF\r\n");
 
 	return entryp;
 }

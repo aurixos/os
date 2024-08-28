@@ -21,6 +21,7 @@
 #define FIRMWARE_MEMORY_H
 
 void *fw_allocmem(size_t size);
+int fw_allocpage(size_t np, void *base);
 void fw_free(void *p);
 
 #endif /* FIRMWARE_MEMORY_H */

@@ -52,5 +52,7 @@ void abp_load(void *kernel)
         return;
     }
 
+    log("Jumping to kernel\r\n");
+
     kernel_entry(&boot_info);
 }

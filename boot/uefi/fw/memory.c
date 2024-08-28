@@ -19,6 +19,7 @@
 
 #include <firmware/memory.h>
 #include <firmware/firmware.h>
+#include <print.h>
 #include <efi.h>
 #include <efilib.h>
 
@@ -31,10 +32,24 @@ void *fw_allocmem(size_t size)
 
 	status = gSystemTable->BootServices->AllocatePool(EfiLoaderData, (EFI_UINTN)size, &ptr);
 	if (EFI_ERROR(status)) {
+		log("ERROR: %x\r\n", status);
 		return NULL;
 	}
 
 	return ptr;
+}
+
+int fw_allocpage(size_t np, void *base)
+{
+	EFI_STATUS status;
+	
+	status = gSystemTable->BootServices->AllocatePages(AllocateAddress, 0x80000000, (EFI_UINTN)np, (EFI_PHYSICAL_ADDRESS *)base);
+	if (EFI_ERROR(status)) {
+		log("ERROR: %x\r\n", status);
+		return 1;
+	}
+
+	return 0;
 }
 
 void fw_free(void *p)

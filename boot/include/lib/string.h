@@ -25,6 +25,7 @@
 //* FIRMWARE SPECIFIC *//
 
 void *malloc(size_t n);
+int mallocpage(size_t np, void *base);
 void free(void *p);
 
 //! FIRMWARE SPECIFIC !//

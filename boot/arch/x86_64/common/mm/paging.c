@@ -30,6 +30,11 @@ uint64_t *pagetable = NULL;
 
 int paging_init(void)
 {
+	// disable write protection
+	uint64_t cr0 = read_cr0();
+	cr0 &= ~(1 << 16);
+	write_cr0(cr0);
+
 	pagetable = (uint64_t *)read_cr3();
 	if (pagetable == NULL) {
 		log("ERROR: read_cr3() returned NULL!\r\n");
