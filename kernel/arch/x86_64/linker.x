@@ -1,6 +1,3 @@
-/* We can't use this linker yet, as AxBoot doesn't support */
-/* Higher half kernel loading yet. */
-
 OUTPUT_FORMAT(elf64-x86-64)
 OUTPUT_ARCH(i386:x86-64)
 ENTRY(_start)
@@ -15,7 +12,9 @@ PHDRS
 
 SECTIONS
 {
-	. = 0xffffffff80000000;
+	/* We can't load higher half kernels just yet. */
+	/* . = 0xffffffff80000000; */
+	. = 0x1000;
 
 	_linker_start_text = .;
 

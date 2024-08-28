@@ -20,7 +20,15 @@
 #ifndef _AXBOOT_H
 #define _AXBOOT_H
 
+#define HIGHER_HALF 0xffffffff80000000
+
+#define PHYS_TO_VIRT(addr) ((uint64_t)(addr) + HIGHER_HALF)
+#define VIRT_TO_PHYS(addr) ((uint64_t)(addr) - HIGHER_HALF)
+
 #define ARRAY_LENGTH(x) ((sizeof(x)) / (sizeof((x[0]))))
+
+#define ROUND_DOWN(x, a) (((x)) & (~((a) - 1)))
+#define ROUND_UP(x, a) ((((x)) + (a) - 1) & (~((a) - 1)) ) 
 
 #define BOOTLOADER_NAME_STR "AxBoot"
 #define BOOTLOADER_VERSION_STR "0.1"

@@ -17,10 +17,12 @@
 /* SOFTWARE.                                                                     */
 /*********************************************************************************/
 
+#include <arch/mm/paging.h>
 #include <firmware/file.h>
 #include <loader/elf.h>
 #include <lib/string.h>
 #include <print.h>
+#include <axboot.h>
 
 #include <stdint.h>
 #include <stddef.h>
@@ -99,7 +101,7 @@ void *elf_load(void *kernel, bool *is_higherhalf)
 			Elf32_Phdr *phdr32 = (Elf32_Phdr *)phdrs32;
 			if (phdr32->p_type == PT_LOAD) {
 				void *file_segment = (void *)((uintptr_t)kernel + phdr32->p_offset);
-				void *memory_segment = (void *)(uintptr_t)phdr32->p_vaddr;
+				void *memory_segment = (void *)(uintptr_t)phdr32->p_paddr;
 
 				memcpy(memory_segment, file_segment, phdr32->p_filesz);
 
@@ -127,7 +129,7 @@ void *elf_load(void *kernel, bool *is_higherhalf)
 			Elf64_Phdr *phdr64 = (Elf64_Phdr *)phdrs64;
 			if (phdr64->p_type == PT_LOAD) {
 				void *file_segment = (void *)((uintptr_t)kernel + phdr64->p_offset);
-				void *memory_segment = (void *)(uintptr_t)phdr64->p_vaddr;
+				void *memory_segment = (void *)(uintptr_t)phdr64->p_paddr;
 
 				memcpy(memory_segment, file_segment, phdr64->p_filesz);
 

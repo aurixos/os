@@ -30,8 +30,9 @@ export ASFLAGS :=
 export CFLAGS := -ffreestanding -mno-red-zone -mno-stack-arg-probe -fno-stack-protector -fno-stack-check -O3 -MMD -MP
 export LDFLAGS := -nostdlib
 
-export COMMON_CFILES := $(shell find common -name '*.c') $(shell find arch/$(ARCH)/common -name '*.c')
-export COMMON_ASFILES := $(shell find arch/$(ARCH)/common -name '*.asm')
+export COMMON_CFILES := $(shell find common -name '*.c')
+export COMMON_ARCH_CFILES := $(shell find arch/$(ARCH)/common -name '*.c')
+export COMMON_ARCH_ASFILES := $(shell find arch/$(ARCH)/common -name '*.asm')
 
 include boot.mk
 include uefi.mk

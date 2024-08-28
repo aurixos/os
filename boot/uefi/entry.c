@@ -20,6 +20,7 @@
 #include <efi.h>
 #include <efilib.h>
 
+#include <arch/mm/paging.h>
 #include <firmware/firmware.h>
 #include <menu/menu.h>
 #include <loader/loader.h>
@@ -44,6 +45,11 @@ EFI_STATUS uefi_entry(EFI_HANDLE ImageHandle,
     }
 
     firmware_init();
+
+    if (paging_init() != 0) {
+        log("Couldn't enable paging!\r\n");
+        while(1);
+    }
 
     //menu_main();
 
