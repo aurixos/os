@@ -1,5 +1,5 @@
 /*********************************************************************************/
-/* Module Name:  file.h                                                          */
+/* Module Name:  fb.h                                                            */
 /* Project:      AurixOS                                                         */
 /*                                                                               */
 /* Copyright (c) 2024 Jozef Nagy                                                 */
@@ -17,11 +17,12 @@
 /* SOFTWARE.                                                                     */
 /*********************************************************************************/
 
-#ifndef _FIRMWARE_FIRMWARE_H
-#define _FIRMWARE_FIRMWARE_H
+#ifndef _FIRMWARE_FB_H
+#define _FIRMWARE_FB_H
 
-#include <uefi/firmware/globals.h>
+#include <stdint.h>
 
-int firmware_init(void);
+int fw_initialize_fb(void);
+void fw_get_framebuffer(void **address, uint32_t *width, uint32_t *height, uint32_t *bpp);
 
-#endif /* _FIRMWARE_FIRMWARE_H */
+#endif /* _FIRMWARE_FB_H */

@@ -17,7 +17,7 @@
 /* SOFTWARE.                                                                     */
 /*********************************************************************************/
 
-#include <uefi/firmware/globals.h>
+#include <firmware/firmware.h>
 #include <efi.h>
 #include <efilib.h>
 

@@ -38,6 +38,9 @@ void abp_load(void *kernel)
     entryp kernel_entry;
 
     // set up basic boot information
+    boot_info->bootloader_name = malloc(strlen(BOOTLOADER_NAME_STR));
+    boot_info->bootloader_version = malloc(strlen(BOOTLOADER_VERSION_STR));
+    boot_info->protocol_version = malloc(strlen(AXBOOT_PROTOCOL_VERSION_STR));
     strcpy(boot_info->bootloader_name, BOOTLOADER_NAME_STR);
     strcpy(boot_info->bootloader_version, BOOTLOADER_VERSION_STR);
     strcpy(boot_info->protocol_version, AXBOOT_PROTOCOL_VERSION_STR);

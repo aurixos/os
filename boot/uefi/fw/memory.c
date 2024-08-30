@@ -32,7 +32,7 @@ void *fw_allocmem(size_t size)
 
 	status = gSystemTable->BootServices->AllocatePool(EfiLoaderData, (EFI_UINTN)size, &ptr);
 	if (EFI_ERROR(status)) {
-		log("ERROR: %x\r\n", status);
+		log("ERROR: Failed to allocate memory: 0x%x\r\n", status);
 		return NULL;
 	}
 
@@ -45,7 +45,7 @@ int fw_allocpage(size_t np, void *base)
 	
 	status = gSystemTable->BootServices->AllocatePages(AllocateAddress, 0x80000000, (EFI_UINTN)np, (EFI_PHYSICAL_ADDRESS *)base);
 	if (EFI_ERROR(status)) {
-		log("ERROR: %x\r\n", status);
+		log("ERROR: Failed to allocate %u pages at address 0x%x: 0x%x\r\n", np, base, status);
 		return 1;
 	}
 

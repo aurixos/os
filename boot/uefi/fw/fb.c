@@ -1,5 +1,5 @@
 /*********************************************************************************/
-/* Module Name:  file.h                                                          */
+/* Module Name:  fb.c                                                            */
 /* Project:      AurixOS                                                         */
 /*                                                                               */
 /* Copyright (c) 2024 Jozef Nagy                                                 */
@@ -17,11 +17,41 @@
 /* SOFTWARE.                                                                     */
 /*********************************************************************************/
 
-#ifndef _FIRMWARE_FIRMWARE_H
-#define _FIRMWARE_FIRMWARE_H
+#include <firmware/firmware.h>
+#include <firmware/fb.h>
+#include <lib/string.h>
+#include <print.h>
+#include <efi.h>
+#include <efilib.h>
 
-#include <uefi/firmware/globals.h>
+#include <stdint.h>
+#include <stddef.h>
 
-int firmware_init(void);
+uint8_t is_initialized = 0;
 
-#endif /* _FIRMWARE_FIRMWARE_H */
+void *fb_address = NULL;
+uint32_t fb_width = 0;
+uint32_t fb_height = 0;
+uint32_t fb_bpp = 0;
+
+int fw_initialize_fb(void)
+{
+	// TODO: Remove this; this just signalizes no framebuffer has been found for now.
+	return 1;
+
+	// get GOP
+
+	// set best available graphics mode
+
+	// all went well :>
+	is_initialized = 1;
+	return 0;
+}
+
+void fw_get_framebuffer(void **address, uint32_t *width, uint32_t *height, uint32_t *bpp)
+{
+	*address = fb_address;
+	*width = fb_width;
+	*height = fb_height;
+	*bpp = fb_bpp;
+}

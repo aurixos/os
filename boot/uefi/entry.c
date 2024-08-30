@@ -22,10 +22,13 @@
 
 #include <arch/mm/paging.h>
 #include <firmware/firmware.h>
+#include <firmware/fb.h>
 #include <menu/menu.h>
 #include <loader/loader.h>
 #include <loader/elf.h>
 #include <print.h>
+
+#include <stddef.h>
 
 EFI_STATUS uefi_entry(EFI_HANDLE ImageHandle,
                        EFI_SYSTEM_TABLE *SystemTable)
@@ -45,6 +48,10 @@ EFI_STATUS uefi_entry(EFI_HANDLE ImageHandle,
     }
 
     firmware_init();
+
+    if (fw_initialize_fb() != 0) {
+        debug("No valid framebuffer was found!\r\n");
+    }
 
     if (paging_init() != 0) {
         log("Couldn't enable paging!\r\n");

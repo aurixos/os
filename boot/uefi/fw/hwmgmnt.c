@@ -18,7 +18,7 @@
 /*********************************************************************************/
 
 #include <firmware/hwmgmnt.h>
-#include <uefi/firmware/globals.h>
+#include <firmware/firmware.h>
 #include <lib/string.h>
 #include <print.h>
 

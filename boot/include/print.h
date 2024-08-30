@@ -24,11 +24,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-int log(const char *fmt, ...);
-int debug(const char *fmt, ...);
-int vfprintf(void (*print_callback)(const char *), const char *fmt, va_list args);
-
-void _print_num(void (*print_callback)(const char *), uint64_t num, uint8_t base, bool is_signed);
+void log(const char *fmt, ...);
+void debug(const char *fmt, ...);
 
 void printstr(const char *str);
 

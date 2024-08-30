@@ -27,7 +27,7 @@ export BUILD_DIR ?= build
 export SYSROOT_DIR ?= sysroot
 
 export ASFLAGS := 
-export CFLAGS := -ffreestanding -mno-red-zone -mno-stack-arg-probe -fno-stack-protector -fno-stack-check -O3 -MMD -MP
+export CFLAGS := -ffreestanding -mgeneral-regs-only -mno-red-zone -mno-stack-arg-probe -fno-stack-protector -fno-stack-check -O2 -MMD -MP
 export LDFLAGS := -nostdlib
 
 export COMMON_CFILES := $(shell find common -name '*.c')

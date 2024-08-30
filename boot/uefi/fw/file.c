@@ -18,6 +18,7 @@
 /*********************************************************************************/
 
 #include <firmware/firmware.h>
+#include <firmware/file.h>
 #include <lib/string.h>
 #include <print.h>
 #include <efi.h>
