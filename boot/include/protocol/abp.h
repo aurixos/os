@@ -25,8 +25,13 @@
 #define AXBOOT_PROTOCOL_VERSION_STR "0.2"
 
 struct acpi_info {
+    uint8_t is_valid;
     void *rsdp;
-    int is_xsdp;
+};
+
+struct smbios_info {
+    uint8_t is_valid;
+    void *entry_point;
 };
 
 #define ABP_MEMORY_RESERVED 0xf0
@@ -42,6 +47,8 @@ struct memory_map {
     uint64_t base;
     uint64_t length;
     uint64_t type;
+
+    struct memory_map *next;
 };
 
 struct framebuffer_info {
@@ -53,20 +60,19 @@ struct framebuffer_info {
 
 struct abp_boot_info {
     // General
-    const char *bootloader_name;
-    const char *bootloader_version;
-    const char *protocol_version;
+    char *bootloader_name;
+    char *bootloader_version;
+    char *protocol_version;
 
     // ACPI
     struct acpi_info acpi;
+    struct smbios_info smbios;
 
     // Memory
     struct memory_map *memmap;
-    int memmap_entcnt;
 
     // Framebuffer
-    struct framebuffer_info *framebuffer;
-    int framebuffer_cnt;
+    struct framebuffer_info framebuffer;
 };
 
 void abp_load(void *kernel);

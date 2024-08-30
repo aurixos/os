@@ -122,7 +122,7 @@ void *elf_load(void *kernel, bool *is_higherhalf)
 		}
 
 		entryp = (void *)header64->e_entry;
-		*is_higherhalf = header64->e_entry < 0xffffffff80000000;
+		*is_higherhalf = header64->e_entry >= 0xffffffff80000000;
 
 		Elf64_Phdr *phdrs64 = (Elf64_Phdr *)(kernel + header64->e_phoff);
 		for (uint16_t i = 0; i < header64->e_phnum; i++) {
@@ -136,23 +136,21 @@ void *elf_load(void *kernel, bool *is_higherhalf)
 					continue;
 				}
 
-				if (is_higherhalf) {
+				if (*is_higherhalf) {
 					memory_segment = (void *)(uintptr_t)(phdr64->p_vaddr - 0xffffffff80000000);
 					base = phdr64->p_vaddr - 0xffffffff80000000;
 
-					paging_map_range(base, phdr64->p_vaddr, 1);
-				}
-
-				// TODO: Get rid of this
+					// TODO: Get rid of this
 
 #define EFI_PAGE_SIZE 0x1000
 #define EFI_PAGE_MASK 0xFFF
 #define EFI_PAGE_SHIFT 12
 #define EFI_SIZE_TO_PAGES(Size) (((Size) >> EFI_PAGE_SHIFT) + (((Size) & EFI_PAGE_MASK) ? 1 : 0))
 
-				int stat = mallocpage(EFI_SIZE_TO_PAGES(ROUND_UP(phdr64->p_memsz, PAGE_SIZE)), &base);
-				if (stat != 0) {
-					return NULL;
+					int stat = mallocpage(EFI_SIZE_TO_PAGES(ROUND_UP(phdr64->p_memsz, PAGE_SIZE)), &base);
+					if (stat != 0) {
+						return NULL;
+					}
 				}
 
 				memcpy(memory_segment, file_segment, phdr64->p_filesz);
@@ -167,7 +165,7 @@ void *elf_load(void *kernel, bool *is_higherhalf)
 
 	}
 
-	log("Loaded ELF\r\n");
+	debug("Loaded ELF kernel file\r\n");
 
 	return entryp;
 }

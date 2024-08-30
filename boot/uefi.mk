@@ -67,7 +67,7 @@ UEFI_OBJ := $(UEFI_CFILES:uefi/%.c=$(BUILD_DIR)/boot/uefi/%.c.o) \
 			$(UEFI_ASFILES:uefi/%.S=$(BUILD_DIR)/boot/uefi/%.S.o) \
 			$(COMMON_CFILES:common/%.c=$(BUILD_DIR)/boot/uefi/common/%.c.o) \
 			$(COMMON_ARCH_CFILES:arch/$(ARCH)/common/%.c=$(BUILD_DIR)/boot/uefi/arch/%.c.o) \
-			$(COMMON_ASFILES:arch/$(ARCH)/common/%.asm=$(BUILD_DIR)/boot/uefi/arch/%.asm.o)
+			$(COMMON_ARCH_ASFILES:arch/$(ARCH)/common/%.asm=$(BUILD_DIR)/boot/uefi/arch/%.asm.o)
 
 .PHONY: install-uefi
 install-uefi:

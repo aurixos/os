@@ -22,6 +22,11 @@
 
 #include <stdint.h>
 
+static inline void cpu_disable_interrupts(void)
+{
+	__asm__ volatile("cli" ::: "memory");
+}
+
 static inline uint64_t read_cr0()
 {
 	uint64_t val;

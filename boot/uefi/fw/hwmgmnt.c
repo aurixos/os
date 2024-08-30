@@ -17,7 +17,7 @@
 /* SOFTWARE.                                                                     */
 /*********************************************************************************/
 
-#include <firmware/acpi.h>
+#include <firmware/hwmgmnt.h>
 #include <uefi/firmware/globals.h>
 #include <lib/string.h>
 #include <print.h>
@@ -36,12 +36,40 @@ void *fw_get_acpi_rsdp(void)
     for (EFI_UINTN i = 0; i < gSystemTable->NumberOfTableEntries; i++) {
         if (!memcmp(&gSystemTable->ConfigurationTable[i].VendorGuid, &acpi10, sizeof(EFI_GUID)) ||
             !memcmp(&gSystemTable->ConfigurationTable[i].VendorGuid, &acpi20, sizeof(EFI_GUID))) {
-            return &gSystemTable->ConfigurationTable[i];
+            // let's just do one more check to be sure
+            void *ptr = gSystemTable->ConfigurationTable[i].VendorTable;
+            if (!memcmp(ptr, "RSD PTR ", 8)) {
+                return ptr;
+            }
         }
     }
 
     // no rsdp was found
-    log("ERROR: No RSDP was found!\r\n");
+    debug("ERROR: No RSDP was found!\r\n");
+
+    return NULL;
+}
+
+void *fw_get_smbios_entry_point(void)
+{
+    void *cfgtbl = gSystemTable->ConfigurationTable->VendorTable;
+    EFI_GUID smbios2 = SMBIOS_TABLE_GUID;
+    EFI_GUID smbios3 = SMBIOS3_TABLE_GUID;
+
+    for (EFI_UINTN i = 0; i < gSystemTable->NumberOfTableEntries; i++) {
+        if (!memcmp(&gSystemTable->ConfigurationTable[i].VendorGuid, &smbios2, sizeof(EFI_GUID)) ||
+            !memcmp(&gSystemTable->ConfigurationTable[i].VendorGuid, &smbios3, sizeof(EFI_GUID))) {
+            // let's just do one more check to be sure
+            void *ptr = gSystemTable->ConfigurationTable[i].VendorTable;
+            if (!memcmp(ptr, "_SM_", 5) ||
+                !memcmp(ptr, "_SM3_", 5)) {
+                return ptr;
+            }
+        }
+    }
+
+    // no entry point was found
+    debug("ERROR: No SMBIOS Entry Point was found!\r\n");
 
     return NULL;
 }

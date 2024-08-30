@@ -17,9 +17,11 @@
 /* SOFTWARE.                                                                     */
 /*********************************************************************************/
 
+#include <arch/cpu/cpu.h>
 #include <protocol/abp.h>
 #include <loader/elf.h>
-#include <firmware/acpi.h>
+#include <firmware/hwmgmnt.h>
+#include <lib/string.h>
 #include <print.h>
 #include <axboot.h>
 
@@ -36,9 +38,9 @@ void abp_load(void *kernel)
     entryp kernel_entry;
 
     // set up basic boot information
-    boot_info.bootloader_name = BOOTLOADER_NAME_STR;
-    boot_info.bootloader_name = BOOTLOADER_VERSION_STR;
-    boot_info.protocol_version = AXBOOT_PROTOCOL_VERSION_STR;
+    strcpy(boot_info.bootloader_name, BOOTLOADER_NAME_STR);
+    strcpy(boot_info.bootloader_version, BOOTLOADER_VERSION_STR);
+    strcpy(boot_info.protocol_version, AXBOOT_PROTOCOL_VERSION_STR);
 
     // get kernel entry point
     kernel_entry = (entryp)elf_load(kernel, &higher_half);
@@ -46,13 +48,31 @@ void abp_load(void *kernel)
         return;
     }
 
-    // get ACPI info
+    // get ACPI and SMBIOS info
     boot_info.acpi.rsdp = fw_get_acpi_rsdp();
-    if (boot_info.acpi.rsdp == NULL) {
-        return;
+    if (boot_info.acpi.rsdp != NULL) {
+        boot_info.acpi.is_valid = 1;
     }
 
-    log("Jumping to kernel\r\n");
+    boot_info.smbios.entry_point = fw_get_smbios_entry_point();
+    if (boot_info.smbios.entry_point != NULL) {
+        boot_info.smbios.is_valid = 1;
+    }
+
+    // get framebuffer info
+    //boot_info.framebuffer_cnt = fb_get_framebuffer_count();
+    //for (int i = 0; i < boot_info.framebuffer_cnt; i++) {
+    //    boot_info.framebuffer[i] = fb_get_framebuffer(i);
+    //}
+
+    // get memory map;
+    // on UEFI, this also calls BS->ExitBootServices()
+    //boot_info.memmap = fw_get_memmap(&boot_info.memmap_entcnt);
+
+    // disable interrupts and hope for the best.
+    cpu_disable_interrupts();
+
+    debug("Jumping to kernel at %x...\r\n", (uint64_t)kernel_entry);
 
     kernel_entry(&boot_info);
 }
