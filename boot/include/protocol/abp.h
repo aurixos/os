@@ -28,12 +28,12 @@
 // ACPI and SMBIOS
 ///
 
-struct acpi_info {
+struct abp_acpi_info {
     uint8_t is_valid;
     void *rsdp;
 };
 
-struct smbios_info {
+struct abp_smbios_info {
     uint8_t is_valid;
     void *entry_point;
 };
@@ -51,12 +51,12 @@ struct smbios_info {
 #define ABP_MEMORY_KERNEL 0xf7
 #define ABP_MEMORY_NOT_USABLE 0xff
 
-struct memory_map {
+struct abp_memory_map {
     uint64_t base;
     uint64_t length;
     uint64_t type;
 
-    struct memory_map *next;
+    struct abp_memory_map *next;
 };
 
 ///
@@ -68,7 +68,7 @@ enum {
     AbpFramebufferBgra
 };
 
-struct framebuffer_info {
+struct abp_framebuffer_info {
     void *addr;
     uint32_t width;
     uint32_t height;
@@ -87,15 +87,15 @@ struct abp_boot_info {
     char *protocol_version;
 
     // ACPI
-    struct acpi_info acpi;
-    struct smbios_info smbios;
+    struct abp_acpi_info acpi;
+    struct abp_smbios_info smbios;
 
     // Memory
-    struct memory_map *memmap;
+    struct abp_memory_map *memmap;
     uint8_t lvl5_paging;
 
     // Framebuffer
-    struct framebuffer_info framebuffer;
+    struct abp_framebuffer_info framebuffer;
 };
 
 void abp_load(void *kernel);

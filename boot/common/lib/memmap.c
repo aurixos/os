@@ -1,5 +1,5 @@
 /*********************************************************************************/
-/* Module Name:  paging.h                                                        */
+/* Module Name:  memmap.c                                                        */
 /* Project:      AurixOS                                                         */
 /*                                                                               */
 /* Copyright (c) 2024 Jozef Nagy                                                 */
@@ -17,31 +17,39 @@
 /* SOFTWARE.                                                                     */
 /*********************************************************************************/
 
-#ifndef _MM_PAGING_H
-#define _MM_PAGING_H
+#include <firmware/memmap.h>
+#include <lib/string.h>
+#include <print.h>
 
 #include <stdint.h>
+#include <stddef.h>
 
-#define PAGE_SIZE 0x1000
-#define PHYS_PAGE_ADDR_MASK 0x000FFFFFFFFFF000
+void memmap_dump(struct memory_map_info *memmap)
+{
+	debug("Dumping memory map:\r\n");
+	for (size_t i = 0; i < memmap->entry_count; i++) {
+		debug("Entry %u: base=0x%lx length=%u type=%s\r\n", i, memmap->entries[i].base, memmap->entries[i].length, memmap_type_to_str(memmap->entries[i].type));
+	}
+}
 
-struct page_table {
-	uint64_t entry[512];
-};
-
-// pte flags
-#define PTE_PRESENT (1)
-#define PTE_READ_WRITE (1 << 1)
-#define PTE_USER (1 << 2)
-#define PTE_WRITE_THROUGH (1 << 3)
-#define PTE_CACHE_DISABLE (1 << 4)
-#define PTE_ACCESSED (1 << 5)
-#define PTE_DIRTY (1 << 6)
-#define PTE_PAT (1 << 7)
-#define PTE_GLOBAL (1 << 8)
-
-int paging_init(void);
-void paging_map_range(uint64_t phys, uint64_t virt, size_t npages);
-void paging_map(uint64_t phys, uint64_t virt);
-
-#endif /* _MM_PAGING_H */
+char *memmap_type_to_str(uint16_t type)
+{
+	switch (type) {
+		case MemoryMapReserved:
+			return "Reserved";
+        case MemoryMapUsable:
+			return "Usable";
+        case MemoryMapLoader:
+			return "Bootloader Reclaimable";
+        case MemoryMapAcpiReclaimable:
+			return "ACPI Reclaimable";
+        case MemoryMapAcpiNVS:
+			return "Acpi NVS";
+        case MemoryMapMmio:
+			return "MMIO";
+		case MemoryMapUnusable:
+			return "Unusable";
+        default:
+			return "Unknown";
+	}
+}

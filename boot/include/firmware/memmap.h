@@ -1,5 +1,5 @@
 /*********************************************************************************/
-/* Module Name:  paging.h                                                        */
+/* Module Name:  memmap.h                                                        */
 /* Project:      AurixOS                                                         */
 /*                                                                               */
 /* Copyright (c) 2024 Jozef Nagy                                                 */
@@ -17,31 +17,34 @@
 /* SOFTWARE.                                                                     */
 /*********************************************************************************/
 
-#ifndef _MM_PAGING_H
-#define _MM_PAGING_H
+#ifndef _FIRMWARE_MEMMAP_H
+#define _FIRMWARE_MEMMAP_H
 
 #include <stdint.h>
 
-#define PAGE_SIZE 0x1000
-#define PHYS_PAGE_ADDR_MASK 0x000FFFFFFFFFF000
-
-struct page_table {
-	uint64_t entry[512];
+enum {
+	MemoryMapReserved,
+	MemoryMapUsable,
+	MemoryMapLoader,
+	MemoryMapAcpiReclaimable,
+	MemoryMapAcpiNVS,
+	MemoryMapMmio,
+	MemoryMapUnusable,
 };
 
-// pte flags
-#define PTE_PRESENT (1)
-#define PTE_READ_WRITE (1 << 1)
-#define PTE_USER (1 << 2)
-#define PTE_WRITE_THROUGH (1 << 3)
-#define PTE_CACHE_DISABLE (1 << 4)
-#define PTE_ACCESSED (1 << 5)
-#define PTE_DIRTY (1 << 6)
-#define PTE_PAT (1 << 7)
-#define PTE_GLOBAL (1 << 8)
+struct memory_map_entry {
+	uint64_t base;
+	uint64_t length;
+	uint16_t type;
+};
 
-int paging_init(void);
-void paging_map_range(uint64_t phys, uint64_t virt, size_t npages);
-void paging_map(uint64_t phys, uint64_t virt);
+struct memory_map_info {
+	struct memory_map_entry *entries;
+	uint64_t entry_count;
+};
 
-#endif /* _MM_PAGING_H */
+void fw_get_memory_map(struct memory_map_info *memmap);
+void memmap_dump(struct memory_map_info *memmap);
+char *memmap_type_to_str(uint16_t type);
+
+#endif /* _FIRMWARE_MEMMAP_H */

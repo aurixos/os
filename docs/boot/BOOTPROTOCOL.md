@@ -15,9 +15,15 @@ The Aurix Boot Protocol presents a simple and minimal protocol for booting the A
 
 - Write Protection bit in CR0 is disabled
 
+- GDT is set up as follows:
+
+| Name            | Base  | Limit | Flags |
+| --------------- | ----- | ----- | ----- |
+| NULL Descriptor | `0x0` | `0x0` | `0x0` |
+
 ## Paging
 
-- If available, 5-level paging is set up (see [Kernel Parameters](#kernel-parameters))
+- ~~If available, 5-level paging is set up (see [Kernel Parameters](#kernel-parameters))~~ 5-level paging is not yet supported in AxBoot
 - Lower 2 GiB (4 GiB on 64-bit architectures) are identity mapped
 - Kernel is mapped to the higher half if desired
 

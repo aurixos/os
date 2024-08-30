@@ -21,6 +21,8 @@
 #include <protocol/abp.h>
 #include <loader/elf.h>
 #include <firmware/hwmgmnt.h>
+#include <firmware/memmap.h>
+#include <firmware/handoff.h>
 #include <firmware/fb.h>
 #include <lib/string.h>
 #include <print.h>
@@ -30,7 +32,58 @@
 #include <stddef.h>
 #include <stdbool.h>
 
+#define ABP_MEMORY_RESERVED 0xf0
+#define ABP_MEMORY_USABLE 0xf1
+#define ABP_MEMORY_BOOTLOADER_RECLAIMABLE 0xf2
+#define ABP_MEMORY_MMIO 0xf3
+#define ABP_MEMORY_ACPI_NVS 0xf4
+#define ABP_MEMORY_ACPI_RECLAIMABLE 0xf5
+#define ABP_MEMORY_KERNEL 0xf7
+#define ABP_MEMORY_NOT_USABLE 0xff
+
 typedef void (*entryp)(struct abp_boot_info *);
+
+static void translate_memory_map(struct memory_map_info *memmap, struct abp_memory_map **abp_memmap)
+{
+    struct abp_memory_map *current_entry = *abp_memmap;
+    current_entry = (struct abp_memory_map *)malloc(sizeof(struct abp_memory_map));
+
+    for (size_t i = 0; i <= memmap->entry_count; i++) {
+        current_entry->base = memmap->entries[i].base;
+        current_entry->length = memmap->entries[i].length;
+        
+        switch (memmap->entries[i].type) {
+            case MemoryMapUnusable:
+            case MemoryMapReserved:
+                current_entry->type = ABP_MEMORY_RESERVED;
+                break;
+            case MemoryMapUsable:
+                current_entry->type = ABP_MEMORY_USABLE;
+                break;
+            case MemoryMapLoader:
+                current_entry->type = ABP_MEMORY_BOOTLOADER_RECLAIMABLE;
+                break;
+            case MemoryMapAcpiReclaimable:
+                current_entry->type = ABP_MEMORY_ACPI_RECLAIMABLE;
+                break;
+            case MemoryMapAcpiNVS:
+                current_entry->type = ABP_MEMORY_ACPI_NVS;
+                break;
+            case MemoryMapMmio:
+                current_entry->type = ABP_MEMORY_MMIO;
+                break;
+            default:
+                debug("Unknown memory type 0x%x\r\n", memmap->entries[i].type);
+                current_entry->type = ABP_MEMORY_RESERVED;
+                break;
+        }
+
+        current_entry->next = (struct abp_memory_map *)malloc(sizeof(struct abp_memory_map));
+        current_entry = current_entry->next;
+    }
+
+    current_entry->next = NULL;
+}
 
 void abp_load(void *kernel)
 {
@@ -81,9 +134,14 @@ void abp_load(void *kernel)
     // get memory map;
     // on UEFI, this also calls BS->ExitBootServices()
     //boot_info->memmap = fw_get_memmap(&(boot_info->lvl5_paging));
+    struct memory_map_info memmap = {0};
+    fw_get_memory_map(&memmap);
+    memmap_dump(&memmap);
+    translate_memory_map(&memmap, &boot_info->memmap);
 
     // disable interrupts and hope for the best.
     debug("Preparing for handoff...\r\n");
+    fw_prepare_handoff();
     cpu_disable_interrupts();
 
     debug("Jumping to kernel at %x...\r\n", (uint64_t)kernel_entry);
