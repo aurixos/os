@@ -119,9 +119,9 @@ void abp_load(void *kernel)
     // get framebuffer info
     fw_get_framebuffer(&boot_info->framebuffer.addr, &boot_info->framebuffer.width, &boot_info->framebuffer.height, &boot_info->framebuffer.bpp, &boot_info->framebuffer.pixel_format);
     if (boot_info->framebuffer.pixel_format == 1) {
-        boot_info->framebuffer.pixel_format == AbpFramebufferRgba;
+        boot_info->framebuffer.pixel_format = AbpFramebufferRgba;
     } else if (boot_info->framebuffer.pixel_format == 2) {
-        boot_info->framebuffer.pixel_format == AbpFramebufferBgra;
+        boot_info->framebuffer.pixel_format = AbpFramebufferBgra;
     }
 
     log("Framebuffer info:\r\n");

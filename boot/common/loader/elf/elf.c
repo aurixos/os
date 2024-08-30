@@ -93,7 +93,7 @@ void *elf_load(void *kernel, bool *is_higherhalf)
 			return NULL;
 		}
 
-		entryp = (void *)header32->e_entry;
+		entryp = (void *)(uintptr_t)header32->e_entry;
 		*is_higherhalf = header32->e_entry < 0xc0000000;
 
 		Elf32_Phdr *phdrs32 = (Elf32_Phdr *)(kernel + header32->e_phoff);

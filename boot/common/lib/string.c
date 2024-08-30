@@ -121,8 +121,8 @@ void *memcpy(void *dest, void *src, size_t len)
 
 int memcmp(const void *a, const void *b, size_t len)
 {
-	unsigned char *ap = a;
-    unsigned char *bp = b;
+	unsigned char *ap = (unsigned char *)a;
+    unsigned char *bp = (unsigned char *)b;
     int ret = 0;
 
     if (a == b) {

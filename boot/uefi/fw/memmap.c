@@ -71,7 +71,7 @@ void fw_get_memory_map(struct memory_map_info *memmap)
 	// translate UEFI memory map to AxBoot one
 	debug("Processing memory map\r\n");
 	for (EFI_UINTN i = 0; i < size / desc_size; i++) {
-		EFI_MEMORY_DESCRIPTOR *desc = ((uint8_t *)map + (i * desc_size));
+		EFI_MEMORY_DESCRIPTOR *desc = (EFI_MEMORY_DESCRIPTOR *)((uint8_t *)map + (i * desc_size));
 		
 		if (desc->NumberOfPages == 0) {
 			continue;
