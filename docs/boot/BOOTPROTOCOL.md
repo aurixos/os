@@ -9,11 +9,23 @@ The Aurix Boot Protocol presents a simple and minimal protocol for booting the A
 
 - Framebuffer is set to the best available video mode (graphics mode if available)
 
+### Architecture-specific
+
+#### x86_64
+
+- Write Protection bit in CR0 is disabled
+
+## Paging
+
+- If available, 5-level paging is set up (see [Kernel Parameters](#kernel-parameters))
+- Lower 2 GiB (4 GiB on 64-bit architectures) are identity mapped
+- Kernel is mapped to the higher half if desired
+
 ## Kernel parameters
 
 The bootloader passes `abp_boot_info` structure as a parameter to the kernel.
-This structure contains the bootloader name and version, version of the ABP protocol, ACPI information,
-memory map and framebuffer information.
+
+A non-zero value in `lvl5_paging` indicates that 5-level paging has been set up and is available.
 
 ```c
 struct abp_boot_info {
@@ -28,6 +40,7 @@ struct abp_boot_info {
 
     // Memory
     struct memory_map *memmap;
+    int lvl5_paging;
 
     // Framebuffer
     struct framebuffer_info framebuffer;

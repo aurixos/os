@@ -70,6 +70,7 @@ struct abp_boot_info {
 
     // Memory
     struct memory_map *memmap;
+    uint8_t lvl5_paging;
 
     // Framebuffer
     struct framebuffer_info framebuffer;

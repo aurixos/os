@@ -34,13 +34,13 @@ typedef void (*entryp)(struct abp_boot_info *);
 void abp_load(void *kernel)
 {
     bool higher_half = false;
-    struct abp_boot_info boot_info = {0};
+    struct abp_boot_info *boot_info = malloc(sizeof(struct abp_boot_info));
     entryp kernel_entry;
 
     // set up basic boot information
-    strcpy(boot_info.bootloader_name, BOOTLOADER_NAME_STR);
-    strcpy(boot_info.bootloader_version, BOOTLOADER_VERSION_STR);
-    strcpy(boot_info.protocol_version, AXBOOT_PROTOCOL_VERSION_STR);
+    strcpy(boot_info->bootloader_name, BOOTLOADER_NAME_STR);
+    strcpy(boot_info->bootloader_version, BOOTLOADER_VERSION_STR);
+    strcpy(boot_info->protocol_version, AXBOOT_PROTOCOL_VERSION_STR);
 
     // get kernel entry point
     kernel_entry = (entryp)elf_load(kernel, &higher_half);
@@ -49,30 +49,27 @@ void abp_load(void *kernel)
     }
 
     // get ACPI and SMBIOS info
-    boot_info.acpi.rsdp = fw_get_acpi_rsdp();
-    if (boot_info.acpi.rsdp != NULL) {
-        boot_info.acpi.is_valid = 1;
+    boot_info->acpi.rsdp = fw_get_acpi_rsdp();
+    if (boot_info->acpi.rsdp != NULL) {
+        boot_info->acpi.is_valid = 1;
     }
 
-    boot_info.smbios.entry_point = fw_get_smbios_entry_point();
-    if (boot_info.smbios.entry_point != NULL) {
-        boot_info.smbios.is_valid = 1;
+    boot_info->smbios.entry_point = fw_get_smbios_entry_point();
+    if (boot_info->smbios.entry_point != NULL) {
+        boot_info->smbios.is_valid = 1;
     }
 
     // get framebuffer info
-    //boot_info.framebuffer_cnt = fb_get_framebuffer_count();
-    //for (int i = 0; i < boot_info.framebuffer_cnt; i++) {
-    //    boot_info.framebuffer[i] = fb_get_framebuffer(i);
-    //}
+    //boot_info->framebuffer = video_get_framebuffer();
 
     // get memory map;
     // on UEFI, this also calls BS->ExitBootServices()
-    //boot_info.memmap = fw_get_memmap(&boot_info.memmap_entcnt);
+    //boot_info->memmap = fw_get_memmap(&(boot_info->lvl5_paging));
 
     // disable interrupts and hope for the best.
     cpu_disable_interrupts();
 
     debug("Jumping to kernel at %x...\r\n", (uint64_t)kernel_entry);
 
-    kernel_entry(&boot_info);
+    kernel_entry(boot_info);
 }
