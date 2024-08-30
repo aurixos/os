@@ -67,7 +67,7 @@ size_t mbstowcs(wchar_t *dest, const char **src, size_t len)
 
 size_t strlen(const char *str)
 {
-	size_t count;
+	size_t count = 0;
 
 	if (str == NULL) {
 		return 0;
