@@ -24,6 +24,10 @@
 
 #define AXBOOT_PROTOCOL_VERSION_STR "0.2"
 
+///
+// ACPI and SMBIOS
+///
+
 struct acpi_info {
     uint8_t is_valid;
     void *rsdp;
@@ -33,6 +37,10 @@ struct smbios_info {
     uint8_t is_valid;
     void *entry_point;
 };
+
+///
+// Memory Map
+///
 
 #define ABP_MEMORY_RESERVED 0xf0
 #define ABP_MEMORY_USABLE 0xf1
@@ -51,12 +59,26 @@ struct memory_map {
     struct memory_map *next;
 };
 
+///
+// Framebuffer
+///
+
+enum {
+    AbpFramebufferRgba,
+    AbpFramebufferBgra
+};
+
 struct framebuffer_info {
     void *addr;
     uint32_t width;
     uint32_t height;
     uint16_t bpp;
+    uint8_t pixel_format;
 };
+
+///
+// General
+///
 
 struct abp_boot_info {
     // General

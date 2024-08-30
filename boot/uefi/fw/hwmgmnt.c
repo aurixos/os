@@ -39,6 +39,7 @@ void *fw_get_acpi_rsdp(void)
             // let's just do one more check to be sure
             void *ptr = gSystemTable->ConfigurationTable[i].VendorTable;
             if (!memcmp(ptr, "RSD PTR ", 8)) {
+                debug("Found RSDP at 0x%lx\r\n", ptr);
                 return ptr;
             }
         }
@@ -63,6 +64,7 @@ void *fw_get_smbios_entry_point(void)
             void *ptr = gSystemTable->ConfigurationTable[i].VendorTable;
             if (!memcmp(ptr, "_SM_", 5) ||
                 !memcmp(ptr, "_SM3_", 5)) {
+                debug("Found SMBIOS entry point at 0x%lx\r\n", ptr);
                 return ptr;
             }
         }

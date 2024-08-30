@@ -23,6 +23,6 @@
 #include <stdint.h>
 
 int fw_initialize_fb(void);
-void fw_get_framebuffer(void **address, uint32_t *width, uint32_t *height, uint32_t *bpp);
+void fw_get_framebuffer(void **address, uint32_t *width, uint32_t *height, uint16_t *bpp, uint8_t *pixelformat);
 
 #endif /* _FIRMWARE_FB_H */

@@ -21,6 +21,7 @@
 #include <protocol/abp.h>
 #include <loader/elf.h>
 #include <firmware/hwmgmnt.h>
+#include <firmware/fb.h>
 #include <lib/string.h>
 #include <print.h>
 #include <axboot.h>
@@ -63,13 +64,26 @@ void abp_load(void *kernel)
     }
 
     // get framebuffer info
-    //boot_info->framebuffer = video_get_framebuffer();
+    fw_get_framebuffer(&boot_info->framebuffer.addr, &boot_info->framebuffer.width, &boot_info->framebuffer.height, &boot_info->framebuffer.bpp, &boot_info->framebuffer.pixel_format);
+    if (boot_info->framebuffer.pixel_format == 1) {
+        boot_info->framebuffer.pixel_format == AbpFramebufferRgba;
+    } else if (boot_info->framebuffer.pixel_format == 2) {
+        boot_info->framebuffer.pixel_format == AbpFramebufferBgra;
+    }
+
+    log("Framebuffer info:\r\n");
+    log("- Address: 0x%lx\r\n", boot_info->framebuffer.addr);
+    log("- Width: 0x%u\r\n", boot_info->framebuffer.width);
+    log("- Height: 0x%u\r\n", boot_info->framebuffer.height);
+    log("- Bits per pixel: %u\r\n", boot_info->framebuffer.bpp);
+    log("- Pixel Format: %s\r\n", boot_info->framebuffer.pixel_format == AbpFramebufferRgba ? "RGBA" : "BGRA");
 
     // get memory map;
     // on UEFI, this also calls BS->ExitBootServices()
     //boot_info->memmap = fw_get_memmap(&(boot_info->lvl5_paging));
 
     // disable interrupts and hope for the best.
+    debug("Preparing for handoff...\r\n");
     cpu_disable_interrupts();
 
     debug("Jumping to kernel at %x...\r\n", (uint64_t)kernel_entry);
