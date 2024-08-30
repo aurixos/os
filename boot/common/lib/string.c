@@ -80,6 +80,24 @@ size_t strlen(const char *str)
 	return count;
 }
 
+char *strcpy(char *dest, const char *src)
+{
+	if (dest == NULL) {
+		return NULL;
+	}
+
+	char *pdest = dest;
+
+	while (*src != '\0') {
+		*dest = *src;
+		dest++;
+		src++;
+	}
+
+	*dest = '\0';
+	return pdest;
+}
+
 void *memset(void *dest, int val, size_t len)
 {
 	unsigned char *ptr = dest;
