@@ -82,7 +82,7 @@ size_t strlen(const char *str)
 
 char *strcpy(char *dest, const char *src)
 {
-	if (dest == NULL) {
+	if (dest == NULL || src == NULL) {
 		return NULL;
 	}
 
