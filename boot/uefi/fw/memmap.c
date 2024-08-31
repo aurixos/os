@@ -65,7 +65,7 @@ void fw_get_memory_map(struct memory_map_info *memmap)
 	memmap_key = key;
 
 	// allocate memory for AxBoot-format memory map
-	memmap->entry_count = size / desc_size;
+	memmap->entry_count = size / desc_size - 1;
 	memmap->entries = (struct memory_map_entry *)malloc(memmap->entry_count * sizeof(struct memory_map_entry));
 
 	// translate UEFI memory map to AxBoot one
@@ -116,6 +116,38 @@ void fw_get_memory_map(struct memory_map_info *memmap)
 	}
 
 	// TODO: check for overlapping entries and merge them
+	for (int i = 0; i < memmap->entry_count; i++) {
+	
+		struct memory_map_entry *entry = &memmap->entries[i];
+		if (entry->length <= 0) {
+			for (int j = i; j < memmap->entry_count; j++) {
+				memmap->entries[j] = memmap->entries[j + 1];
+			}
+		}
+
+		// are we on the last entry?
+		if (i == memmap->entry_count - 1) {
+			break;
+		}
+		struct memory_map_entry *next_entry = &memmap->entries[i+1];
+
+
+		uint64_t entry_end = (uint64_t)entry->base + entry->length;
+		if (entry_end >= next_entry->base) {
+			if (entry->type == next_entry->type) {
+				// two consecutive entries are the same, so just merge them
+				entry->length += next_entry->length;
+
+				for (int j = i; j < memmap->entry_count; j++) {
+					memmap->entries[j] = memmap->entries[j + 1];
+				}
+
+				memmap->entry_count--;
+				i--;
+				continue;
+			}
+		}
+	}
 }
 
 void uefi_exit_boot_services(void)
