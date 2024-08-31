@@ -18,6 +18,7 @@
 /*********************************************************************************/
 
 #include <arch/cpu/cpu.h>
+#include <arch/mm/paging.h>
 #include <protocol/abp.h>
 #include <loader/elf.h>
 #include <firmware/hwmgmnt.h>
@@ -31,15 +32,6 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
-
-#define ABP_MEMORY_RESERVED 0xf0
-#define ABP_MEMORY_USABLE 0xf1
-#define ABP_MEMORY_BOOTLOADER_RECLAIMABLE 0xf2
-#define ABP_MEMORY_MMIO 0xf3
-#define ABP_MEMORY_ACPI_NVS 0xf4
-#define ABP_MEMORY_ACPI_RECLAIMABLE 0xf5
-#define ABP_MEMORY_KERNEL 0xf7
-#define ABP_MEMORY_NOT_USABLE 0xff
 
 typedef void (*entryp)(struct abp_boot_info *);
 
@@ -91,6 +83,16 @@ void abp_load(void *kernel)
     struct abp_boot_info *boot_info = malloc(sizeof(struct abp_boot_info));
     entryp kernel_entry;
 
+    // acquire memory map and initialize paging
+    struct memory_map_info memmap = {0};
+    fw_get_memory_map(&memmap);
+    //memmap_dump(&memmap);
+
+    if (paging_init(&memmap) != 0) {
+        log("ERROR: Couldn't set up paging!\r\n");
+        while(1);
+    }
+
     // set up basic boot information
     boot_info->bootloader_name = malloc(strlen(BOOTLOADER_NAME_STR));
     boot_info->bootloader_version = malloc(strlen(BOOTLOADER_VERSION_STR));
@@ -131,19 +133,19 @@ void abp_load(void *kernel)
     debug("- Bits per pixel: %u\r\n", boot_info->framebuffer.bpp);
     debug("- Pixel Format: %s\r\n", boot_info->framebuffer.pixel_format == AbpFramebufferRgba ? "RGBA" : "BGRA");
 
-    // get memory map
-    struct memory_map_info memmap = {0};
-    fw_get_memory_map(&memmap);
-    memmap_dump(&memmap);
+    // set memory map
     translate_memory_map(&memmap, &boot_info->memmap);
     boot_info->lvl5_paging = 0;
 
     // LET'S FUCKING GOOOOOO
     debug("Preparing for handoff...\r\n");
     fw_prepare_handoff();
-    cpu_disable_interrupts();
 
     debug("Jumping to kernel at %x...\r\n", (uint64_t)kernel_entry);
 
+    // TODO: Remap kernel to higher half (if requested)
+    // TODO: Load GDT
+    // TODO: Set new page table
+    // TODO: Call kernel entry point
     kernel_entry(boot_info);
 }

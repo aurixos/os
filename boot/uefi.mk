@@ -40,9 +40,11 @@ UEFI_CC := clang
 UEFI_LD := clang
 
 UEFI_ASFLAGS := $(ASFLAGS) \
+				-DAXBOOT_UEFI=1 \
 				$(foreach d, $(INCLUDE_DIRS), -I$d)
 
 UEFI_CFLAGS := $(CFLAGS) \
+				-DAXBOOT_UEFI=1 \
 				$(foreach d, $(INCLUDE_DIRS), -I$d) \
 				-target $(ARCH)-unknown-windows \
 				-fshort-wchar \

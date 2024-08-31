@@ -20,13 +20,15 @@
 #ifndef _MM_PAGING_H
 #define _MM_PAGING_H
 
+#include <firmware/memmap.h>
+
 #include <stdint.h>
 
 #define PAGE_SIZE 0x1000
 #define PHYS_PAGE_ADDR_MASK 0x000FFFFFFFFFF000
 
 struct page_table {
-	uint64_t entry[512];
+	uint64_t entries[512];
 };
 
 // pte flags
@@ -40,8 +42,12 @@ struct page_table {
 #define PTE_PAT (1 << 7)
 #define PTE_GLOBAL (1 << 8)
 
-int paging_init(void);
-void paging_map_range(uint64_t phys, uint64_t virt, size_t npages);
+int paging_init(struct memory_map_info *memmap);
+
+void paging_identity_map(uint64_t addr);
 void paging_map(uint64_t phys, uint64_t virt);
+void paging_unmap(uint64_t virt);
+
+void *paging_alloc_mmap(struct memory_map_info *memmap, uint64_t np);
 
 #endif /* _MM_PAGING_H */

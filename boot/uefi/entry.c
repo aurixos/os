@@ -20,7 +20,6 @@
 #include <efi.h>
 #include <efilib.h>
 
-#include <arch/mm/paging.h>
 #include <firmware/firmware.h>
 #include <firmware/fb.h>
 #include <menu/menu.h>
@@ -51,11 +50,6 @@ EFI_STATUS uefi_entry(EFI_HANDLE ImageHandle,
 
     if (fw_initialize_fb() != 0) {
         debug("No valid framebuffer was found!\r\n");
-    }
-
-    if (paging_init() != 0) {
-        debug("Couldn't set up paging!\r\n");
-        while(1);
     }
 
     //menu_main();
