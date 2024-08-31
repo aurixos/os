@@ -2,6 +2,9 @@
 
 The Aurix Boot Protocol presents a simple and minimal protocol for booting the AurixOS kernel.
 
+> [!NOTE]  
+> This document is still a work in progress and may contain incomplete information.
+
 ## Machine state
 
 - All general purpose registers are zeroed out
@@ -17,9 +20,13 @@ The Aurix Boot Protocol presents a simple and minimal protocol for booting the A
 
 - GDT is set up as follows:
 
-| Name            | Base  | Limit | Flags |
-| --------------- | ----- | ----- | ----- |
-| NULL Descriptor | `0x0` | `0x0` | `0x0` |
+| Name                   | Base   | Limit        | Flags      |
+| +--------------------- | +----+ | +----------+ | +----+     |
+| NULL Descriptor        | `0x00` | `0x0000`     | `0x00`     |
+| 32-bit Code Descriptor | `0x00` | `0xFFFFFFFF` | Read only  |
+| 32-bit Data Descriptor | `0x00` | `0xFFFFFFFF` | Read/Write |
+| 64-bit Code Descriptor | `0x00` | `0x0000`     | Read only  |
+| 64-bit Data Descriptor | `0x00` | `0x0000`     | Read/Write |
 
 ## Paging
 
