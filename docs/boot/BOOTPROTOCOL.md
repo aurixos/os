@@ -21,7 +21,7 @@ The Aurix Boot Protocol presents a simple and minimal protocol for booting the A
 - GDT is set up as follows:
 
 | Name                   | Base   | Limit        | Flags      |
-| +--------------------- | +----+ | +----------+ | +----+     |
+| :--------------------- | :----: | :----------: | :--------: |
 | NULL Descriptor        | `0x00` | `0x0000`     | `0x00`     |
 | 32-bit Code Descriptor | `0x00` | `0xFFFFFFFF` | Read only  |
 | 32-bit Data Descriptor | `0x00` | `0xFFFFFFFF` | Read/Write |
