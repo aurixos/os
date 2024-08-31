@@ -31,7 +31,7 @@
 int elf_validate_header(Elf32_Ehdr *header)
 {
 	if (header == NULL) {
-		log("ERROR: elf_validate_header() called with NULL argument!\r\n");
+		debug("ERROR: elf_validate_header() called with NULL argument!\r\n");
 		return -1;
 	}
 
@@ -39,22 +39,22 @@ int elf_validate_header(Elf32_Ehdr *header)
 			header->e_ident[EI_MAG1] != ELFMAG1 ||
 			header->e_ident[EI_MAG2] != ELFMAG2 ||
 			header->e_ident[EI_MAG3] != ELFMAG3) {
-		log("ERROR: Invalid ELF magic value!\r\n");
+		debug("ERROR: Invalid ELF magic value!\r\n");
 		return -1;
 	}
 
 	if (header->e_ident[EI_DATA] != ELFDATA2LSB) {
-		log("ERROR: ELF is not little endian!\r\n");
+		debug("ERROR: ELF is not little endian!\r\n");
 		return -1;
 	}
 
 	if (header->e_type != ET_EXEC) {
-		log("ERROR: ELF file is not an executable!\r\n");
+		debug("ERROR: ELF file is not an executable!\r\n");
 		return -1;
 	}
 
 	if (header->e_version != EV_CURRENT) {
-		log("ERROR: ELF version is not EV_CURRENT!\r\n");
+		debug("ERROR: ELF version is not EV_CURRENT!\r\n");
 		return -1;
 	}
 
@@ -64,7 +64,7 @@ int elf_validate_header(Elf32_Ehdr *header)
 		header->e_machine != EM_AARCH64 &&
 		header->e_machine != EM_PPC &&
 		header->e_machine != EM_PPC64) {
-		log("ERROR: Unsupported machine specified!\r\n");
+		debug("ERROR: Unsupported machine specified!\r\n");
 		return -1;
 	}
 
@@ -79,7 +79,7 @@ void *elf_load(void *kernel, bool *is_higherhalf)
 	void *entryp = NULL;
 
 	if (elf_validate_header(header32) != 0) {
-		log("ERROR: Invalid ELF header!\r\n");
+		debug("ERROR: Invalid ELF header!\r\n");
 		return NULL;
 	}
 
@@ -89,7 +89,7 @@ void *elf_load(void *kernel, bool *is_higherhalf)
 		header32->e_machine == EM_ARM ||
 		header32->e_machine == EM_PPC) {
 		if (header32->e_phnum <= 0) {
-			log("ERROR: No loadable ELF segments found.\r\n");
+			debug("ERROR: No loadable ELF segments found.\r\n");
 			return NULL;
 		}
 
@@ -117,7 +117,7 @@ void *elf_load(void *kernel, bool *is_higherhalf)
 		}
 	} else {
 		if (header64->e_phnum <= 0) {
-			log("ERROR: No loadable ELF segments found.\r\n");
+			debug("ERROR: No loadable ELF segments found.\r\n");
 			return NULL;
 		}
 

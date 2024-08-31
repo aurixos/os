@@ -175,7 +175,7 @@ void uefi_exit_boot_services(void)
 
 		status = gSystemTable->BootServices->ExitBootServices(gImageHandle, key);
 		if (EFI_ERROR(status)) {
-			log("Failed to exit boot services: ExitBootServices() returned 0x%lx\r\n", status);
+			debug("Failed to exit boot services: ExitBootServices() returned 0x%lx\r\n", status);
 		}
 
 	} while (retries++ < MAX_RETRIES && EFI_ERROR(status));

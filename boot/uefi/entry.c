@@ -54,7 +54,7 @@ EFI_STATUS uefi_entry(EFI_HANDLE ImageHandle,
     }
 
     if (paging_init() != 0) {
-        log("Couldn't enable paging!\r\n");
+        debug("Couldn't set up paging!\r\n");
         while(1);
     }
 
@@ -62,7 +62,7 @@ EFI_STATUS uefi_entry(EFI_HANDLE ImageHandle,
 
     loader_load(ProtocolAbp, "\\System\\axkrnl");
 
-    log("Tried to return from main()! Halting...\r\n");
+    debug("Tried to return from main()! Halting...\r\n");
     while(1);
 
     return EFI_SUCCESS;

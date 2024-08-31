@@ -38,7 +38,7 @@ int firmware_init(void)
 				NULL,
 				EFI_OPEN_PROTOCOL_BY_HANDLE_PROTOCOL);
 	if (EFI_ERROR(Status)) {
-		log("Couldn't open LoadedImage protocol!\r\n");
+		debug("Couldn't open LoadedImage protocol!\r\n");
 		return 1;
 	}
 
@@ -49,7 +49,7 @@ int firmware_init(void)
 				NULL,
 				EFI_OPEN_PROTOCOL_BY_HANDLE_PROTOCOL);
 	if (EFI_ERROR(Status)) {
-		log("Couldn't open SimpleFileSystem protocol!\r\n");
+		debug("Couldn't open SimpleFileSystem protocol!\r\n");
 		return 1;
 	}
 

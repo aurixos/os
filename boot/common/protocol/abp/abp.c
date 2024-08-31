@@ -124,22 +124,21 @@ void abp_load(void *kernel)
         boot_info->framebuffer.pixel_format = AbpFramebufferBgra;
     }
 
-    log("Framebuffer info:\r\n");
-    log("- Address: 0x%lx\r\n", boot_info->framebuffer.addr);
-    log("- Width: 0x%u\r\n", boot_info->framebuffer.width);
-    log("- Height: 0x%u\r\n", boot_info->framebuffer.height);
-    log("- Bits per pixel: %u\r\n", boot_info->framebuffer.bpp);
-    log("- Pixel Format: %s\r\n", boot_info->framebuffer.pixel_format == AbpFramebufferRgba ? "RGBA" : "BGRA");
+    debug("Framebuffer info:\r\n");
+    debug("- Address: 0x%lx\r\n", boot_info->framebuffer.addr);
+    debug("- Width: 0x%u\r\n", boot_info->framebuffer.width);
+    debug("- Height: 0x%u\r\n", boot_info->framebuffer.height);
+    debug("- Bits per pixel: %u\r\n", boot_info->framebuffer.bpp);
+    debug("- Pixel Format: %s\r\n", boot_info->framebuffer.pixel_format == AbpFramebufferRgba ? "RGBA" : "BGRA");
 
-    // get memory map;
-    // on UEFI, this also calls BS->ExitBootServices()
-    //boot_info->memmap = fw_get_memmap(&(boot_info->lvl5_paging));
+    // get memory map
     struct memory_map_info memmap = {0};
     fw_get_memory_map(&memmap);
     memmap_dump(&memmap);
     translate_memory_map(&memmap, &boot_info->memmap);
+    boot_info->lvl5_paging = 0;
 
-    // disable interrupts and hope for the best.
+    // LET'S FUCKING GOOOOOO
     debug("Preparing for handoff...\r\n");
     fw_prepare_handoff();
     cpu_disable_interrupts();
