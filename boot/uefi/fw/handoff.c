@@ -23,5 +23,5 @@
 
 void fw_prepare_handoff(void)
 {
-	//uefi_exit_boot_services();
+	uefi_exit_boot_services();
 }

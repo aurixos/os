@@ -29,8 +29,6 @@
 #include <stdint.h>
 #include <stddef.h>
 
-static EFI_UINTN memmap_key = 0;
-
 void fw_get_memory_map(struct memory_map_info *memmap)
 {
 	EFI_STATUS status;
@@ -43,7 +41,6 @@ void fw_get_memory_map(struct memory_map_info *memmap)
 	if (memmap == NULL) {
 		return;
 	}
-
 
 	status = gSystemTable->BootServices->GetMemoryMap(&size, map, &key, &desc_size, &desc_ver);
 	if (EFI_ERROR(status) && status != EFI_BUFFER_TOO_SMALL) {
@@ -60,9 +57,6 @@ void fw_get_memory_map(struct memory_map_info *memmap)
 		free(map);
 		return;
 	}
-
-	// we'll need for ExitBootServices()
-	memmap_key = key;
 
 	// allocate memory for AxBoot-format memory map
 	memmap->entry_count = size / desc_size - 1;
@@ -153,12 +147,42 @@ void fw_get_memory_map(struct memory_map_info *memmap)
 void uefi_exit_boot_services(void)
 {
 	EFI_STATUS status;
+	EFI_MEMORY_DESCRIPTOR *map = NULL;
+	EFI_UINTN size = 0;
+	EFI_UINTN key = 0;
+	EFI_UINTN desc_size = 0;
+	EFI_UINT32 desc_ver = 0;
+	EFI_UINT32 retries = 0;
 
-	// FIXME: ExitBootServices() returns EFI_INVALID_PARAMETER for some reason
-	status = gSystemTable->BootServices->ExitBootServices(gImageHandle, memmap_key);
-	if (EFI_ERROR(status)) {
-		log("ERROR: Failed to exit boot services: ExitBootServices() returned 0x%lx\r\n", status);
+	status = gSystemTable->BootServices->GetMemoryMap(&size, map, &key, &desc_size, &desc_ver);
+	if (EFI_ERROR(status) && status != EFI_BUFFER_TOO_SMALL) {
+		debug("ERROR: Failed to acquire memory map (step 1): 0x%lx\r\n", status);
+		return;
+	}
+
+	size += desc_size * 2;
+	map = (EFI_MEMORY_DESCRIPTOR *)malloc(size);
+
+#define MAX_RETRIES 10
+
+	do {
+		debug("Exitting Boot Services: Attempt %u/%u\r\n", retries + 1, MAX_RETRIES);
+
+		status = gSystemTable->BootServices->GetMemoryMap(&size, map, &key, &desc_size, &desc_ver);
+		if (EFI_ERROR(status)) {
+			debug("Failed to acquire memory map: 0x%lx\r\n", status);
+		}
+
+		status = gSystemTable->BootServices->ExitBootServices(gImageHandle, key);
+		if (EFI_ERROR(status)) {
+			log("Failed to exit boot services: ExitBootServices() returned 0x%lx\r\n", status);
+		}
+
+	} while (retries++ < MAX_RETRIES && EFI_ERROR(status));
+
+	if (retries == MAX_RETRIES) {
+		debug("ERROR: Failed to exit boot services!\r\n");
 		// TODO: die?
-		while(1);
+		while (1);
 	}
 }
