@@ -31,7 +31,7 @@ The Aurix Boot Protocol presents a simple and minimal protocol for booting the A
 ## Paging
 
 - ~~If available, 5-level paging is set up (see [Kernel Parameters](#kernel-parameters))~~ 5-level paging is not yet supported in AxBoot
-- Lower 2 GiB (4 GiB on 64-bit architectures) are identity mapped
+- The memory map is identity mapped
 - Kernel is mapped to the higher half if desired
 
 ## Kernel parameters
