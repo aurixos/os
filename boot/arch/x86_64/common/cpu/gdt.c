@@ -1,5 +1,5 @@
 /*********************************************************************************/
-/* Module Name:  paging.h                                                        */
+/* Module Name:  gdt.c                                                           */
 /* Project:      AurixOS                                                         */
 /*                                                                               */
 /* Copyright (c) 2024 Jozef Nagy                                                 */
@@ -17,33 +17,19 @@
 /* SOFTWARE.                                                                     */
 /*********************************************************************************/
 
-#ifndef _MM_PAGING_H
-#define _MM_PAGING_H
-
-#include <firmware/memmap.h>
+#include <arch/cpu/gdt.h>
+#include <arch/mm/paging.h>
 
 #include <stdint.h>
 
-#define PAGE_SIZE 0x1000
-#define PHYS_PAGE_ADDR_MASK 0x000FFFFFFFFFF000
-
-struct page_table {
-	uint64_t entries[512];
-};
-
-// pte flags
-#define PTE_PRESENT (1)
-#define PTE_READ_WRITE (1 << 1)
-#define PTE_USER (1 << 2)
-
-int paging_init(struct memory_map_info *memmap);
-
-void paging_identity_map(uint64_t addr);
-void paging_map(uint64_t phys, uint64_t virt);
-void paging_unmap(uint64_t virt);
-
-uint64_t paging_get_pml4(void);
-
-void *paging_allocate(size_t np);
-
-#endif /* _MM_PAGING_H */
+void gdt_set_entry(struct gdt_descriptor *entry, uint32_t base, uint32_t limit, uint8_t access,
+				   uint8_t flags)
+{
+	entry->limit_low = (limit >> 8) & 0xffff;
+	entry->base_low = (base >> 8) & 0xffff;
+	entry->base_mid = (base >> 16) & 0xff;
+	entry->access = access;
+	entry->limit_high = (limit >> 16) & 0xf;
+	entry->flags = flags;
+	entry->base_high = (base >> 24) & 0xff;
+}

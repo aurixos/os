@@ -13,8 +13,8 @@ PHDRS
 SECTIONS
 {
 	/* We can't load higher half kernels just yet. */
-	/*. = 0xffffffff80000000;*/
-	. = 0x1000;
+	. = 0xffffffff80000000;
+	/*. = 0x1000;*/
 
 	_linker_start_text = .;
 

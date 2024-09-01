@@ -1,5 +1,5 @@
 /*********************************************************************************/
-/* Module Name:  paging.h                                                        */
+/* Module Name:  gdt.h                                                           */
 /* Project:      AurixOS                                                         */
 /*                                                                               */
 /* Copyright (c) 2024 Jozef Nagy                                                 */
@@ -17,33 +17,51 @@
 /* SOFTWARE.                                                                     */
 /*********************************************************************************/
 
-#ifndef _MM_PAGING_H
-#define _MM_PAGING_H
-
-#include <firmware/memmap.h>
+#ifndef _ARCH_CPU_GDT_H
+#define _ARCH_CPU_GDT_H
 
 #include <stdint.h>
 
-#define PAGE_SIZE 0x1000
-#define PHYS_PAGE_ADDR_MASK 0x000FFFFFFFFFF000
+struct gdt_descriptor {
+	uint16_t limit_low;
+	uint16_t base_low;
+	uint8_t base_mid;
+	uint8_t access;
+	uint8_t limit_high : 4;
+	uint8_t flags : 4;
+	uint8_t base_high;
+} __attribute__((packed));
 
-struct page_table {
-	uint64_t entries[512];
-};
+struct tss_descriptor {
+	struct gdt_descriptor gdt;
+	uint32_t base_high;
+	uint32_t reserved;
+} __attribute__((packed));
 
-// pte flags
-#define PTE_PRESENT (1)
-#define PTE_READ_WRITE (1 << 1)
-#define PTE_USER (1 << 2)
+struct tss {
+	uint32_t reserved;
+	uint32_t rsp0[2];
+	uint32_t rsp1[2];
+	uint32_t rsp2[2];
+	uint32_t reserved0[2];
+	uint32_t ist0[2];
+	uint32_t ist1[2];
+	uint32_t ist2[2];
+	uint32_t ist3[2];
+	uint32_t ist4[2];
+	uint32_t ist5[2];
+	uint32_t ist6[2];
+	uint32_t ist7[2];
+	uint32_t reserved1[4];
+	uint16_t iomap_base;
+} __attribute__((packed));
 
-int paging_init(struct memory_map_info *memmap);
+struct gdtr {
+	uint16_t limit;
+	uint64_t base;
+} __attribute__((packed));
 
-void paging_identity_map(uint64_t addr);
-void paging_map(uint64_t phys, uint64_t virt);
-void paging_unmap(uint64_t virt);
+void gdt_set_entry(struct gdt_descriptor *entry, uint32_t base, uint32_t limit, uint8_t access,
+				   uint8_t flags);
 
-uint64_t paging_get_pml4(void);
-
-void *paging_allocate(size_t np);
-
-#endif /* _MM_PAGING_H */
+#endif /* _ARCH_CPU_GDT_H */

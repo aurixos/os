@@ -33,8 +33,6 @@
 #include <stddef.h>
 #include <stdbool.h>
 
-typedef void (*entryp)(struct abp_boot_info *);
-
 static void translate_memory_map(struct memory_map_info *memmap, struct abp_memory_map **abp_memmap)
 {
     struct abp_memory_map *current_entry = *abp_memmap;
@@ -81,20 +79,7 @@ void abp_load(void *kernel, size_t kernel_size)
 {
     bool higher_half = false;
     struct abp_boot_info *boot_info = malloc(sizeof(struct abp_boot_info));
-    entryp kernel_entry;
-
-    // get kernel entry point
-    kernel_entry = (entryp)elf_load(kernel, &higher_half);
-    if (kernel_entry == NULL) {
-        return;
-    }
-
-    // remap kernel to higher half if desired
-    if (higher_half) {
-        for (uint64_t i = 0; i < (kernel_size + (PAGE_SIZE - 1)) / PAGE_SIZE; i++) {
-            paging_map((uint64_t)kernel + (i * PAGE_SIZE), HIGHER_HALF + (i * PAGE_SIZE));
-        }
-    }
+    void *kernel_entry;
 
     // acquire memory map and initialize paging
     struct memory_map_info memmap = {0};
@@ -104,6 +89,20 @@ void abp_load(void *kernel, size_t kernel_size)
     if (paging_init(&memmap) != 0) {
         log("ERROR: Couldn't set up paging!\r\n");
         while(1);
+    }
+
+    // get kernel entry point
+    kernel_entry = elf_load(kernel, &higher_half);
+    if (kernel_entry == NULL) {
+        return;
+    }
+
+    // remap kernel to higher half if desired
+    debug("kernel size: %u (%u pages)\r\n", kernel_size, (kernel_size + (PAGE_SIZE - 1)) / PAGE_SIZE);
+    if (higher_half) {
+        for (uint64_t i = 0; i < (kernel_size + (PAGE_SIZE - 1)) / PAGE_SIZE; i++) {
+            paging_map((uint64_t)kernel + (i * PAGE_SIZE), HIGHER_HALF + (i * PAGE_SIZE));
+        }
     }
 
     // set up basic boot information
@@ -160,9 +159,5 @@ void abp_load(void *kernel, size_t kernel_size)
 
     debug("Jumping to kernel at %x...\r\n", (uint64_t)kernel_entry);
 
-    // TODO: Remap kernel to higher half (if requested)
-    // TODO: Load GDT
-    // TODO: Set new page table
-    // TODO: Call kernel entry point
-    kernel_entry(boot_info);
+    abp_handoff(kernel_entry, boot_info, kernel_stack, 16);
 }

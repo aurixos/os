@@ -109,9 +109,8 @@ void fw_get_memory_map(struct memory_map_info *memmap)
 		}
 	}
 
-	// TODO: check for overlapping entries and merge them
+    // check for overlapping entries and merge them
 	for (int i = 0; i < memmap->entry_count; i++) {
-	
 		struct memory_map_entry *entry = &memmap->entries[i];
 		if (entry->length <= 0) {
 			for (int j = i; j < memmap->entry_count; j++) {

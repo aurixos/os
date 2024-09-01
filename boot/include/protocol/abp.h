@@ -21,6 +21,7 @@
 #define _ABP_H
 
 #include <stdint.h>
+#include <stddef.h>
 
 #define AXBOOT_PROTOCOL_VERSION_STR "0.2"
 
@@ -98,6 +99,13 @@ struct abp_boot_info {
     struct abp_framebuffer_info framebuffer;
 };
 
+///
+// AxBoot
+///
+
+typedef void (*abp_entryp)(struct abp_boot_info *);
+
 void abp_load(void *kernel, size_t kernel_size);
+void abp_handoff(void *entrypoint, struct abp_boot_info *bootinfo, void *stack, uint16_t stack_size);
 
 #endif /* _ABP_H */

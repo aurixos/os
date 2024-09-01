@@ -17,6 +17,7 @@
 /* SOFTWARE.                                                                     */
 /*********************************************************************************/
 
+#include <arch/cpu/cpu.h>
 #include <firmware/firmware.h>
 #include <firmware/memmap.h>
 #include <firmware/handoff.h>

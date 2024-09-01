@@ -161,6 +161,11 @@ void paging_unmap(uint64_t virt)
 	__asm__ volatile("invlpg (%0)" :: "r"(virt));
 }
 
+uint64_t paging_get_pml4(void)
+{
+	return (uint64_t)pml4;
+}
+
 void *paging_allocate(size_t np)
 {
 	return alloc_mmap(np);
