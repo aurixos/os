@@ -160,3 +160,8 @@ void paging_unmap(uint64_t virt)
 
 	__asm__ volatile("invlpg (%0)" :: "r"(virt));
 }
+
+void *paging_allocate(size_t np)
+{
+	return alloc_mmap(np);
+}

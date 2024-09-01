@@ -48,6 +48,6 @@ void paging_identity_map(uint64_t addr);
 void paging_map(uint64_t phys, uint64_t virt);
 void paging_unmap(uint64_t virt);
 
-void *paging_alloc_mmap(struct memory_map_info *memmap, uint64_t np);
+void *paging_allocate(size_t np);
 
 #endif /* _MM_PAGING_H */

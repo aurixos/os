@@ -77,11 +77,24 @@ static void translate_memory_map(struct memory_map_info *memmap, struct abp_memo
     current_entry->next = NULL;
 }
 
-void abp_load(void *kernel)
+void abp_load(void *kernel, size_t kernel_size)
 {
     bool higher_half = false;
     struct abp_boot_info *boot_info = malloc(sizeof(struct abp_boot_info));
     entryp kernel_entry;
+
+    // get kernel entry point
+    kernel_entry = (entryp)elf_load(kernel, &higher_half);
+    if (kernel_entry == NULL) {
+        return;
+    }
+
+    // remap kernel to higher half if desired
+    if (higher_half) {
+        for (uint64_t i = 0; i < (kernel_size + (PAGE_SIZE - 1)) / PAGE_SIZE; i++) {
+            paging_map((uint64_t)kernel + (i * PAGE_SIZE), HIGHER_HALF + (i * PAGE_SIZE));
+        }
+    }
 
     // acquire memory map and initialize paging
     struct memory_map_info memmap = {0};
@@ -100,12 +113,6 @@ void abp_load(void *kernel)
     strcpy(boot_info->bootloader_name, BOOTLOADER_NAME_STR);
     strcpy(boot_info->bootloader_version, BOOTLOADER_VERSION_STR);
     strcpy(boot_info->protocol_version, AXBOOT_PROTOCOL_VERSION_STR);
-
-    // get kernel entry point
-    kernel_entry = (entryp)elf_load(kernel, &higher_half);
-    if (kernel_entry == NULL) {
-        return;
-    }
 
     // get ACPI and SMBIOS info
     boot_info->acpi.rsdp = fw_get_acpi_rsdp();
@@ -126,16 +133,26 @@ void abp_load(void *kernel)
         boot_info->framebuffer.pixel_format = AbpFramebufferBgra;
     }
 
+    // identity map the framebuffer
+    uint64_t framebuffer_size = boot_info->framebuffer.width * boot_info->framebuffer.height * (boot_info->framebuffer.bpp >> 3);
+    debug("Identity mapping the framebuffer...\r\n");
+    for (uint64_t i = 0; i < (framebuffer_size + (PAGE_SIZE - 1)) / PAGE_SIZE; i++) {
+        paging_identity_map((uint64_t)boot_info->framebuffer.addr + (i * PAGE_SIZE));
+    }
+
     debug("Framebuffer info:\r\n");
     debug("- Address: 0x%lx\r\n", boot_info->framebuffer.addr);
-    debug("- Width: 0x%u\r\n", boot_info->framebuffer.width);
-    debug("- Height: 0x%u\r\n", boot_info->framebuffer.height);
+    debug("- Width: %u\r\n", boot_info->framebuffer.width);
+    debug("- Height: %u\r\n", boot_info->framebuffer.height);
     debug("- Bits per pixel: %u\r\n", boot_info->framebuffer.bpp);
     debug("- Pixel Format: %s\r\n", boot_info->framebuffer.pixel_format == AbpFramebufferRgba ? "RGBA" : "BGRA");
 
     // set memory map
     translate_memory_map(&memmap, &boot_info->memmap);
     boot_info->lvl5_paging = 0;
+    
+    // create a new 64 KB stack for the kernel
+    void *kernel_stack = paging_allocate(16);
 
     // LET'S FUCKING GOOOOOO
     debug("Preparing for handoff...\r\n");

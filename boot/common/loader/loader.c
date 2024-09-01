@@ -55,7 +55,7 @@ void loader_load(int protocol, const char *filepath)
 
 	switch (protocol) {
 		case ProtocolAbp:
-			abp_load(filebuf);
+			abp_load(filebuf, filesize);
 			break;
 		default:
 			log("ERROR: Invalid protocol specified!\r\n");

@@ -98,6 +98,6 @@ struct abp_boot_info {
     struct abp_framebuffer_info framebuffer;
 };
 
-void abp_load(void *kernel);
+void abp_load(void *kernel, size_t kernel_size);
 
 #endif /* _ABP_H */
