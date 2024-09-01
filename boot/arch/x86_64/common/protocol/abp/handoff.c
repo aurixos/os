@@ -58,6 +58,7 @@ void abp_handoff(void *entrypoint, struct abp_boot_info *bootinfo, void *stack, 
 
 	uint64_t pml4 = paging_get_pml4();
 
+	// it's go time, motherfuckers!
 	__asm__ volatile(
 		"cli\n"
 		"movq %[pml4], %%cr3\n"
@@ -91,4 +92,6 @@ void abp_handoff(void *entrypoint, struct abp_boot_info *bootinfo, void *stack, 
 			"c"(bootinfo)
 		: "rax", "memory"
 	);
+
+	__builtin_unreachable();
 }

@@ -140,7 +140,7 @@ void abp_load(void *kernel, size_t kernel_size)
     }
 
     debug("Framebuffer info:\r\n");
-    debug("- Address: 0x%lx\r\n", boot_info->framebuffer.addr);
+    debug("- Address: 0x%llx\r\n", boot_info->framebuffer.addr);
     debug("- Width: %u\r\n", boot_info->framebuffer.width);
     debug("- Height: %u\r\n", boot_info->framebuffer.height);
     debug("- Bits per pixel: %u\r\n", boot_info->framebuffer.bpp);
@@ -152,12 +152,22 @@ void abp_load(void *kernel, size_t kernel_size)
     
     // create a new 64 KB stack for the kernel
     void *kernel_stack = paging_allocate(16);
+    memset(kernel_stack, 0, (16 * PAGE_SIZE));
+    debug("Created new stack at 0x%lx\r\n", kernel_stack);
+
+    for (uint64_t i = 0; i < 16; i++) {
+        paging_identity_map((uint64_t)kernel_stack + (i * PAGE_SIZE));
+    }
+
 
     // LET'S FUCKING GOOOOOO
+    debug("Kernel entry is located at 0x%llx\r\n", kernel_entry);
     debug("Preparing for handoff...\r\n");
     fw_prepare_handoff();
 
-    debug("Jumping to kernel at %x...\r\n", (uint64_t)kernel_entry);
+    /*for (;;) {
+		__asm__ volatile("cli;hlt");
+	}*/
 
     abp_handoff(kernel_entry, boot_info, kernel_stack, 16);
 }

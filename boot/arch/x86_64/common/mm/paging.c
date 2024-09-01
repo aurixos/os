@@ -69,7 +69,7 @@ int paging_init(struct memory_map_info *memmap)
 	// disable write protection
 	uint64_t cr0 = read_cr0();
 	cr0 &= ~(1 << 16);
-	write_cr0(cr0);
+	/write_cr0(cr0);
 
 	g_memmap = memmap;
 	pml4 = alloc_mmap(1);
@@ -80,7 +80,7 @@ int paging_init(struct memory_map_info *memmap)
 	for (uint32_t i = 0; i < memmap->entry_count; i++) {
 		struct memory_map_entry *entry = &memmap->entries[i];
 
-		for (uint64_t j = 0; j < entry->length / PAGE_SIZE; j++) {
+		for (uint64_t j = 0; j < (entry->length + PAGE_SIZE - 1) / PAGE_SIZE; j++) {
 			paging_identity_map(entry->base + (j * PAGE_SIZE));
 		}
 	}
