@@ -1,5 +1,5 @@
 /*********************************************************************************/
-/* Module Name:  print.c                                                         */
+/* Module Name:  serial.h                                                        */
 /* Project:      AurixOS                                                         */
 /*                                                                               */
 /* Copyright (c) 2024 Jozef Nagy                                                 */
@@ -17,48 +17,11 @@
 /* SOFTWARE.                                                                     */
 /*********************************************************************************/
 
-#define NANOPRINTF_IMPLEMENTATION
-#define NANOPRINTF_USE_FIELD_WIDTH_FORMAT_SPECIFIERS 1
-#define NANOPRINTF_USE_PRECISION_FORMAT_SPECIFIERS 1
-#define NANOPRINTF_USE_FLOAT_FORMAT_SPECIFIERS 1
-#define NANOPRINTF_USE_LARGE_FORMAT_SPECIFIERS 1
-#define NANOPRINTF_USE_BINARY_FORMAT_SPECIFIERS 0
-#define NANOPRINTF_USE_WRITEBACK_FORMAT_SPECIFIERS 0
-#include <nanoprintf.h>
+#ifndef _DEBUG_SERIAL_H
+#define _DEBUG_SERIAL_H
 
-#include <debug/serial.h>
-#include <print.h>
+void serial_init(void);
+void serial_send(char c);
+void serial_sendstr(char *s);
 
-#include <stddef.h>
-#include <stdint.h>
-#include <stdarg.h>
-#include <stdbool.h>
-
-int32_t _fltused = 0;
-int32_t __eqdf2 = 0;
-int32_t __ltdf2 = 0;
-
-void log(const char *fmt, ...)
-{
-	va_list args;
-	char buf[4096];
-
-	va_start(args, fmt);
-	npf_vsnprintf(buf, sizeof(buf), fmt, args);
-	va_end(args);
-
-	printstr(buf);
-}
-
-void debug(const char *fmt, ...)
-{
-	va_list args;
-	char buf[4096];
-
-	va_start(args, fmt);
-	npf_vsnprintf(buf, sizeof(buf), fmt, args);
-	va_end(args);
-
-	serial_sendstr(buf);
-}
-
+#endif /* _DEBUG_SERIAL_H */

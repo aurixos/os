@@ -1,5 +1,5 @@
 /*********************************************************************************/
-/* Module Name:  print.c                                                         */
+/* Module Name:  serial.c                                                        */
 /* Project:      AurixOS                                                         */
 /*                                                                               */
 /* Copyright (c) 2024 Jozef Nagy                                                 */
@@ -17,48 +17,44 @@
 /* SOFTWARE.                                                                     */
 /*********************************************************************************/
 
-#define NANOPRINTF_IMPLEMENTATION
-#define NANOPRINTF_USE_FIELD_WIDTH_FORMAT_SPECIFIERS 1
-#define NANOPRINTF_USE_PRECISION_FORMAT_SPECIFIERS 1
-#define NANOPRINTF_USE_FLOAT_FORMAT_SPECIFIERS 1
-#define NANOPRINTF_USE_LARGE_FORMAT_SPECIFIERS 1
-#define NANOPRINTF_USE_BINARY_FORMAT_SPECIFIERS 0
-#define NANOPRINTF_USE_WRITEBACK_FORMAT_SPECIFIERS 0
-#include <nanoprintf.h>
-
 #include <debug/serial.h>
-#include <print.h>
+#include <arch/cpu/cpu.h>
 
-#include <stddef.h>
 #include <stdint.h>
-#include <stdarg.h>
-#include <stdbool.h>
 
-int32_t _fltused = 0;
-int32_t __eqdf2 = 0;
-int32_t __ltdf2 = 0;
+#define COM1 0x3f8
 
-void log(const char *fmt, ...)
+static int is_tx_empty(void)
 {
-	va_list args;
-	char buf[4096];
-
-	va_start(args, fmt);
-	npf_vsnprintf(buf, sizeof(buf), fmt, args);
-	va_end(args);
-
-	printstr(buf);
+	return inb(COM1 + 5) & 0x20;
 }
 
-void debug(const char *fmt, ...)
+void serial_init(void)
 {
-	va_list args;
-	char buf[4096];
-
-	va_start(args, fmt);
-	npf_vsnprintf(buf, sizeof(buf), fmt, args);
-	va_end(args);
-
-	serial_sendstr(buf);
+	// TODO: Initialize all COM ports
+	outb(COM1 + 1, 0x00);
+	outb(COM1 + 3, 0x80);
+	outb(COM1, 0x03);
+	outb(COM1 + 1, 0x00);
+	outb(COM1 + 3, 0x03);
+	outb(COM1 + 2, 0xC7);
+	outb(COM1 + 4, 0x0B);
+	outb(COM1 + 4, 0x0F);
 }
 
+void serial_send(char c)
+{
+	while (is_tx_empty() == 0);
+	outb(COM1, c);
+}
+
+void serial_sendstr(char *s)
+{
+	while (*s != '\0') {
+		if (*s == '\r') {
+			s++;
+			continue;
+		}
+		serial_send(*s++);
+	}
+}
