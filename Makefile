@@ -11,7 +11,7 @@ export GITREV := $(shell git rev-parse --short HEAD)
 LIVECD := $(RELEASE_DIR)/aurix-$(GITREV)-livecd_$(ARCH).iso
 LIVEHDD := $(RELEASE_DIR)/aurix-$(GITREV)-livehdd_$(ARCH).img
 
-QEMU_FLAGS := -m 2G -smp 4 -serial stdio
+QEMU_FLAGS := -m 2G -smp 4 -d int -D log.txt -serial stdio #-no-reboot -no-shutdown -machine smm=off -monitor stdio
 
 .PHONY: boot
 boot:

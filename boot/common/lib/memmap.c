@@ -28,7 +28,7 @@ void memmap_dump(struct memory_map_info *memmap)
 {
 	debug("Dumping memory map:\r\n");
 	for (size_t i = 0; i < memmap->entry_count; i++) {
-		debug("Entry %u: base=0x%lx length=%u type=%s\r\n", i, memmap->entries[i].base, memmap->entries[i].length, memmap_type_to_str(memmap->entries[i].type));
+		debug("Entry %u: base=0x%llx length=%llu type=%s\r\n", i, memmap->entries[i].base, memmap->entries[i].length, memmap_type_to_str(memmap->entries[i].type));
 	}
 }
 

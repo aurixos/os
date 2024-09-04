@@ -64,7 +64,7 @@ void fw_get_memory_map(struct memory_map_info *memmap)
 
 	// translate UEFI memory map to AxBoot one
 	debug("Processing memory map\r\n");
-	for (EFI_UINTN i = 0; i < size / desc_size; i++) {
+	for (EFI_UINTN i = 0; i < size / desc_size - 1; i++) {
 		EFI_MEMORY_DESCRIPTOR *desc = (EFI_MEMORY_DESCRIPTOR *)((uint8_t *)map + (i * desc_size));
 		
 		if (desc->NumberOfPages == 0) {
@@ -112,29 +112,30 @@ void fw_get_memory_map(struct memory_map_info *memmap)
     // check for overlapping entries and merge them
 	for (int i = 0; i < memmap->entry_count; i++) {
 		struct memory_map_entry *entry = &memmap->entries[i];
-		if (entry->length <= 0) {
-			for (int j = i; j < memmap->entry_count; j++) {
-				memmap->entries[j] = memmap->entries[j + 1];
-			}
-		}
-
+	
 		// are we on the last entry?
 		if (i == memmap->entry_count - 1) {
 			break;
 		}
+	
+		if (entry->length == 0) {
+			for (int j = i; j < memmap->entry_count; j++) {
+				memmap->entries[j] = memmap->entries[j + 1];
+			}
+		}
+	
 		struct memory_map_entry *next_entry = &memmap->entries[i+1];
-
 
 		uint64_t entry_end = (uint64_t)entry->base + entry->length;
 		if (entry_end >= next_entry->base) {
 			if (entry->type == next_entry->type) {
 				// two consecutive entries are the same, so just merge them
 				entry->length += next_entry->length;
-
-				for (int j = i; j < memmap->entry_count; j++) {
+	
+				for (int j = i + 1; j < memmap->entry_count; j++) {
 					memmap->entries[j] = memmap->entries[j + 1];
 				}
-
+	
 				memmap->entry_count--;
 				i--;
 				continue;

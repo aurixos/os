@@ -39,13 +39,13 @@ static void *alloc_mmap(uint64_t np)
 	static uint64_t remaining_pages = 0;
 
 	if (remaining_pages < np) {
-		uint32_t i;
-		for (i = 0; i < g_memmap->entry_count; i++) {
+		uint32_t i = cur_entry + 1;
+		for (; i < g_memmap->entry_count; i++) {
 			struct memory_map_entry *entry = &g_memmap->entries[i];
 
 			if (entry->type == MemoryMapUsable && (entry->length / PAGE_SIZE) >= np) {
 				cur_entry = i;
-				remaining_pages = entry->length - np;
+				remaining_pages = ((entry->length + PAGE_SIZE - 1) / PAGE_SIZE) - np;
 				next_page_address = (void *)(entry->base + (np * PAGE_SIZE));
 				return (void *)entry->base;
 			}
@@ -67,9 +67,9 @@ static void *alloc_mmap(uint64_t np)
 int paging_init(struct memory_map_info *memmap)
 {
 	// disable write protection
-	uint64_t cr0 = read_cr0();
-	cr0 &= ~(1 << 16);
-	/write_cr0(cr0);
+	//uint64_t cr0 = read_cr0();
+	//cr0 &= ~(1 << 16);
+	//write_cr0(cr0);
 
 	g_memmap = memmap;
 	pml4 = alloc_mmap(1);
@@ -82,6 +82,7 @@ int paging_init(struct memory_map_info *memmap)
 
 		for (uint64_t j = 0; j < (entry->length + PAGE_SIZE - 1) / PAGE_SIZE; j++) {
 			paging_identity_map(entry->base + (j * PAGE_SIZE));
+			paging_map(entry->base + (j * PAGE_SIZE), entry->base + 0xffff800000000000 + (j * PAGE_SIZE));
 		}
 	}
 
@@ -95,7 +96,7 @@ void paging_identity_map(uint64_t addr)
 
 void paging_map(uint64_t phys, uint64_t virt)
 {
-	const int flags = PTE_PRESENT | PTE_READ_WRITE | PTE_USER;
+	const int flags = PTE_PRESENT | PTE_READ_WRITE;
 
 	uint16_t pml4_index = (virt >> 39) & 0x1ff;
 	uint16_t pdpt_index = (virt >> 30) & 0x1ff;

@@ -21,6 +21,8 @@
 #include <arch/cpu/gdt.h>
 #include <arch/mm/paging.h>
 #include <protocol/abp.h>
+#include <print.h>
+#include <axboot.h>
 
 #include <stdint.h>
 
@@ -36,9 +38,9 @@ struct gdt {
 void abp_handoff(void *entrypoint, struct abp_boot_info *bootinfo, void *stack, uint16_t stack_size)
 {
 	// load new GDT
-	struct gdt gdt;
-	struct gdtr gdtr;
-	struct tss tss;
+	struct gdt gdt = {0};
+	struct gdtr gdtr = {0};
+	struct tss tss = {0};
 
 	tss.iomap_base = sizeof(struct tss);
 	uint64_t tss_addr = (uint64_t)&tss;
@@ -56,12 +58,15 @@ void abp_handoff(void *entrypoint, struct abp_boot_info *bootinfo, void *stack, 
 	gdtr.limit = sizeof(gdt) - 1;
 	gdtr.base = (uint64_t)&gdt;
 
-	uint64_t pml4 = paging_get_pml4();
+	void *pml4 = (void *)paging_get_pml4();
+
+	// ...disable interrupts
+	cpu_disable_interrupts();
 
 	// it's go time, motherfuckers!
 	__asm__ volatile(
-		"cli\n"
 		"movq %[pml4], %%cr3\n"
+
 		"lgdt %[gdt]\n"
 		"ltr %[tss]\n"
 
@@ -80,18 +85,15 @@ void abp_handoff(void *entrypoint, struct abp_boot_info *bootinfo, void *stack, 
 
 		"movq %[stack], %%rsp\n"
 
-		"push %%rbp\n"
-
+		"pushq $0x00\n"
 		"callq *%[entryp]\n"
 		::
 			[pml4]"r"(pml4),
 			[gdt]"m"(gdtr),
 			[tss]"r"((uint16_t)0x28),
 			[stack]"gm"((uint64_t)stack + (stack_size * PAGE_SIZE)),
-			[entryp]"r"(entrypoint),
-			"c"(bootinfo)
-		: "rax", "memory"
-	);
+			[entryp]"r"(entrypoint)//, "c"(bootinfo)
+		: "rax", "memory");
 
 	__builtin_unreachable();
 }
