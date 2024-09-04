@@ -12,9 +12,8 @@ PHDRS
 
 SECTIONS
 {
-	/* We can't load higher half kernels just yet. */
-	. = 0xffffffff80000000;
-	/*. = 0x1000;*/
+	/* AxBoot remaps this to 0xffffffff80000000 for us */
+	. = 0x1000;
 
 	_linker_start_text = .;
 

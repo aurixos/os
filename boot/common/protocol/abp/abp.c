@@ -95,21 +95,18 @@ void abp_load(void *kernel, size_t kernel_size)
     debug("kernel buffer: 0x%llx\r\n", kernel);
 
     // get kernel entry point
-    kernel_entry = elf_load(kernel, &higher_half);
-    if (kernel_entry == NULL) {
+    if (!elf_load(kernel, &kernel_entry)) {
         return;
     }
 
     // remap kernel to higher half if desired
     debug("kernel size: %u (%u pages)\r\n", kernel_size, (kernel_size + (PAGE_SIZE - 1)) / PAGE_SIZE);
-    if (higher_half) {
-        for (uint64_t i = 0; i < (kernel_size + (PAGE_SIZE - 1)) / PAGE_SIZE; i++) {
-            paging_map((uint64_t)kernel + (i * PAGE_SIZE), HIGHER_HALF + (i * PAGE_SIZE));
-        }
-    }
     for (uint64_t i = 0; i < (kernel_size + (PAGE_SIZE - 1)) / PAGE_SIZE; i++) {
         paging_identity_map((uint64_t)kernel + (i * PAGE_SIZE));
+        paging_map((uint64_t)kernel + (i * PAGE_SIZE), HIGHER_HALF + (i * PAGE_SIZE));
     }
+
+    kernel_entry += HIGHER_HALF;
 
     // set up basic boot information
     boot_info->bootloader_name = paging_allocate((strlen(BOOTLOADER_NAME_STR) + PAGE_SIZE - 1) / PAGE_SIZE);
@@ -159,10 +156,7 @@ void abp_load(void *kernel, size_t kernel_size)
 
     for (uint64_t i = 0; i < 16; i++) {
         paging_identity_map((uint64_t)kernel_stack + (i * PAGE_SIZE));
-        paging_map((uint64_t)kernel_stack + (i * PAGE_SIZE), (uint64_t)kernel_stack + (i * PAGE_SIZE) + 0xffff800000000000);
     }
-
-    kernel_stack += 0xffff800000000000;
 
     // set memory map
     translate_memory_map(&memmap, &boot_info->memmap);

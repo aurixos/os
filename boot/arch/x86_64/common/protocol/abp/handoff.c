@@ -92,7 +92,7 @@ void abp_handoff(void *entrypoint, struct abp_boot_info *bootinfo, void *stack, 
 			[gdt]"m"(gdtr),
 			[tss]"r"((uint16_t)0x28),
 			[stack]"gm"((uint64_t)stack + (stack_size * PAGE_SIZE)),
-			[entryp]"r"(entrypoint)//, "c"(bootinfo)
+			[entryp]"r"(entrypoint), "c"(bootinfo)
 		: "rax", "memory");
 
 	__builtin_unreachable();

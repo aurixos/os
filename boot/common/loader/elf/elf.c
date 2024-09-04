@@ -71,16 +71,14 @@ int elf_validate_header(Elf32_Ehdr *header)
 	return 0;
 }
 
-void *elf_load(void *kernel, bool *is_higherhalf)
+bool elf_load(void *kernel, void **entryp)
 {
 	Elf32_Ehdr *header32 = (Elf32_Ehdr *)kernel;
 	Elf64_Ehdr *header64 = (Elf64_Ehdr *)kernel;
 
-	void *entryp = NULL;
-
 	if (elf_validate_header(header32) != 0) {
 		debug("ERROR: Invalid ELF header!\r\n");
-		return NULL;
+		return false;
 	}
 
 	// TODO: print some debug information about the ELF file
@@ -90,11 +88,10 @@ void *elf_load(void *kernel, bool *is_higherhalf)
 		header32->e_machine == EM_PPC) {
 		if (header32->e_phnum <= 0) {
 			debug("ERROR: No loadable ELF segments found.\r\n");
-			return NULL;
+			return false;
 		}
 
-		entryp = (void *)(uintptr_t)header32->e_entry;
-		*is_higherhalf = header32->e_entry < 0xc0000000;
+		*entryp = (void *)(uintptr_t)header32->e_entry;
 
 		Elf32_Phdr *phdrs32 = (Elf32_Phdr *)(kernel + header32->e_phoff);
 		for (uint16_t i = 0; i < header32->e_phnum; i++) {
@@ -118,11 +115,10 @@ void *elf_load(void *kernel, bool *is_higherhalf)
 	} else {
 		if (header64->e_phnum <= 0) {
 			debug("ERROR: No loadable ELF segments found.\r\n");
-			return NULL;
+			return false;
 		}
 
-		entryp = (void *)header64->e_entry;
-		*is_higherhalf = header64->e_entry >= 0xffffffff80000000;
+		*entryp = (void *)header64->e_entry;
 
 		Elf64_Phdr *phdrs64 = (Elf64_Phdr *)(kernel + header64->e_phoff);
 		for (uint16_t i = 0; i < header64->e_phnum; i++) {
@@ -134,23 +130,6 @@ void *elf_load(void *kernel, bool *is_higherhalf)
 
 				if (phdr64->p_memsz == 0) {
 					continue;
-				}
-
-				if (*is_higherhalf) {
-					memory_segment = (void *)(uintptr_t)(phdr64->p_vaddr - 0xffffffff80000000);
-					base = phdr64->p_vaddr - 0xffffffff80000000;
-
-					// TODO: Get rid of this
-
-#define EFI_PAGE_SIZE 0x1000
-#define EFI_PAGE_MASK 0xFFF
-#define EFI_PAGE_SHIFT 12
-#define EFI_SIZE_TO_PAGES(Size) (((Size) >> EFI_PAGE_SHIFT) + (((Size) & EFI_PAGE_MASK) ? 1 : 0))
-
-					int stat = mallocpage(EFI_SIZE_TO_PAGES(ROUND_UP(phdr64->p_memsz, PAGE_SIZE)), &base);
-					if (stat != 0) {
-						return NULL;
-					}
 				}
 
 				memcpy(memory_segment, file_segment, phdr64->p_filesz);
@@ -167,5 +146,5 @@ void *elf_load(void *kernel, bool *is_higherhalf)
 
 	debug("Loaded ELF kernel file\r\n");
 
-	return entryp;
+	return true;
 }

@@ -369,6 +369,6 @@ typedef struct {
     Elf64_Xword p_align;
 } Elf64_Phdr;
 
-void *elf_load(void *kernel, bool *is_higherhalf);
+bool elf_load(void *kernel, void **entryp);
 
 #endif /* _LOADER_ELF_ELF_H */
