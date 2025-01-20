@@ -1,0 +1,1 @@
+QEMU_MACHINE_FLAGS := -M q35

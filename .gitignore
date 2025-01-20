@@ -1,0 +1,14 @@
+build/
+release/
+sysroot/
+ovmf/
+.vscode/
+.ccls-cache/
+
+.DS_Store
+Brewfile.lock.json
+*.o
+*.d
+*.iso
+*.img
+*.log
