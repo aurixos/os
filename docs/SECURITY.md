@@ -4,7 +4,7 @@
 
 If there are any vulnerabilities in **AurixOS**, don't hesitate to _report them_.
 
-1. Contact [schkwve@gmail.com](mailto:schkwve@gmail.com).
+1. Contact [creoz@disroot.org](mailto:creoz@disroot.org).
 2. Describe the vulnerability.
 
    If you have a fix, that is most welcome -- please attach or summarize it in your message!
