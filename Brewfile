@@ -10,7 +10,6 @@ brew "make"
 brew "gptfdisk"
 brew "xorriso"
 brew "qemu"
-brew "zig"
 brew "util-linux" if OS.mac?
 brew "gsed" if OS.mac?
 
