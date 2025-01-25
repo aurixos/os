@@ -56,21 +56,19 @@ KERNEL_LDFLAGS := -Tarch/$(ARCH)/linker.ld \
 				-static \
 				-no-pie
 
-ifeq ($(DEBUG),yes)
-KERNEL_CFLAGS += -g3
+ifeq ($(BUILD_TYPE),debug)
+KERNEL_CFLAGS += -O0 -g3
 else
 KERNEL_CFLAGS += -O2
 endif
 
-KERNEL_CFILES := $(shell find . -type d \( -name arch -o -name platform \) -prune -name '*.c')
-KERNEL_ASFILES := $(shell find . -type d \( -name arch -o -name platform \) -prune -name '*.S')
+KERNEL_CFILES := $(shell find . -type d \( -name arch -o -name platform \) -prune -o -name '*.c' -print)
 KERNEL_ARCH_CFILES := $(shell find arch/$(ARCH) -name '*.c')
 KERNEL_ARCH_ASFILES := $(shell find arch/$(ARCH) -name '*.S')
 KERNEL_PLATFORM_CFILES := $(shell find platform/$(PLATFORM) -name '*.c')
 KERNEL_PLATFORM_ASFILES := $(shell find platform/$(PLATFORM) -name '*.S')
 
 KERNEL_OBJ := $(KERNEL_CFILES:%.c=$(BUILD_DIR)/kernel/%.c.o) \
-			$(KERNEL_ASFILES:%.S=$(BUILD_DIR)/kernel/%.S.o) \
 			$(KERNEL_ARCH_CFILES:arch/$(ARCH)/%.c=$(BUILD_DIR)/kernel/arch/%.c.o) \
 			$(KERNEL_ARCH_ASFILES:arch/$(ARCH)/%.S=$(BUILD_DIR)/kernel/arch/%.S.o) \
 			$(KERNEL_PLATFORM_CFILES:platform/$(PLATFORM)/%.c=$(BUILD_DIR)/kernel/platform/%.c.o) \
@@ -84,7 +82,7 @@ $(KERNEL_FILE): $(KERNEL_OBJ)
 	@mkdir -p $(@D)
 	@printf "  LD\t$(notdir $@)\n"
 	@$(KERNEL_LD) $(KERNEL_LDFLAGS) $^ -o $@
-ifeq ($(DEBUG),yes)
+ifeq ($(BUILD_TYPE),debug)
 	@printf "  OBJCOPY axkrnl.sym\n"
 	@$(KERNEL_OBJCOPY) --only-keep-debug $@ $(BUILD_DIR)/axkrnl.sym
 	@$(KERNEL_OBJCOPY) --strip-debug --strip-unneeded $@

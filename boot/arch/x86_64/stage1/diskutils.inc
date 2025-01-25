@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Module Name:  boot-hdd.asm                                                    ;;
+;; Module Name:  diskutils.inc                                                   ;;
 ;; Project:      AurixOS                                                         ;;
 ;;                                                                               ;;
 ;; Copyright (c) 2024-2025 Jozef Nagy                                            ;;
@@ -17,29 +17,26 @@
 ;; SOFTWARE.                                                                     ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-[bits 16]
-[org 0x7c00]
-
-_start:
-	jmp short AxBootEntry
-	nop
-
+;; dh = number of sectors to read
+;; dl = drive number
 ;;
-;; BIOS bootloader on x86_64 is just a placeholder
-;; incase it ever becomes a thing... for now it just
-;; notifies the user that you can't boot AurixOS
-;; without UEFI on x86_64.
-;;
+;; output: es:bx
+LoadDisk:
+	push dx
+	mov ah, 0x02
+	mov al, dh
+	mov ch, 0x00
+	mov dh, 0x00
+	mov cl, 0x02
+	int 0x13
+	jc .ReadError
+	pop dx
+	cmp dh, al
+	jne .ReadError
+	ret
+	.ReadError:
+		mov si, sDiskReadError
+		call PrintString
+		call AxBootHalt
 
-%include "boot.inc"
-%include "print.inc"
-%include "diskutils.inc"
-
-%include "strings.inc"
-
-AxBootHalt:
-	hlt
-	jmp AxBootHalt
-
-times 510-($-$$) db 0
-dw 0xaa55
+sDiskReadError: db 'ERROR: Failed to read disk!', 0

@@ -1,5 +1,5 @@
 /*********************************************************************************/
-/* Module Name:  boot.S                                                          */
+/* Module Name:  string.h                                                        */
 /* Project:      AurixOS                                                         */
 /*                                                                               */
 /* Copyright (c) 2024-2025 Jozef Nagy                                            */
@@ -17,53 +17,18 @@
 /* SOFTWARE.                                                                     */
 /*********************************************************************************/
 
-.section ".text.boot"
+#ifndef _LIB_STRING_H
+#define _LIB_STRING_H
 
-.global _start
+#include <stddef.h>
 
-_start:
-    //
-	// hello, am i on the main core?
-	//
-    mrs x1, mpidr_el1
-    and x1, x1, #3
-    cbz x1, 2f
-	
-	//
-    // no? alright then, sorry for interrupting. *leaves*
-	//
-1:
-	wfe
-    b 1b
+size_t mbstowcs(wchar_t *dest, const char **src, size_t len);
 
-	//
-	// ok cool now execute this huge pile of horrible code
-	// thanks :>
-	//
-2:
-    //
-	// let the stack live below our code
-	//
-    ldr x1, =_start
-    mov sp, x1
+size_t strlen(const char *str);
+char *strcpy(char *dest, const char *src);
 
-	//
-	// no junk allowed in .bss!
-	//
-    ldr x1, =__bss_start
-    ldr w2, =__bss_size
-3:  cbz w2, 4f
-    str xzr, [x1], #8
-    sub w2, w2, #1
-    cbnz w2, 3b
+void *memset(void *dest, int val, size_t len);
+void *memcpy(void *dest, void *src, size_t len);
+int memcmp(const void *a, const void *b, size_t len);
 
-4:
-	bl menu_main
-    
-	//
-	// crazy? i was crazy once.
-	// they locked me in a room. a rubber room. a rubber room with rats.
-	// and rats make me crazy.
-	// (bootloader returned, just halt the whole thing)
-	//
-    b 1b
+#endif /* _LIB_STRING_H */

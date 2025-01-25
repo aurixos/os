@@ -17,8 +17,15 @@
 ## SOFTWARE.                                                                     ##
 ###################################################################################
 
+.DEFAULT_GOAL := all
+
+##
+# Build configuration
+#
+
 export ARCH ?= x86_64
 export PLATFORM ?= generic-pc
+export BUILD_TYPE ?= debug
 
 export ROOT_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
@@ -26,15 +33,44 @@ export BUILD_DIR ?= $(ROOT_DIR)/build
 export SYSROOT_DIR ?= $(ROOT_DIR)/sysroot
 export RELEASE_DIR ?= $(ROOT_DIR)/release
 
-export GITREV := $(shell git rev-parse --short HEAD)
-
 NOUEFI ?= y
+
+##
+# Image generation and running
+#
 
 LIVECD := $(RELEASE_DIR)/aurix-$(GITREV)-livecd_$(ARCH)-$(PLATFORM).iso
 LIVEHDD := $(RELEASE_DIR)/aurix-$(GITREV)-livehdd_$(ARCH)-$(PLATFORM).img
 LIVESD := $(RELEASE_DIR)/aurix-$(GITREV)-livesd_$(ARCH)-$(PLATFORM).img
 
 QEMU_FLAGS := -m 2G -smp 4 -serial stdio
+
+##
+# General info
+#
+
+export CODENAME := "Matterhorn"
+export VERSION := "0.1"
+export GITREV := $(shell git rev-parse --short HEAD)
+
+export DEFINES := AURIX_CODENAME=$(CODENAME) \
+				AURIX_VERSION=$(VERSION) \
+				AURIX_GITREV=$(GITREV) \
+				BUILD_TYPE=$(BUILD_TYPE)
+
+ifeq ($(BUILD_TYPE),debug)
+DEFINES += BUILD_DEBUG
+else
+DEFINES += BUILD_RELEASE
+endif
+
+##
+# Recipes
+#
+
+.PHONY: all
+all: boot kernel
+	@:
 
 .PHONY: boot
 boot:

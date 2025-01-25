@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Module Name:  boot-hdd.asm                                                    ;;
+;; Module Name:  boot.inc                                                        ;;
 ;; Project:      AurixOS                                                         ;;
 ;;                                                                               ;;
 ;; Copyright (c) 2024-2025 Jozef Nagy                                            ;;
@@ -17,29 +17,27 @@
 ;; SOFTWARE.                                                                     ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-[bits 16]
-[org 0x7c00]
+AxBootEntry:
+	;;
+	;; Set 80x50 text mode and clear the screen
+	;;
+	mov ax, 0x03
+	int 0x10
+	xor bx, bx
+	mov ax, 0x1112
+	int 0x10
+	mov ah, 0
+	int 0x10
 
-_start:
-	jmp short AxBootEntry
-	nop
-
-;;
-;; BIOS bootloader on x86_64 is just a placeholder
-;; incase it ever becomes a thing... for now it just
-;; notifies the user that you can't boot AurixOS
-;; without UEFI on x86_64.
-;;
-
-%include "boot.inc"
-%include "print.inc"
-%include "diskutils.inc"
-
-%include "strings.inc"
-
-AxBootHalt:
-	hlt
+	;; Legacy booting is not ready for release yet
+%ifdef BUILD_DEBUG
+	;;
+	;; Display an error message and halt
+	;;
+	mov si, sErrorUnbootable
+	call PrintString
+	mov si, sPressToReboot
+	call PrintString
 	jmp AxBootHalt
-
-times 510-($-$$) db 0
-dw 0xaa55
+%endif
+	jmp AxBootHalt

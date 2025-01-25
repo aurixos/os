@@ -20,7 +20,8 @@
 [bits 16]
 [org 0x7c00]
 
-jmp 0x0000:AxBootEntry
+_start:
+	jmp 0x0000:AxBootEntry
 
 times 8-($-$$) db 0
 
@@ -37,39 +38,11 @@ bi_Reserved times 40 db 0
 ;; without UEFI on x86_64.
 ;;
 
+%include "boot.inc"
+%include "print.inc"
+%include "diskutils.inc"
+
 %include "strings.inc"
-
-AxBootEntry:
-	;;
-	;; Set 80x50 text mode and clear the screen
-	;;
-	mov ax, 0x03
-	int 0x10
-	xor bx, bx
-	mov ax, 0x1112
-	int 0x10
-	mov ah, 0
-	int 0x10
-
-	;;
-	;; Display an error message and halt
-	;;
-	mov si, sErrorUnbootable
-	call PrintString
-	mov si, sPressToReboot
-	call PrintString
-	jmp AxBootHalt
-
-PrintString:
-	lodsb
-	or al, al
-	jz .done
-	mov ah, 0x0e
-	mov bx, 0x0007
-	int 0x10
-	jmp PrintString
-	.done:
-		ret
 
 AxBootHalt:
 	hlt

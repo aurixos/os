@@ -21,16 +21,19 @@
 
 export INCLUDE_DIRS := $(BOOT_ROOT)/include
 
+export DEFINES += __$(ARCH)__ \
+				_AXBOOT
+
 export BUILD_DIR ?= build
 export SYSROOT_DIR ?= sysroot
 
-export ASFLAGS := 
-export CFLAGS := -D__$(ARCH) -D_AXBOOT -ffreestanding -fno-stack-protector -fno-stack-check -MMD -MP
+export ASFLAGS := $(foreach d, $(DEFINES), -D$d)
+export CFLAGS := $(foreach d, $(DEFINES), -D$d) -ffreestanding -fno-stack-protector -fno-stack-check -MMD -MP
 export LDFLAGS := -nostdlib
 
 export BOOT_ROOT := $(ROOT_DIR)/boot
 
-ifeq ($(DEBUG),yes)
+ifeq ($(BUILD_TYPE),debug)
 CFLAGS += -O0 -g3
 else
 CFLAGS += -O2

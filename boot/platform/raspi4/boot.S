@@ -1,5 +1,5 @@
 /*********************************************************************************/
-/* Module Name:  config.c                                                        */
+/* Module Name:  boot.S                                                          */
 /* Project:      AurixOS                                                         */
 /*                                                                               */
 /* Copyright (c) 2024-2025 Jozef Nagy                                            */
@@ -17,60 +17,53 @@
 /* SOFTWARE.                                                                     */
 /*********************************************************************************/
 
-#include <lib/string.h>
-#include <print.h>
-#include <axboot.h>
+.section ".text.boot"
 
-#include <stdint.h>
-#include <stddef.h>
+.global _start
 
-char *config_paths[] = {
-	"\\axboot.cfg",
-	"\\System\\axboot.cfg",
-	"\\EFI\\axboot.cfg",
-	"\\EFI\\BOOT\\axboot.cfg",
-};
-
-void config_init(void)
-{
-	void *config_file;
-	char *config_buffer;
-	int filesize;
+_start:
+    //
+	// hello, am i on the main core?
+	//
+    mrs x1, mpidr_el1
+    and x1, x1, #3
+    cbz x1, 2f
 	
-	for (size_t i = 0; i < ARRAY_LENGTH(config_paths); i++) {
-		//config_file = fw_file_open(NULL, config_paths[i]);
-		if (config_file != NULL) {
-			break;
-		}
-	}
+	//
+    // no? alright then, sorry for interrupting. *leaves*
+	//
+1:
+	wfe
+    b 1b
 
-	if (config_file == NULL) {
-		//print("No configuration file found! Please refer to the AxBoot documentation.\n");
-		//print("Entering console...\n\n");
-		//console();
-	}
+	//
+	// ok cool now execute this huge pile of horrible code
+	// thanks :>
+	//
+2:
+    //
+	// let the stack live below our code
+	//
+    ldr x1, =_start
+    mov sp, x1
 
-	//filesize = fw_file_size(config_file);
-	//config_buffer = malloc(filesize);
-	if (config_buffer == NULL) {
-		log("Entering console...\r\n\r\n");
-		//console();
-	}
+	//
+	// no junk allowed in .bss!
+	//
+    ldr x1, =__bss_start
+    ldr w2, =__bss_size
+3:  cbz w2, 4f
+    str xzr, [x1], #8
+    sub w2, w2, #1
+    cbnz w2, 3b
 
-	//fw_file_read(config_file, filesize, config_buffer);
-
-	// TODO: parse configuration file
-
-	//free(config_buffer);
-
-	/*
-	if (config_errors != 0 || config_get_menu_root() == NULL) {
-		//print("\nConfiguration invalid!\n");
-		//print("Please correct your config file.\n");
-		//print("Entering console...\n\n");
-		//console();
-	}
-	*/
-
-	//fw_file_close(config_file);
-}
+4:
+	bl main_menu
+    
+	//
+	// crazy? i was crazy once.
+	// they locked me in a room. a rubber room. a rubber room with rats.
+	// and rats make me crazy.
+	// (bootloader returned, just halt the whole thing)
+	//
+    b 1b

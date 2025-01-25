@@ -1,5 +1,5 @@
 /*********************************************************************************/
-/* Module Name:  config.c                                                        */
+/* Module Name:  bootmenu.h                                                      */
 /* Project:      AurixOS                                                         */
 /*                                                                               */
 /* Copyright (c) 2024-2025 Jozef Nagy                                            */
@@ -17,60 +17,9 @@
 /* SOFTWARE.                                                                     */
 /*********************************************************************************/
 
-#include <lib/string.h>
-#include <print.h>
-#include <axboot.h>
+#ifndef _MENU_BOOTMENU_H
+#define _MENU_BOOTMENU_H
 
-#include <stdint.h>
-#include <stddef.h>
+void main_menu(void);
 
-char *config_paths[] = {
-	"\\axboot.cfg",
-	"\\System\\axboot.cfg",
-	"\\EFI\\axboot.cfg",
-	"\\EFI\\BOOT\\axboot.cfg",
-};
-
-void config_init(void)
-{
-	void *config_file;
-	char *config_buffer;
-	int filesize;
-	
-	for (size_t i = 0; i < ARRAY_LENGTH(config_paths); i++) {
-		//config_file = fw_file_open(NULL, config_paths[i]);
-		if (config_file != NULL) {
-			break;
-		}
-	}
-
-	if (config_file == NULL) {
-		//print("No configuration file found! Please refer to the AxBoot documentation.\n");
-		//print("Entering console...\n\n");
-		//console();
-	}
-
-	//filesize = fw_file_size(config_file);
-	//config_buffer = malloc(filesize);
-	if (config_buffer == NULL) {
-		log("Entering console...\r\n\r\n");
-		//console();
-	}
-
-	//fw_file_read(config_file, filesize, config_buffer);
-
-	// TODO: parse configuration file
-
-	//free(config_buffer);
-
-	/*
-	if (config_errors != 0 || config_get_menu_root() == NULL) {
-		//print("\nConfiguration invalid!\n");
-		//print("Please correct your config file.\n");
-		//print("Entering console...\n\n");
-		//console();
-	}
-	*/
-
-	//fw_file_close(config_file);
-}
+#endif /* _MENU_BOOTMENU_H */

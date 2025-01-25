@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Module Name:  boot-hdd.asm                                                    ;;
+;; Module Name:  print.inc                                                       ;;
 ;; Project:      AurixOS                                                         ;;
 ;;                                                                               ;;
 ;; Copyright (c) 2024-2025 Jozef Nagy                                            ;;
@@ -17,29 +17,15 @@
 ;; SOFTWARE.                                                                     ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-[bits 16]
-[org 0x7c00]
-
-_start:
-	jmp short AxBootEntry
-	nop
-
-;;
-;; BIOS bootloader on x86_64 is just a placeholder
-;; incase it ever becomes a thing... for now it just
-;; notifies the user that you can't boot AurixOS
-;; without UEFI on x86_64.
-;;
-
-%include "boot.inc"
-%include "print.inc"
-%include "diskutils.inc"
-
-%include "strings.inc"
-
-AxBootHalt:
-	hlt
-	jmp AxBootHalt
-
-times 510-($-$$) db 0
-dw 0xaa55
+;; si = input string
+PrintString:
+	lodsb
+	or al, al
+	cmp al, 0
+	jz .done
+	mov ah, 0x0e
+	mov bx, 0x0007
+	int 0x10
+	jmp PrintString
+	.done:
+		ret

@@ -32,7 +32,6 @@ BOOT_CFLAGS := $(CFLAGS) \
 
 BOOT_LDFLAGS := $(LDFLAGS)
 
-$(shell find . -type d \( -name arch -o -name platform \) -prune -name '*.c')
 BOOT_ASFILES := $(shell find $(BOOT_ROOT)/arch/$(ARCH) -type d -name arch/$(ARCH)/uefi -prune -name '*.S')
 BOOT_CFILES := $(shell find $(BOOT_ROOT)/arch/$(ARCH) -type d -name arch/$(ARCH)/uefi -prune -name '*.c')
 
@@ -56,9 +55,9 @@ install:
 $(STAGE1_HDD): $(BOOT_ROOT)/arch/$(ARCH)/stage1/boot-hdd.asm
 	@mkdir -p $(@D)
 	@printf "  AS\tboot/arch/$(ARCH)/stage1/stage1-hdd.bin\n"
-	@nasm -fbin -I$(BOOT_ROOT)/arch/$(ARCH)/stage1 $< -o $@
+	@nasm -fbin -I$(BOOT_ROOT)/arch/$(ARCH)/stage1 $(ASFLAGS) $< -o $@
 
 $(STAGE1_CD): $(BOOT_ROOT)/arch/$(ARCH)/stage1/boot-cd.asm
 	@mkdir -p $(@D)
 	@printf "  AS\tboot/arch/$(ARCH)/stage1/stage1-cd.bin\n"
-	@nasm -fbin -I$(BOOT_ROOT)/arch/$(ARCH)/stage1 $< -o $@
+	@nasm -fbin -I$(BOOT_ROOT)/arch/$(ARCH)/stage1 $(ASFLAGS) $< -o $@
