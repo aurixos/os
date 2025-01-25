@@ -26,7 +26,9 @@
 #define BOOTLOADER_VERSION_STR "0.1"
 
 #ifndef UNREACHABLE
-	#define UNREACHABLE()
+	#define UNREACHABLE() __builtin_unreachable()
 #endif
+
+void axboot_init(void);
 
 #endif /* _AXBOOT_H */

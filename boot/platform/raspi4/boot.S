@@ -58,7 +58,7 @@ _start:
     cbnz w2, 3b
 
 4:
-	bl main_menu
+	bl axboot_init
     
 	//
 	// crazy? i was crazy once.

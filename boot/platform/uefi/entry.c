@@ -20,7 +20,8 @@
 #include <efi.h>
 #include <efilib.h>
 
-#include <mem/mman.h>
+#include <axboot.h>
+#include <mm/mman.h>
 #include <lib/string.h>
 #include <print.h>
 
@@ -48,6 +49,6 @@ EFI_STATUS uefi_entry(EFI_HANDLE ImageHandle,
         debug("Couldn't disable UEFI watchdog: %s (%x)\n", efi_status_to_str(Status), Status);
     }
 
-    while(1);
-    return EFI_SUCCESS;
+    axboot_init();
+    UNREACHABLE();
 }

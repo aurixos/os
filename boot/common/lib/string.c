@@ -18,6 +18,7 @@
 /*********************************************************************************/
 
 #include <lib/string.h>
+#include <mm/mman.h>
 
 #include <stdint.h>
 #include <stddef.h>
@@ -49,6 +50,46 @@ size_t mbstowcs(wchar_t *dest, const char **src, size_t len)
 	return len - count;
 }
 
+size_t strspn(const char *s, const char *accept)
+{
+    const char *p;
+    size_t count = 0;
+
+    while (s != NULL) {
+        for (p = accept; *p; p++) {
+            if (*s == *p) {
+                count++;
+                break;
+            }
+        }
+
+        if (!*p) {
+            break;
+        }
+        s++;
+    }
+
+    return count;
+}
+
+size_t strcspn(const char *s, const char *reject)
+{
+    const char *p;
+    size_t count = 0;
+
+    while (*s) {
+        for (p = reject; *p; p++) {
+            if (*s == *p) {
+                return count;
+            }
+        }
+        s++;
+        count++;
+    }
+
+    return count;
+}
+
 size_t strlen(const char *str)
 {
 	size_t count = 0;
@@ -62,6 +103,26 @@ size_t strlen(const char *str)
 	} while (str[count] != '\0');
 
 	return count;
+}
+
+int strcmp(const char *s1, const char *s2)
+{
+    while (*s1 && (*s1 == *s2)) {
+		s1++;
+		s2++;
+	}
+
+	return *(unsigned char *)s1 - *(unsigned char *)s2;
+}
+
+int strncmp(const char *s1, const char *s2, size_t n)
+{
+	while (n-- && *s1 && (*s1 == *s2)) {
+		s1++;
+		s2++;
+	}
+
+	return n ? (*(unsigned char *)s1 - *(unsigned char *)s2) : 0;
 }
 
 char *strcpy(char *dest, const char *src)
@@ -82,6 +143,80 @@ char *strcpy(char *dest, const char *src)
 	return pdest;
 }
 
+// TODO: Get rid of this function
+char *strdup(const char *s)
+{
+	size_t len = strlen(s);
+	char *new = (char *)mem_alloc(len + 1);
+
+	if (new) {
+		strcpy(new, s);
+	}
+
+	return new;
+}
+
+char *strtok(char *str, const char *delim)
+{
+    static char *last;
+    char *end;
+
+    if (str == NULL)
+    {
+        str = last;
+    }
+    if (str == NULL)
+    {
+        return NULL;
+    }
+
+    str += strspn(str, delim);
+    if (*str == '\0')
+    {
+        return NULL;
+    }
+
+    end = str + strcspn(str, delim);
+    if (*end)
+    {
+        *end++ = '\0';
+    }
+
+    last = end;
+    return str;
+}
+
+char *strchr(char *s, int c)
+{
+	if (s == NULL) {
+		return NULL;
+	}
+
+	while (*s != 0) {
+		if (*s == c)
+			return (char *)s;
+		s++;
+	}
+
+	return NULL;
+}
+
+char *strrchr(char *s, int c)
+{
+	const char *last = NULL;
+
+	if (s == NULL) {
+		return NULL;
+	}
+
+	while (*s != 0) {
+		if (*s == (char)c)
+			last = s;
+		s++;
+	}
+	return (char *)last;
+}
+
 void *memset(void *dest, int val, size_t len)
 {
 	unsigned char *ptr = dest;
@@ -91,7 +226,7 @@ void *memset(void *dest, int val, size_t len)
 	return dest;
 }
 
-void *memcpy(void *dest, void *src, size_t len)
+void *memcpy(void *dest, const void *src, size_t len)
 {
 	char *d = (char *)dest;
 	const char *s = (const char *)src;

@@ -20,6 +20,7 @@
 #ifndef _PRINT_H
 #define _PRINT_H
 
+#include "nanoprintf.h"
 #include <stdarg.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -28,5 +29,7 @@ void log(const char *fmt, ...);
 void debug(const char *fmt, ...);
 
 void printstr(const char *str);
+
+void snprintf(char *buf, size_t size, const char *fmt, ...);
 
 #endif /* _PRINT_H */

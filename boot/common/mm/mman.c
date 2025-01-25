@@ -17,9 +17,48 @@
 /* SOFTWARE.                                                                     */
 /*********************************************************************************/
 
-#include <mem/mman.h>
+#include <arch/mm/paging.h>
+#include <mm/mman.h>
+#include <lib/string.h>
 #include <print.h>
 #include <stddef.h>
+
+struct alloc_header allocation_list[MAX_ALLOCATIONS] = {0};
+
+int find_alloc(void *addr)
+{
+	for (int i = 0; i < MAX_ALLOCATIONS; i++) {
+		if (allocation_list[i].addr == addr) {
+			return i;
+		}
+	}
+
+	return -1;
+}
+
+int add_alloc(void *addr, size_t size)
+{
+	for (int i = 0; i < MAX_ALLOCATIONS; i++) {
+		if (allocation_list[i].addr == 0) {
+			allocation_list[i].addr = addr;
+			allocation_list[i].size = size;
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
+void remove_alloc(void *addr)
+{
+	int i = find_alloc(addr);
+	if (i == -1) {
+		return;
+	}
+
+	allocation_list[i].addr = 0;
+	allocation_list[i].size = 0;
+}
 
 #ifndef AXBOOT_UEFI
 
@@ -40,7 +79,15 @@ int mem_allocat(void *addr, size_t npages)
 	return 0;
 }
 
-void mem_free(void **addr)
+void *mem_realloc(void *addr, size_t n)
+{
+	(void)addr;
+	(void)n;
+
+	return NULL;
+}
+
+void mem_free(void *addr)
 {
 	(void)addr;
 }
@@ -61,6 +108,8 @@ void *mem_alloc(size_t n)
 		return NULL;
 	}
 
+	add_alloc(alloc, n);
+
 	return alloc;
 }
 
@@ -75,10 +124,36 @@ int mem_allocat(void *addr, size_t npages)
 		return 0;
 	}
 
+	add_alloc(addr, npages * PAGE_SIZE);
+
 	return 1;
 }
 
-void mem_free(void **addr)
+void *mem_realloc(void *addr, size_t n)
+{
+	size_t old_size;
+	void *new = NULL;
+	
+	int i = find_alloc(addr);
+	if (i == -1) {
+		debug("mem_realloc(): Couldn't find allocation for 0x%lx.\n");
+		return NULL;
+	}
+
+	old_size = allocation_list[i].size;
+
+	new = mem_alloc(n);
+	if (!new) {
+		return NULL;
+	}
+
+	memcpy(new, addr, old_size);
+	mem_free(addr);
+
+	return new;
+}
+
+void mem_free(void *addr)
 {
 	EFI_STATUS status;
 
@@ -86,13 +161,13 @@ void mem_free(void **addr)
 		return;
 	}
 
-	status = gBootServices->FreePool(*addr);
+	status = gBootServices->FreePool(addr);
 	if (EFI_ERROR(status)) {
-		debug("mem_free(): Couldn't free 0x%lx: %s (%lx)\n", *addr, efi_status_to_str(status), status);
+		debug("mem_free(): Couldn't free 0x%lx: %s (%lx)\n", addr, efi_status_to_str(status), status);
 		return;
 	}
 
-	*addr = NULL;
+	remove_alloc(addr);
 }
 
 #endif

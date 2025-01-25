@@ -22,9 +22,18 @@
 
 #include <stddef.h>
 
+// NOTE: If any allocations fail, try increasing this number.
+#define MAX_ALLOCATIONS 256
+
+struct alloc_header {
+	void *addr;
+	size_t size;
+};
+
 void *mem_alloc(size_t n);
 int mem_allocat(void *addr, size_t npages);
+void *mem_realloc(void *addr, size_t n);
 
-void mem_free(void **addr);
+void mem_free(void *addr);
 
 #endif /* _MEM_MMAN_H */
