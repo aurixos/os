@@ -1,5 +1,5 @@
 /*********************************************************************************/
-/* Module Name:  print.c                                                         */
+/* Module Name:  mman.h                                                          */
 /* Project:      AurixOS                                                         */
 /*                                                                               */
 /* Copyright (c) 2024-2025 Jozef Nagy                                            */
@@ -17,14 +17,14 @@
 /* SOFTWARE.                                                                     */
 /*********************************************************************************/
 
-#include <lib/string.h>
-#include <efi.h>
-#include <efilib.h>
+#ifndef _MEM_MMAN_H
+#define _MEM_MMAN_H
 
-void printstr(const char *str)
-{
-	CHAR16 wstr[4096];
-	mbstowcs(wstr, &str, strlen(str));
-	wstr[strlen(str)] = '\0';
-	gSystemTable->ConOut->OutputString(gSystemTable->ConOut, wstr);
-}
+#include <stddef.h>
+
+void *mem_alloc(size_t n);
+int mem_allocat(void *addr, size_t npages);
+
+void mem_free(void **addr);
+
+#endif /* _MEM_MMAN_H */

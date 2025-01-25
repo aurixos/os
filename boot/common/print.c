@@ -46,7 +46,10 @@ void log(const char *fmt, ...)
 	npf_vsnprintf(buf, sizeof(buf), fmt, args);
 	va_end(args);
 
-	//printstr(buf);
+// TODO: Get rid of this
+#ifdef AXBOOT_UEFI
+	printstr(buf);
+#endif
 }
 
 void debug(const char *fmt, ...)
@@ -58,6 +61,8 @@ void debug(const char *fmt, ...)
 	npf_vsnprintf(buf, sizeof(buf), fmt, args);
 	va_end(args);
 
-	//serial_sendstr(buf);
+#ifdef AXBOOT_UEFI
+	printstr(buf);
+#endif
 }
 

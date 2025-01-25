@@ -20,10 +20,6 @@
 #ifndef _MM_PAGING_H
 #define _MM_PAGING_H
 
-#include <firmware/memmap.h>
-
-#include <stdint.h>
-
 #define PAGE_SIZE 0x1000
 
 #endif /* _MM_PAGING_H */

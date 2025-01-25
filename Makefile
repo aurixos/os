@@ -33,7 +33,7 @@ export BUILD_DIR ?= $(ROOT_DIR)/build
 export SYSROOT_DIR ?= $(ROOT_DIR)/sysroot
 export RELEASE_DIR ?= $(ROOT_DIR)/release
 
-NOUEFI ?= y
+NOUEFI ?= n
 
 ##
 # Image generation and running

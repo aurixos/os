@@ -1,5 +1,5 @@
 /*********************************************************************************/
-/* Module Name:  print.c                                                         */
+/* Module Name:  mman.c                                                          */
 /* Project:      AurixOS                                                         */
 /*                                                                               */
 /* Copyright (c) 2024-2025 Jozef Nagy                                            */
@@ -17,14 +17,82 @@
 /* SOFTWARE.                                                                     */
 /*********************************************************************************/
 
-#include <lib/string.h>
+#include <mem/mman.h>
+#include <print.h>
+#include <stddef.h>
+
+#ifndef AXBOOT_UEFI
+
+#warning "Memory management is not implemented yet, expect runtime errors."
+
+void *mem_alloc(size_t n)
+{
+	(void)n;
+
+	return NULL;
+}
+
+int mem_allocat(void *addr, size_t npages)
+{
+	(void)addr;
+	(void)npages;
+
+	return 0;
+}
+
+void mem_free(void **addr)
+{
+	(void)addr;
+}
+
+#else
+
 #include <efi.h>
 #include <efilib.h>
 
-void printstr(const char *str)
+void *mem_alloc(size_t n)
 {
-	CHAR16 wstr[4096];
-	mbstowcs(wstr, &str, strlen(str));
-	wstr[strlen(str)] = '\0';
-	gSystemTable->ConOut->OutputString(gSystemTable->ConOut, wstr);
+	EFI_STATUS status;
+	void *alloc = NULL;
+
+	status = gBootServices->AllocatePool(EfiLoaderData, (EFI_UINTN)n, &alloc);
+	if (EFI_ERROR(status)) {
+		debug("mem_alloc(): Couldn't allocate %u bytes: %s (%lx)\n", n, efi_status_to_str(status), status);
+		return NULL;
+	}
+
+	return alloc;
 }
+
+int mem_allocat(void *addr, size_t npages)
+{
+	EFI_STATUS status;
+	void *alloc;
+
+	status = gBootServices->AllocatePages(AllocateAddress, EfiLoaderData, (EFI_UINTN)npages, addr);
+	if (EFI_ERROR(status)) {
+		debug("mem_allocat(): Couldn't allocate %u bytes at 0x%lx: %s (%lx)\n", npages, addr, efi_status_to_str(status), status);
+		return 0;
+	}
+
+	return 1;
+}
+
+void mem_free(void **addr)
+{
+	EFI_STATUS status;
+
+	if (addr == NULL) {
+		return;
+	}
+
+	status = gBootServices->FreePool(*addr);
+	if (EFI_ERROR(status)) {
+		debug("mem_free(): Couldn't free 0x%lx: %s (%lx)\n", *addr, efi_status_to_str(status), status);
+		return;
+	}
+
+	*addr = NULL;
+}
+
+#endif

@@ -20,9 +20,15 @@
 #include <efi.h>
 #include <efilib.h>
 
+#include <mem/mman.h>
+#include <lib/string.h>
 #include <print.h>
 
 #include <stddef.h>
+
+EFI_HANDLE gImageHandle;
+EFI_SYSTEM_TABLE *gSystemTable;
+EFI_BOOT_SERVICES *gBootServices;
 
 EFI_STATUS uefi_entry(EFI_HANDLE ImageHandle,
                        EFI_SYSTEM_TABLE *SystemTable)
@@ -31,6 +37,7 @@ EFI_STATUS uefi_entry(EFI_HANDLE ImageHandle,
 
     gImageHandle = ImageHandle;
     gSystemTable = SystemTable;
+    gBootServices = SystemTable->BootServices;
 
     // clear the screen
     gSystemTable->ConOut->ClearScreen(gSystemTable->ConOut);
@@ -38,7 +45,7 @@ EFI_STATUS uefi_entry(EFI_HANDLE ImageHandle,
     // disable UEFI watchdog
     Status = gSystemTable->BootServices->SetWatchdogTimer(0, 0, 0, NULL);
     if (EFI_ERROR(Status)) {
-        debug("Couldn't disable UEFI watchdog!\n");
+        debug("Couldn't disable UEFI watchdog: %s (%x)\n", efi_status_to_str(Status), Status);
     }
 
     while(1);

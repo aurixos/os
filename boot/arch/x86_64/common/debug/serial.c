@@ -17,7 +17,7 @@
 /* SOFTWARE.                                                                     */
 /*********************************************************************************/
 
-#include <debug/serial.h>
+//#include <debug/serial.h>
 #include <arch/cpu/cpu.h>
 
 #include <stdint.h>
