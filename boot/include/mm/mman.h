@@ -22,9 +22,6 @@
 
 #include <stddef.h>
 
-// NOTE: If any allocations fail, try increasing this number.
-#define MAX_ALLOCATIONS 256
-
 struct alloc_header {
 	void *addr;
 	size_t size;

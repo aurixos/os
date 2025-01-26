@@ -23,6 +23,9 @@
 #include <print.h>
 #include <stddef.h>
 
+// NOTE: If any allocations fail, try increasing this number.
+#define MAX_ALLOCATIONS 256
+
 struct alloc_header allocation_list[MAX_ALLOCATIONS] = {0};
 
 int find_alloc(void *addr)
