@@ -1,5 +1,5 @@
 /*********************************************************************************/
-/* Module Name:  init.c                                                          */
+/* Module Name:  uefi_sfs.c                                                      */
 /* Project:      AurixOS                                                         */
 /*                                                                               */
 /* Copyright (c) 2024-2025 Jozef Nagy                                            */
@@ -17,10 +17,20 @@
 /* SOFTWARE.                                                                     */
 /*********************************************************************************/
 
-#include <vfs/vfs.h>
+#ifndef AXBOOT_UEFI
 
-void axboot_init()
+#include <vfs/drive.h>
+#include <vfs/vfs.h>
+#include <efi.h>
+#include <efilib.h>
+
+struct sfs_fsdata {
+};
+
+uint8_t sfs_read(char *filename, char *buffer, struct device *dev, void *fsdata)
 {
-	vfs_init();
-	while (1);
+	(void)dev;
+	(void)fsdata;
 }
+
+#endif

@@ -26,12 +26,17 @@
 struct vfs_drive;
 
 struct vfs_filesystem {
-	int (*read_file)(struct vfs_drive *drive, char *filename, char *buf, size_t len);
-	int (*write_file)(struct vfs_drive *drive, char *filename, char *buf, size_t len);
+	char *fsname;
+
+	uint8_t (*read)(char *, char *, struct vfs_drive *, void *);
+	uint8_t (*write)(char *, char *, size_t, struct vfs_drive *, void *);
+	uint8_t (*mount)(struct vfs_drive *, void *);
+
+	uint8_t *fs_data;
 };
 
 struct vfs_mount {
-	char *mountpoint;
+	char *mnt;
 	struct vfs_drive *drive;
 };
 

@@ -1,5 +1,5 @@
 /*********************************************************************************/
-/* Module Name:  init.c                                                          */
+/* Module Name:  uefi_sfs.c                                                      */
 /* Project:      AurixOS                                                         */
 /*                                                                               */
 /* Copyright (c) 2024-2025 Jozef Nagy                                            */
@@ -17,10 +17,11 @@
 /* SOFTWARE.                                                                     */
 /*********************************************************************************/
 
-#include <vfs/vfs.h>
+#ifndef _FS_UEFI_SFS_H
+#define _FS_UEFI_SFS_H
 
-void axboot_init()
-{
-	vfs_init();
-	while (1);
-}
+#ifndef AXBOOT_UEFI
+
+#endif
+
+#endif /* _FS_UEFI_SFS_H */

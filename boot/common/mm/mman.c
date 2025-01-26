@@ -24,7 +24,7 @@
 #include <stddef.h>
 
 // NOTE: If any allocations fail, try increasing this number.
-#define MAX_ALLOCATIONS 256
+#define MAX_ALLOCATIONS 64
 
 struct alloc_header allocation_list[MAX_ALLOCATIONS] = {0};
 
