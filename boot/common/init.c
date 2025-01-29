@@ -23,7 +23,7 @@
 
 void axboot_init()
 {
-	if (!vfs_init("/")) {
+	if (!vfs_init("\\")) {
 		debug("axboot_init(): Failed to mount boot drive! Halting...");
 		// TODO: Halt
 		while (1);
@@ -31,7 +31,7 @@ void axboot_init()
 
 	// read kernel -> test read
 	char *buffer = NULL;
-	vfs_read("/System/axkrnl", buffer);
+	vfs_read("\\System\\axkrnl", buffer);
 
 	mem_free(buffer);
 
