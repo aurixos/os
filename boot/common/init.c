@@ -18,9 +18,22 @@
 /*********************************************************************************/
 
 #include <vfs/vfs.h>
+#include <mm/mman.h>
+#include <print.h>
 
 void axboot_init()
 {
-	vfs_init();
+	if (!vfs_init("/")) {
+		debug("axboot_init(): Failed to mount boot drive! Halting...");
+		// TODO: Halt
+		while (1);
+	}
+
+	// read kernel -> test read
+	char *buffer = NULL;
+	vfs_read("/System/axkrnl", buffer);
+
+	mem_free(buffer);
+
 	while (1);
 }

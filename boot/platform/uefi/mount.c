@@ -1,5 +1,5 @@
 /*********************************************************************************/
-/* Module Name:  bootmenu.h                                                      */
+/* Module Name:  mount.c                                                         */
 /* Project:      AurixOS                                                         */
 /*                                                                               */
 /* Copyright (c) 2024-2025 Jozef Nagy                                            */
@@ -17,9 +17,12 @@
 /* SOFTWARE.                                                                     */
 /*********************************************************************************/
 
-#ifndef _MENU_BOOTMENU_H
-#define _MENU_BOOTMENU_H
+#include <vfs/vfs.h>
+#include <fs/uefi_sfs.h>
+#include <efi.h>
+#include <efilib.h>
 
-void main_menu(void);
-
-#endif /* _MENU_BOOTMENU_H */
+struct vfs_drive *mount_boot_volume(char *mountpoint)
+{
+	return sfs_init(mountpoint);
+}

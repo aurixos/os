@@ -20,19 +20,15 @@
 #ifndef _VFS_VFS_H
 #define _VFS_VFS_H
 
+#include <vfs/drive.h>
 #include <stdint.h>
 #include <stddef.h>
 
-struct vfs_drive;
-
 struct vfs_filesystem {
-	char *fsname;
-
-	uint8_t (*read)(char *, char *, struct vfs_drive *, void *);
+	size_t (*read)(char *, char *, struct vfs_drive *, void *);
 	uint8_t (*write)(char *, char *, size_t, struct vfs_drive *, void *);
-	uint8_t (*mount)(struct vfs_drive *, void *);
 
-	uint8_t *fs_data;
+	void *fsdata;
 };
 
 struct vfs_mount {
@@ -40,9 +36,14 @@ struct vfs_mount {
 	struct vfs_drive *drive;
 };
 
-void vfs_init(void);
+int vfs_init(char *root_mountpoint);
 
-int vfs_read(char *filename, char *buf, size_t len);
+/* This function allocates `buf`. Passing a non-NULL value will result in an error. */
+/* NOTE: Remember to free the allocated memory afterwards! */
+size_t vfs_read(char *filename, char *buf);
 int vfs_write(char *filename, char *buf, size_t len);
+
+/* Every platform will define this on its own */
+struct vfs_drive *mount_boot_volume(char *mountpoint);
 
 #endif /* _VFS_VFS_H */

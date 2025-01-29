@@ -20,8 +20,11 @@
 #ifndef _FS_UEFI_SFS_H
 #define _FS_UEFI_SFS_H
 
-#ifndef AXBOOT_UEFI
+#include <vfs/drive.h>
+#include <stdint.h>
 
-#endif
+struct vfs_drive *sfs_init(char *mountpoint);
+
+size_t sfs_read(char *filename, char *buffer, struct vfs_drive *dev, void *fsdata);
 
 #endif /* _FS_UEFI_SFS_H */
