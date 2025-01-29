@@ -95,7 +95,7 @@ struct vfs_drive *sfs_init(char *mountpoint)
 	return drive;
 }
 
-size_t sfs_read(char *filename, char *buffer, struct vfs_drive *dev, void *fsdata)
+size_t sfs_read(char *filename, char **buffer, struct vfs_drive *dev, void *fsdata)
 {
 	struct sfs_fsdata *data = (struct sfs_fsdata *)fsdata;
 	EFI_FILE_PROTOCOL *volume = data->volume;
@@ -113,7 +113,8 @@ size_t sfs_read(char *filename, char *buffer, struct vfs_drive *dev, void *fsdat
 		return 0;
 	}
 
-	mbstowcs(wfilename, (const char **)&filename, strlen(filename));
+	size_t n = mbstowcs(wfilename, (const char **)&filename, strlen(filename));
+	wfilename[n] = L'\0';
 
 	/* open the file */
 	status = volume->Open(volume, &file, wfilename, EFI_FILE_MODE_READ, EFI_FILE_READ_ONLY | EFI_FILE_HIDDEN | EFI_FILE_SYSTEM);
@@ -134,16 +135,19 @@ size_t sfs_read(char *filename, char *buffer, struct vfs_drive *dev, void *fsdat
 
 	file->GetInfo(file, &fi_guid, &fileinfo_size, fileinfo);
 	len = fileinfo->FileSize;
+	mem_free(fileinfo);
 
-	debug("sfs_read: %u\n", len);
-
-	buffer = (char *)mem_alloc(len * sizeof(char));
-	if (!buffer) {
+	*buffer = (char *)mem_alloc(len * sizeof(char));
+	if (!*buffer) {
 		debug("sfs_read(): Failed to allocate memory for output buffer!\n");
 		return 0;
 	}
 
-	file->Read(file, &len, buffer);
+	status = file->Read(file, &len, *buffer);
+	if (EFI_ERROR(status)) {
+		debug("sfs_read(): Failed to read file '%s': %s (%lx)\n", filename, efi_status_to_str(status), status);
+		return 0;
+	}
 
 	/* close the file */
 	file->Close(file);

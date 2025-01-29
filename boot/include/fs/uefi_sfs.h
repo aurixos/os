@@ -25,6 +25,6 @@
 
 struct vfs_drive *sfs_init(char *mountpoint);
 
-size_t sfs_read(char *filename, char *buffer, struct vfs_drive *dev, void *fsdata);
+size_t sfs_read(char *filename, char **buffer, struct vfs_drive *dev, void *fsdata);
 
 #endif /* _FS_UEFI_SFS_H */

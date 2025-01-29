@@ -31,7 +31,9 @@ void axboot_init()
 
 	// read kernel -> test read
 	char *buffer = NULL;
-	vfs_read("\\System\\axkrnl", buffer);
+	vfs_read("\\System\\axkrnl", &buffer);
+
+	// TODO: Do something with the kernel :p
 
 	mem_free(buffer);
 

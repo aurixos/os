@@ -32,7 +32,7 @@ size_t mbstowcs(wchar_t *dest, const char **src, size_t len)
 		return 0;
 	}
 
-	while (count--) {
+	while (count) {
 		if ((*dest = *lsrc) == 0) {
 			lsrc = NULL;
 			break;
@@ -44,6 +44,7 @@ size_t mbstowcs(wchar_t *dest, const char **src, size_t len)
 
 		lsrc++;
 		dest++;
+		count--;
 	}
 
 	return len - count;

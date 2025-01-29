@@ -45,7 +45,7 @@ int vfs_init(char *root_mountpoint)
 	return 1;
 }
 
-size_t vfs_read(char *filename, char *buf)
+size_t vfs_read(char *filename, char **buf)
 {
 	if (boot_drive->fs->read == NULL) {
 		debug("vfs_read(): Filesystem didn't set up a read function!");

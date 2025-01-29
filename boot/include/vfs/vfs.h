@@ -25,7 +25,7 @@
 #include <stddef.h>
 
 struct vfs_filesystem {
-	size_t (*read)(char *, char *, struct vfs_drive *, void *);
+	size_t (*read)(char *, char **, struct vfs_drive *, void *);
 	uint8_t (*write)(char *, char *, size_t, struct vfs_drive *, void *);
 
 	void *fsdata;
@@ -40,7 +40,7 @@ int vfs_init(char *root_mountpoint);
 
 /* This function allocates `buf`. Passing a non-NULL value will result in an error. */
 /* NOTE: Remember to free the allocated memory afterwards! */
-size_t vfs_read(char *filename, char *buf);
+size_t vfs_read(char *filename, char **buf);
 int vfs_write(char *filename, char *buf, size_t len);
 
 /* Every platform will define this on its own */
