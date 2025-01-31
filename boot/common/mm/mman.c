@@ -119,7 +119,6 @@ void *mem_alloc(size_t n)
 int mem_allocat(void *addr, size_t npages)
 {
 	EFI_STATUS status;
-	void *alloc;
 
 	status = gBootServices->AllocatePages(AllocateAddress, EfiLoaderData, (EFI_UINTN)npages, addr);
 	if (EFI_ERROR(status)) {

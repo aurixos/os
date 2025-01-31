@@ -34,6 +34,8 @@ struct sfs_fsdata {
 
 struct vfs_drive *sfs_init(char *mountpoint)
 {
+	(void)mountpoint;
+
 	EFI_LOADED_IMAGE_PROTOCOL *loaded_image = NULL;
 	EFI_GUID lip_guid = EFI_LOADED_IMAGE_PROTOCOL_GUID;
 	EFI_SIMPLE_FILE_SYSTEM_PROTOCOL *iovolume;
@@ -97,6 +99,8 @@ struct vfs_drive *sfs_init(char *mountpoint)
 
 size_t sfs_read(char *filename, char **buffer, struct vfs_drive *dev, void *fsdata)
 {
+	(void)dev;
+
 	struct sfs_fsdata *data = (struct sfs_fsdata *)fsdata;
 	EFI_FILE_PROTOCOL *volume = data->volume;
 	EFI_FILE_PROTOCOL *file;

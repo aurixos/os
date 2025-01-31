@@ -18,6 +18,8 @@
 /*********************************************************************************/
 
 #include <lib/string.h>
+#include <mm/mman.h>
+#include <vfs/vfs.h>
 #include <print.h>
 #include <axboot.h>
 
@@ -33,44 +35,24 @@ char *config_paths[] = {
 
 void config_init(void)
 {
-	void *config_file;
-	char *config_buffer;
-	int filesize;
+	char *config_buf;
+	uint8_t open = 0;
 	
 	for (size_t i = 0; i < ARRAY_LENGTH(config_paths); i++) {
-		//config_file = fw_file_open(NULL, config_paths[i]);
-		if (config_file != NULL) {
+		vfs_read("\\System\\axkrnl", &config_buf);
+		if (config_buf != NULL) {
+			open = 1;
 			break;
 		}
 	}
 
-	if (config_file == NULL) {
-		//print("No configuration file found! Please refer to the AxBoot documentation.\n");
-		//print("Entering console...\n\n");
+	if (open == 0) {
+		debug("Couldn't open a configuration file! Entering console...\n");
 		//console();
+		while (1);
 	}
-
-	//filesize = fw_file_size(config_file);
-	//config_buffer = malloc(filesize);
-	if (config_buffer == NULL) {
-		log("Entering console...\r\n\r\n");
-		//console();
-	}
-
-	//fw_file_read(config_file, filesize, config_buffer);
 
 	// TODO: parse configuration file
 
-	//free(config_buffer);
-
-	/*
-	if (config_errors != 0 || config_get_menu_root() == NULL) {
-		//print("\nConfiguration invalid!\n");
-		//print("Please correct your config file.\n");
-		//print("Entering console...\n\n");
-		//console();
-	}
-	*/
-
-	//fw_file_close(config_file);
+	mem_free(config_buf);
 }
