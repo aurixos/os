@@ -1,5 +1,5 @@
 /*********************************************************************************/
-/* Module Name:  init.c                                                          */
+/* Module Name:  align.h                                                         */
 /* Project:      AurixOS                                                         */
 /*                                                                               */
 /* Copyright (c) 2024-2025 Jozef Nagy                                            */
@@ -17,36 +17,13 @@
 /* SOFTWARE.                                                                     */
 /*********************************************************************************/
 
-#include <vfs/vfs.h>
-#include <mm/mman.h>
-#include <mm/vmm.h>
-#include <loader/elf.h>
-#include <print.h>
+#ifndef _LIB_ALIGN_H
+#define _LIB_ALIGN_H
 
-void axboot_init()
-{
-	if (!vfs_init("\\")) {
-		debug("axboot_init(): Failed to mount boot drive! Halting...\n");
-		// TODO: Halt
-		while (1);
-	}
+#include <stdint.h>
 
-	// read kernel -> test read
-	char *kbuf = NULL;
-	vfs_read("\\System\\axkrnl", &kbuf);
+#define DIV_ROUND_UP(x,y) (((uint64_t)(x) + ((uint64_t)(y) - 1)) / (uint64_t)(y))
+#define ALIGN_UP(x,y) (DIV_ROUND_UP(x, y) * (uint64_t)(y))
+#define ALIGN_DOWN(x,y) (((uint64_t)(x) / (uint64_t)(y)) * (uint64_t)(y))
 
-	// TODO: Do something with the kernel :p
-	uintptr_t *pm = create_pagemap();
-	if (!pm) {
-		debug("axboot_init(): Failed to create kernel pagemap! Halting...\n");
-		// TODO: Halt
-		while (1);
-	}
-
-	void *kernel_entry = (void *)elf_load(kbuf, pm);
-	(void)kernel_entry;
-
-	mem_free(kbuf);
-
-	while (1);
-}
+#endif /* _LIB_ALIGN_H */

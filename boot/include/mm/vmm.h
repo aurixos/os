@@ -1,5 +1,5 @@
 /*********************************************************************************/
-/* Module Name:  init.c                                                          */
+/* Module Name:  vmm.h                                                           */
 /* Project:      AurixOS                                                         */
 /*                                                                               */
 /* Copyright (c) 2024-2025 Jozef Nagy                                            */
@@ -17,36 +17,19 @@
 /* SOFTWARE.                                                                     */
 /*********************************************************************************/
 
-#include <vfs/vfs.h>
-#include <mm/mman.h>
-#include <mm/vmm.h>
-#include <loader/elf.h>
-#include <print.h>
+#ifndef _MM_VMM_H
+#define _MM_VMM_H
 
-void axboot_init()
-{
-	if (!vfs_init("\\")) {
-		debug("axboot_init(): Failed to mount boot drive! Halting...\n");
-		// TODO: Halt
-		while (1);
-	}
+#include <arch/mm/paging.h>
+#include <stdint.h>
 
-	// read kernel -> test read
-	char *kbuf = NULL;
-	vfs_read("\\System\\axkrnl", &kbuf);
+#define VMM_PRESENT 1
+#define VMM_WRITABLE 2
+#define VMM_NX (1ull << 63)
+#define VMM_USER 4
 
-	// TODO: Do something with the kernel :p
-	uintptr_t *pm = create_pagemap();
-	if (!pm) {
-		debug("axboot_init(): Failed to create kernel pagemap! Halting...\n");
-		// TODO: Halt
-		while (1);
-	}
+uintptr_t *create_pagemap(void);
 
-	void *kernel_entry = (void *)elf_load(kbuf, pm);
-	(void)kernel_entry;
+void map_page(uintptr_t *pm, uintptr_t virt, uintptr_t phys, uint64_t flags);
 
-	mem_free(kbuf);
-
-	while (1);
-}
+#endif /* _MM_VMM_H */

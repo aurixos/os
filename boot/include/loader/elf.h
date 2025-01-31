@@ -1,5 +1,5 @@
 /*********************************************************************************/
-/* Module Name:  init.c                                                          */
+/* Module Name:  elf.h                                                           */
 /* Project:      AurixOS                                                         */
 /*                                                                               */
 /* Copyright (c) 2024-2025 Jozef Nagy                                            */
@@ -17,36 +17,61 @@
 /* SOFTWARE.                                                                     */
 /*********************************************************************************/
 
-#include <vfs/vfs.h>
-#include <mm/mman.h>
-#include <mm/vmm.h>
-#include <loader/elf.h>
-#include <print.h>
+#ifndef _LOADER_ELF_H
+#define _LOADER_ELF_H
 
-void axboot_init()
-{
-	if (!vfs_init("\\")) {
-		debug("axboot_init(): Failed to mount boot drive! Halting...\n");
-		// TODO: Halt
-		while (1);
-	}
+#include <stdint.h>
+//#include <stddef.h>
 
-	// read kernel -> test read
-	char *kbuf = NULL;
-	vfs_read("\\System\\axkrnl", &kbuf);
+#define ELF_MAGIC 0x464C457F
 
-	// TODO: Do something with the kernel :p
-	uintptr_t *pm = create_pagemap();
-	if (!pm) {
-		debug("axboot_init(): Failed to create kernel pagemap! Halting...\n");
-		// TODO: Halt
-		while (1);
-	}
+struct elf_header {
+    uint32_t e_magic;
+    uint8_t e_class;
+    uint8_t e_data;
+    uint8_t e_version;
+    uint8_t e_osabi;
+    uint8_t e_abiversion;
+    uint8_t e_pad[7];
+    uint16_t e_type;
+    uint16_t e_machine;
+    uint32_t e_version2;
+    uint64_t e_entry;
+    uint64_t e_phoff;
+    uint64_t e_shoff;
+    uint32_t e_flags;
+    uint16_t e_ehsize;
+    uint16_t e_phentsize;
+    uint16_t e_phnum;
+    uint16_t e_shentsize;
+    uint16_t e_shnum;
+    uint16_t e_shstrndx;
+} __attribute__((packed));
 
-	void *kernel_entry = (void *)elf_load(kbuf, pm);
-	(void)kernel_entry;
+struct elf_program_header {
+    uint32_t p_type;
+    uint32_t p_flags;
+    uint64_t p_offset;
+    uint64_t p_vaddr;
+    uint64_t p_paddr;
+    uint64_t p_filesz;
+    uint64_t p_memsz;
+    uint64_t p_align;
+} __attribute__((packed));
 
-	mem_free(kbuf);
+#define PT_NULL 0
+#define PT_LOAD 1
+#define PT_DYNAMIC 2
+#define PT_INTERP 3
+#define PT_NOTE 4
+#define PT_SHLIB 5
+#define PT_PHDR 6
+#define PT_TLS 7
 
-	while (1);
-}
+#define PF_X 0x1
+#define PF_W 0x2
+#define PF_R 0x4
+
+uint64_t elf_load(char *kernel, uintptr_t *pagemap);
+
+#endif /* _LOADER_ELF_H */
